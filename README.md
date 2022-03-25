@@ -14,7 +14,7 @@ Having source code for your mappings generated provides the following benefits:
 * [How do I get started?](#how-do-i-get-started)
 * [Features](#features)
   * [Basic mapping](#basic-mapping)
-  * [### Keeping eye on missing mappings](#keeping-eye-on-missing-mappings)
+  * [Keeping eye on missing mappings](#keeping-eye-on-missing-mappings)
   * [Ignore destination property](#ignore-destination-property)
   * [Override property matching behavior](#override-property-matching-behavior)
   * [Provide custom mapping for destination property](#provide-custom-mapping-for-destination-property)
