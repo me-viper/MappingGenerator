@@ -355,7 +355,7 @@ namespace MappingGenerator.SourceGeneration
 
             var mapListBody = MapCollectionMethodBody(sourceFqn, CreateQualifiedName(list.Construct(model.DestinationType)));
             var mapHashSetBody = MapCollectionMethodBody(sourceFqn, CreateQualifiedName(hashSet.Construct(model.DestinationType)));
-            var mapToArrayBody = MapToTargetEnumerable(listInterface, "ToArray");
+            var mapToArrayBody = MapToTargetEnumerable(sourceFqn, "ToArray");
             var mapCollectionBody = MapToTargetCollection(listInterface, destFqn);
 
             classMembers.Add(MapManyMethodDeclarationSyntax(sourceEnumerable, list.Construct(model.DestinationType), mapListBody));
@@ -521,14 +521,35 @@ namespace MappingGenerator.SourceGeneration
                 );
         }
 
-        private static BlockSyntax MapToTargetEnumerable(NameSyntax mapListInterface, string convertTo)
+        private static BlockSyntax MapToTargetEnumerable(TypeSyntax sourceType, string convertTo)
         {
             return Block(
-                MapToListStatement(mapListInterface),
+                ExpressionStatement(
+                    AssignmentExpression(
+                        SyntaxKind.CoalesceAssignmentExpression,
+                        IdentifierName("source"),
+                        InvocationExpression(
+                            MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                IdentifierName("Enumerable"),
+                                GenericName(Identifier("Empty"))
+                                .WithTypeArgumentList(
+                                    TypeArgumentList(SingletonSeparatedList(sourceType))
+                                    )
+                                )
+                            )
+                        )
+                    ),
                 ReturnStatement(
                     InvocationExpression(
                         MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression, IdentifierName("result"), 
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            InvocationExpression(
+                                MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    IdentifierName("source"),
+                                    IdentifierName("Select")))
+                                .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("Map"))))),
                             IdentifierName(convertTo)
                             )
                         )
