@@ -14,6 +14,7 @@ Having source code for your mappings generated provides the following benefits:
 * [How do I get started?](#how-do-i-get-started)
 * [Features](#features)
   * [Basic mapping](#basic-mapping)
+  * [### Keeping eye on missing mappings](#keeping-eye-on-missing-mappings)
   * [Ignore destination property](#ignore-destination-property)
   * [Override property matching behavior](#override-property-matching-behavior)
   * [Provide custom mapping for destination property](#provide-custom-mapping-for-destination-property)
@@ -133,6 +134,35 @@ partial class Mapper : IMapper<Source, Destination>
     partial void AfterMap(Source source, Destination result);
 }
 ```
+
+### Keeping eye on missing mappings
+
+You can control how MappingGenerator behaves if it was not able to map everything in destination object with MissingMappingBehavior parameter. Options are:
+
+* **Warning** (Default). Produce compilation warning.
+* **Ignore**. Do nothing.
+* **Error**. Produce compilation error.
+
+For example the following code will produce compilation error because it can't find source for `B.Val`:
+
+```csharp
+
+public class A {}
+
+public class B 
+{ 
+    public string Val { get; set; }
+}
+
+[MappingGenerator(typeof(A), typeof(B), MissingMappingBehavior = MissingMappingBehavior.Error)]
+public partial class Mapper 
+{
+}
+```
+
+Compilation error:
+
+`Mapping generator 'Mapper': Failed to resolve mapping for type 'B' property 'Val'.`
 
 ### Ignore destination property
 
