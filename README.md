@@ -916,8 +916,9 @@ partial class Mapper :
     // !!! Explicit interface implementation.
     Collection<Destination> IMapper<IEnumerable<Source>, System.Collections.ObjectModel.Collection<Destination>>.Map(IEnumerable<Source> source)
     {
-        source ??= Enumerable.Empty<Source>();
-        return new HashSet<Destination>(source.Select(Map));
+        var result = ((IMapper<IEnumerable<Source>, List<Destination>>)this).Map(source);
+        // Collection is wrapper over IList.
+        return new Collection<Destination>(result);
     }
 
     // !!! Explicit interface implementation.
