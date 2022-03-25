@@ -17,6 +17,8 @@ namespace MappingGenerator.Abstractions
 
         public MissingMappingBehavior MissingMappingBehavior { get; set; }
 
+        public ImplementationType ImplementationType { get; set; }
+
         public string Name { get; set; } = string.Empty;
     }
 }

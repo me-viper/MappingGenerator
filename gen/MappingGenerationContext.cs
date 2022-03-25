@@ -36,6 +36,8 @@ namespace MappingGenerator.SourceGeneration
 
         public MissingMappingBehavior MissingMappingBehaviour { get; private set; }
 
+        public ImplementationType ImplementationType { get; private set; }
+
         public string MapperName { get; private set; } = default!;
 
         public IReadOnlyCollection<IMethodSymbol> MappingMethods => _mappingMethods;
@@ -144,14 +146,13 @@ namespace MappingGenerator.SourceGeneration
             foreach (var mapperNamedArg in mappingAttr.NamedArguments)
             {
                 if (string.Equals(mapperNamedArg.Key, nameof(MappingGeneratorAttribute.MissingMappingBehavior), StringComparison.Ordinal))
-                {
                     result.MissingMappingBehaviour = (MissingMappingBehavior)((int?)mapperNamedArg.Value.Value ?? 0);
-                }
 
                 if (string.Equals(mapperNamedArg.Key, nameof(MappingGeneratorAttribute.Name), StringComparison.Ordinal))
-                {
                     result.MapperName = (string?)mapperNamedArg.Value.Value ?? string.Empty;
-                }
+
+                if (string.Equals(mapperNamedArg.Key, nameof(MappingGeneratorAttribute.ImplementationType), StringComparison.Ordinal))
+                    result.ImplementationType = (ImplementationType)((int?)mapperNamedArg.Value.Value ?? 0);
             }
 
             SetKnownMappers(result, knownMappers);

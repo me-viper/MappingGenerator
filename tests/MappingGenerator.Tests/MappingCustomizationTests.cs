@@ -71,6 +71,18 @@ namespace MappingGenerator.Tests.MappingCustomization
 
             Assert.Equal(expected, result);
         }
+
+        [Fact]
+        public void ExlicitMapper()
+        {
+            var source = new Source { Value = "Text", Ignore = "IgnoreMe", SourceValue = "Custom" };
+            var expected = new Destination { Value = "Text", Ignore = null, DestinationValue = null };
+
+            var mapper = (IMapper<Source, Destination>)new ExplicitMapper();
+            var result = mapper.Map(source);
+
+            Assert.Equal(expected, result);
+        }
     }
 
     public record Source
@@ -166,4 +178,9 @@ namespace MappingGenerator.Tests.MappingCustomization
             result.Ignore = "AfterMap";
         }
     }
+
+    [MappingGenerator(typeof(Source), typeof(Destination), ImplementationType = ImplementationType.Explicit)]
+    [MappingGeneratorPropertyIgnore(nameof(Destination.Ignore), nameof(Destination.DestinationValue))]
+    public partial class ExplicitMapper
+    { }
 }

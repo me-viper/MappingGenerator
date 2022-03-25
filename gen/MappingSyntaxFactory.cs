@@ -12,6 +12,8 @@ namespace MappingGenerator.SourceGeneration
 
     internal class MappingSyntaxFactory
     {
+        private MappingSyntaxFactoryWithContext _syntaxFactoryWithContext = default!;
+
         public static InvocationExpressionSyntax CallMappingMethod(string methodName)
         {
             return InvocationExpression(IdentifierName(methodName))
@@ -305,6 +307,10 @@ namespace MappingGenerator.SourceGeneration
 
         public SyntaxTree Build(MappingSyntaxModel model)
         {
+            var mapperInterface = MapperInterface(model.SourceType, model.DestinationType);
+            
+            _syntaxFactoryWithContext = new MappingSyntaxFactoryWithContext(mapperInterface, model.Context.ImplementationType);
+
             var body = new List<StatementSyntax>();
 
             body.Add(ArgumentNotNull("source"));
@@ -337,7 +343,7 @@ namespace MappingGenerator.SourceGeneration
 
             var baseTypes = new SyntaxNodeOrToken[]
             {
-                SimpleBaseType(MapperInterface(model.SourceType, model.DestinationType)),
+                SimpleBaseType(mapperInterface),
                 Token(SyntaxKind.CommaToken),
                 SimpleBaseType(listInterface),
                 Token(SyntaxKind.CommaToken),
@@ -351,7 +357,7 @@ namespace MappingGenerator.SourceGeneration
             if (model.DestinationTypeConstructor != null)
                 classMembers.Add(model.DestinationTypeConstructor);
 
-            classMembers.Add(MapMethod(sourceFqn, destFqn, body));
+            classMembers.Add(_syntaxFactoryWithContext.MapMethod(sourceFqn, destFqn, body));
 
             var mapListBody = MapCollectionMethodBody(sourceFqn, CreateQualifiedName(list.Construct(model.DestinationType)));
             var mapHashSetBody = MapCollectionMethodBody(sourceFqn, CreateQualifiedName(hashSet.Construct(model.DestinationType)));
@@ -420,6 +426,29 @@ namespace MappingGenerator.SourceGeneration
                 //.WithEndOfFileToken(NullableKeyword(false))
                 .NormalizeWhitespace()
                 .SyntaxTree;
+        }
+
+        private SimpleLambdaExpressionSyntax CallMapMethodLambda(TypeSyntax mapInterface)
+        {
+            return SimpleLambdaExpression(Parameter(Identifier("p")))
+                .WithExpressionBody(
+                    CallMapMethod(mapInterface)
+                    .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("p")))))
+                    );
+        }
+
+        private InvocationExpressionSyntax CallMapMethod(TypeSyntax mapInterface)
+        {
+            return InvocationExpression(
+                    MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        ParenthesizedExpression(CastExpression(mapInterface, ThisExpression())),
+                        IdentifierName("Map")
+                        )
+                    )
+                .WithArgumentList(
+                    ArgumentList(SingletonSeparatedList(Argument(IdentifierName("source"))))
+                    );
         }
 
         private static NameSyntax CreateQualifiedName(ITypeSymbol typeSymbol)
@@ -497,7 +526,7 @@ namespace MappingGenerator.SourceGeneration
                 );
         }
 
-        private static BlockSyntax MapToTargetCollection(
+        private BlockSyntax MapToTargetCollection(
             NameSyntax mapListInterface, 
             TypeSyntax destinationTypeSyntax)
         {
@@ -521,7 +550,7 @@ namespace MappingGenerator.SourceGeneration
                 );
         }
 
-        private static BlockSyntax MapToTargetEnumerable(TypeSyntax sourceType, string convertTo)
+        private BlockSyntax MapToTargetEnumerable(TypeSyntax sourceType, string convertTo)
         {
             return Block(
                 ExpressionStatement(
@@ -549,7 +578,9 @@ namespace MappingGenerator.SourceGeneration
                                     SyntaxKind.SimpleMemberAccessExpression,
                                     IdentifierName("source"),
                                     IdentifierName("Select")))
-                                .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("Map"))))),
+                                .WithArgumentList(
+                                    ArgumentList(SingletonSeparatedList(Argument(_syntaxFactoryWithContext.CallMapMethodLambda())))
+                                    ),
                             IdentifierName(convertTo)
                             )
                         )
@@ -557,7 +588,7 @@ namespace MappingGenerator.SourceGeneration
                 );
         }
 
-        private static StatementSyntax MapToListStatement(TypeSyntax mapListInterface)
+        private StatementSyntax MapToListStatement(TypeSyntax mapListInterface)
         {
             return LocalDeclarationStatement(
                 VariableDeclaration(IdentifierName(Identifier(TriviaList(), SyntaxKind.VarKeyword, "var", "var", TriviaList())))
@@ -565,25 +596,14 @@ namespace MappingGenerator.SourceGeneration
                         SingletonSeparatedList(
                             VariableDeclarator(Identifier("result"))
                                 .WithInitializer(
-                                    EqualsValueClause(
-                                        InvocationExpression(
-                                                MemberAccessExpression(
-                                                    SyntaxKind.SimpleMemberAccessExpression,
-                                                    ParenthesizedExpression(CastExpression(mapListInterface, ThisExpression())),
-                                                    IdentifierName("Map")
-                                                    )
-                                                )
-                                            .WithArgumentList(
-                                                ArgumentList(SingletonSeparatedList(Argument(IdentifierName("source"))))
-                                                )
-                                        )
+                                    EqualsValueClause(_syntaxFactoryWithContext.CallMapMethod(mapListInterface))
                                     )
                             )
                         )
                 );
         }
 
-        private static BlockSyntax MapCollectionMethodBody(TypeSyntax sourceType, TypeSyntax collectionType)
+        private BlockSyntax MapCollectionMethodBody(TypeSyntax sourceType, TypeSyntax collectionType)
         {
             return Block(
                 ExpressionStatement(
@@ -613,7 +633,9 @@ namespace MappingGenerator.SourceGeneration
                                             SyntaxKind.SimpleMemberAccessExpression,
                                             IdentifierName("source"),
                                             IdentifierName("Select")))
-                                    .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("Map")))))
+                                    .WithArgumentList(
+                                        ArgumentList(SingletonSeparatedList(Argument(_syntaxFactoryWithContext.CallMapMethodLambda())))
+                                        )
                                     )
                                 )
                             )
@@ -696,17 +718,6 @@ namespace MappingGenerator.SourceGeneration
             return ConstructorDeclaration(Identifier(typeName))
                 .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
                 .WithParameterList(ParameterList(SeparatedList(parameters)))
-                .WithBody(Block(body));
-        }
-
-        private static MethodDeclarationSyntax MapMethod(
-            NameSyntax sourceFqn,
-            NameSyntax destFqn,
-            IEnumerable<StatementSyntax> body)
-        {
-            return MethodDeclaration(destFqn, Identifier("Map"))
-                .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
-                .WithParameterList(ParameterList(SingletonSeparatedList(Parameter(Identifier("source")).WithType(sourceFqn))))
                 .WithBody(Block(body));
         }
 

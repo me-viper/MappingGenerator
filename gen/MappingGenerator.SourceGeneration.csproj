@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="..\src\Abstractions\CollectionsHelper.cs" Link="Abstractions\CollectionsHelper.cs" />
     <Compile Include="..\src\Abstractions\IMapper.cs" Link="Abstractions\IMapper.cs" />
+    <Compile Include="..\src\Abstractions\ImplementationType.cs" Link="Abstractions\ImplementationType.cs" />
     <Compile Include="..\src\Abstractions\MappingGeneratorAttribute.cs" Link="Abstractions\MappingGeneratorAttribute.cs" />
     <Compile Include="..\src\Abstractions\MappingGeneratorMappersIgnoreAttribute.cs" Link="Abstractions\MappingGeneratorMappersIgnoreAttribute.cs" />
     <Compile Include="..\src\Abstractions\MappingGeneratorPropertyIgnoreAttribute.cs" Link="Abstractions\MappingGeneratorPropertyIgnoreAttribute.cs" />
@@ -21,10 +22,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Abstractions\" />
   </ItemGroup>
 
 </Project>
