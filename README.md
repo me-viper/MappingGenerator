@@ -914,7 +914,7 @@ partial class Mapper :
     }
 
     // !!! Explicit interface implementation.
-    Collection<Destination> IMapper<IEnumerable<Source>, System.Collections.ObjectModel.Collection<Destination>>.Map(IEnumerable<Source> source)
+    Collection<Destination> IMapper<IEnumerable<Source>, Collection<Destination>>.Map(IEnumerable<Source> source)
     {
         var result = ((IMapper<IEnumerable<Source>, List<Destination>>)this).Map(source);
         // Collection is wrapper over IList.
