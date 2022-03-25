@@ -353,8 +353,8 @@ namespace MappingGenerator.SourceGeneration
 
             classMembers.Add(MapMethod(sourceFqn, destFqn, body));
 
-            var mapListBody = MapListMethodBody(sourceFqn, destFqn);
-            var mapHashSetBody = MapToTargetEnumerable(listInterface, "ToHashSet");
+            var mapListBody = MapCollectionMethodBody(sourceFqn, CreateQualifiedName(list.Construct(model.DestinationType)));
+            var mapHashSetBody = MapCollectionMethodBody(sourceFqn, CreateQualifiedName(hashSet.Construct(model.DestinationType)));
             var mapToArrayBody = MapToTargetEnumerable(listInterface, "ToArray");
             var mapCollectionBody = MapToTargetCollection(listInterface, destFqn);
 
@@ -562,7 +562,7 @@ namespace MappingGenerator.SourceGeneration
                 );
         }
 
-        private static BlockSyntax MapListMethodBody(TypeSyntax sourceType, TypeSyntax destinationType)
+        private static BlockSyntax MapCollectionMethodBody(TypeSyntax sourceType, TypeSyntax collectionType)
         {
             return Block(
                 ExpressionStatement(
@@ -575,18 +575,14 @@ namespace MappingGenerator.SourceGeneration
                                 IdentifierName("Enumerable"),
                                 GenericName(Identifier("Empty"))
                                 .WithTypeArgumentList(
-                                    TypeArgumentList(
-                                        SingletonSeparatedList<TypeSyntax>(sourceType)
-                                        )
+                                    TypeArgumentList(SingletonSeparatedList(sourceType))
                                     )
                                 )
                             )
                         )
                     ),
                 ReturnStatement(
-                    ObjectCreationExpression(
-                        GenericName(Identifier("List"))
-                            .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(destinationType))))
+                    ObjectCreationExpression(collectionType)
                     .WithArgumentList(
                         ArgumentList(
                             SingletonSeparatedList(
