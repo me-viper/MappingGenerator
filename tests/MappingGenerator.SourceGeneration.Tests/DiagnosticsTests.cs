@@ -73,35 +73,35 @@ namespace Test
             await generator.RunAsync();
         }
 
-        [Fact]
-        public async Task NoCastExists()
-        {
-            var code = @"
-namespace Test
-{
-    using System;
-    using MappingGenerator.Abstractions;
+//        [Fact]
+//        public async Task NoCastExists()
+//        {
+//            var code = @"
+//namespace Test
+//{
+//    using System;
+//    using MappingGenerator.Abstractions;
 
-    public class A { public string Val { get; set; } };
-    public class B { public int Val { get; set;} }
+//    public class A { public string Val { get; set; } };
+//    public class B { public int Val { get; set;} }
 
-    [MappingGenerator(typeof(A), typeof(B))]
-    public partial class TestMapper {}
-}
-";
-            var generator = new CSharpSourceGeneratorVerifier<MappingSourceGenerator>.Test();
-            generator.TestState.Sources.Add(code);
-            generator.TestBehaviors = TestBehaviors.SkipGeneratedSourcesCheck;
+//    [MappingGenerator(typeof(A), typeof(B))]
+//    public partial class TestMapper {}
+//}
+//";
+//            var generator = new CSharpSourceGeneratorVerifier<MappingSourceGenerator>.Test();
+//            generator.TestState.Sources.Add(code);
+//            generator.TestBehaviors = TestBehaviors.SkipGeneratedSourcesCheck;
 
-            var d1 = DiagnosticResult
-                .CompilerError("MG0001")
-                .WithArguments("Test.TestMapper", "source.Val", "string", "int")
-                .WithNoLocation();
+//            var d1 = DiagnosticResult
+//                .CompilerError("MG0001")
+//                .WithArguments("Test.TestMapper", "source.Val", "string", "int")
+//                .WithNoLocation();
 
-            generator.TestState.ExpectedDiagnostics.Add(d1);
+//            generator.TestState.ExpectedDiagnostics.Add(d1);
 
-            await generator.RunAsync();
-        }
+//            await generator.RunAsync();
+//        }
 
         [Fact]
         public async Task InvalidMappingMethodParameterCount()
