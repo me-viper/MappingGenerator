@@ -1,0 +1,140 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using MappingGenerator.SourceGeneration.MappingSources;
+using MappingGenerator.SourceGeneration.Spec;
+
+using Microsoft.CodeAnalysis;
+
+namespace MappingGenerator.SourceGeneration.Mappers
+{
+    internal class ConstructorMapper : BaseMapper
+    {
+        public ConstructorMapper(IEnumerable<BaseMappingSource> mappingSources) : base(mappingSources)
+        {
+        }
+
+        public void Map(MapperTypeSpec mapperSpec, MappingGenerationContext context)
+        {
+            var destinationConstructor = TryFindCustomConstructor(context);
+
+            if (destinationConstructor != null)
+            {
+                mapperSpec.HasCustomConstructor = true;
+                return; 
+            }
+
+            MapperTypeSpec? resolvedSpec = null;
+            var hasEmptyConstructor = false;
+
+            foreach (var ctor in context.DestinationType.Constructors.OrderBy(p => p.Parameters.Length))
+            {
+                if (ctor.Parameters.Length == 0)
+                {
+                    hasEmptyConstructor = true;
+                    continue;
+                }
+
+                var hasMatch = false;
+                var tempSpec = new MapperTypeSpec();
+
+                foreach (var param in ctor.Parameters)
+                {
+                    var dest = MappingDestination.FromDefinition(context.MakeMappingDefinition(param), MappingDestinationType.Parameter);
+
+                    foreach (var mappingSource in MappingSources)
+                    {
+                        var spec = mappingSource.TryMap(dest);
+
+                        if (spec != null)
+                        {
+                            tempSpec.ApplySpec(spec);
+                            hasMatch = true;
+                            break;
+                        }
+                    }
+
+                    if (hasMatch || param.IsOptional)
+                        continue;
+
+                    break;
+                }
+
+                if (hasMatch)
+                    resolvedSpec = tempSpec;
+            }
+
+            if (resolvedSpec == null && !hasEmptyConstructor)
+            {
+                context.ExecutionContext.ReportDiagnostic(
+                    Diagnostic.Create(
+                        DiagnosticDescriptors.CantResolveConstructorArgument,
+                        context.DestinationType.Locations.FirstOrDefault(),
+                        context.MapperType.ToDisplayString(),
+                        context.DestinationType.ToDisplayString(),
+                        context.SourceType.ToDisplayString()
+                        )
+                    );
+
+                throw new MappingGenerationException("No constructor");
+            }
+
+            if (resolvedSpec != null)
+            {
+                foreach (var s in resolvedSpec.AppliedSpecs)
+                    context.DestinationMapped(s.Destination);
+
+                mapperSpec.Merge(resolvedSpec);
+            }
+        }
+
+        private static IMethodSymbol? TryFindCustomConstructor(MappingGenerationContext context)
+        {
+            IMethodSymbol? destinationConstructor = null;
+
+            var destinationConstructorCandidates = context.MapperType.GetMembers()
+                .OfType<IMethodSymbol>()
+                .Where(p => p.Name.Equals($"{context.MapperName}CreateDestination"))
+                .ToList();
+
+            foreach (var candidate in destinationConstructorCandidates)
+            {
+                if (candidate.Parameters.Count() != 1
+                    || !candidate.Parameters.First().Type.Equals(context.SourceType, SymbolEqualityComparer.Default))
+                {
+                    context.ExecutionContext.ReportDiagnostic(
+                        Diagnostic.Create(
+                            DiagnosticDescriptors.BadConstructorMethodSignature,
+                            candidate.Locations.FirstOrDefault(),
+                            context.MapperType.ToDisplayString(),
+                            context.SourceType.ToDisplayString(),
+                            context.DestinationType.ToDisplayString()
+                            )
+                        );
+
+                    continue;
+                }
+
+                if (!candidate.ReturnType.Equals(context.DestinationType, SymbolEqualityComparer.Default))
+                {
+                    context.ExecutionContext.ReportDiagnostic(
+                        Diagnostic.Create(
+                            DiagnosticDescriptors.BadConstructorReturnType,
+                            candidate.Locations.FirstOrDefault(),
+                            context.MapperType.ToDisplayString(),
+                            context.DestinationType.ToDisplayString(),
+                            candidate.ReturnType.ToDisplayString()
+                            )
+                        );
+
+                    throw new MappingGenerationException("Bad constructor");
+                }
+
+                destinationConstructor = candidate;
+                break;
+            }
+
+            return destinationConstructor;
+        }
+    }
+}

@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "MappingGenerator": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\samples\\MappingGenerator.SampleApp\\MappingGenerator.SampleApp.csproj"
+      // "targetProject": "..\\tests\\MappingGenerator.Tests\\MappingGenerator.Tests.csproj"
+    }
+  }
+}

@@ -1,0 +1,64 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MappingGenerator.SampleApp", "samples\MappingGenerator.SampleApp\MappingGenerator.SampleApp.csproj", "{FCC9ED74-B4ED-414D-A8EF-E718CF54926F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{06A2041E-E127-45CA-BC4B-EB79D0DCA96D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1D8078D2-387C-4443-85C2-E3B01383AB9B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MappingGenerator", "src\MappingGenerator.csproj", "{319EBDA9-37FD-4957-803F-3805ABB4D324}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MappingGenerator.SourceGeneration", "gen\MappingGenerator.SourceGeneration.csproj", "{15CCD331-4C78-4CA8-8979-AB50D0CF9DC7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MappingGenerator.SourceGeneration.Tests", "tests\MappingGenerator.SourceGeneration.Tests\MappingGenerator.SourceGeneration.Tests.csproj", "{276CBEBA-4341-49A7-91E7-FCE0EA044FB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MappingGenerator.Tests", "tests\MappingGenerator.Tests\MappingGenerator.Tests.csproj", "{DE3BCC0E-E1B2-4F0F-856E-12D99F72C384}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4D7F9D3E-7B60-4731-8B52-9FC7B9FA4DF9}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FCC9ED74-B4ED-414D-A8EF-E718CF54926F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCC9ED74-B4ED-414D-A8EF-E718CF54926F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCC9ED74-B4ED-414D-A8EF-E718CF54926F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCC9ED74-B4ED-414D-A8EF-E718CF54926F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{319EBDA9-37FD-4957-803F-3805ABB4D324}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{319EBDA9-37FD-4957-803F-3805ABB4D324}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{319EBDA9-37FD-4957-803F-3805ABB4D324}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{319EBDA9-37FD-4957-803F-3805ABB4D324}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15CCD331-4C78-4CA8-8979-AB50D0CF9DC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15CCD331-4C78-4CA8-8979-AB50D0CF9DC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15CCD331-4C78-4CA8-8979-AB50D0CF9DC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15CCD331-4C78-4CA8-8979-AB50D0CF9DC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{276CBEBA-4341-49A7-91E7-FCE0EA044FB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{276CBEBA-4341-49A7-91E7-FCE0EA044FB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{276CBEBA-4341-49A7-91E7-FCE0EA044FB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{276CBEBA-4341-49A7-91E7-FCE0EA044FB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE3BCC0E-E1B2-4F0F-856E-12D99F72C384}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE3BCC0E-E1B2-4F0F-856E-12D99F72C384}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE3BCC0E-E1B2-4F0F-856E-12D99F72C384}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE3BCC0E-E1B2-4F0F-856E-12D99F72C384}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FCC9ED74-B4ED-414D-A8EF-E718CF54926F} = {06A2041E-E127-45CA-BC4B-EB79D0DCA96D}
+		{276CBEBA-4341-49A7-91E7-FCE0EA044FB3} = {1D8078D2-387C-4443-85C2-E3B01383AB9B}
+		{DE3BCC0E-E1B2-4F0F-856E-12D99F72C384} = {1D8078D2-387C-4443-85C2-E3B01383AB9B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {249DB98B-51F6-400B-AE71-CCDBC1174E34}
+	EndGlobalSection
+EndGlobal
