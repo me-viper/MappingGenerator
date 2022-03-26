@@ -94,5 +94,14 @@ namespace MappingGenerator.SourceGeneration
             DiagnosticSeverity.Error,
             true
             );
+
+        public static DiagnosticDescriptor MappingMethodHasNoDestination => new(
+            "MG0011",
+            "No valid targets for mapping method",
+            "Mapping generator '{0}': Mapping method '{1}' has no valid targets. Destination type '{2}' doesn't have property '{3}'.",
+            "MappingGenerator",
+            DiagnosticSeverity.Warning,
+            true
+            );
     }
 }

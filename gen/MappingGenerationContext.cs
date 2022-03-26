@@ -408,13 +408,14 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                     context.ExecutionContext.ReportDiagnostic(
                         Diagnostic.Create(
                             DiagnosticDescriptors.InvalidProperty,
-                            context.SourceType.Locations.FirstOrDefault(),
+                            context.MapperType.Locations.FirstOrDefault(),
                             context.MapperType.ToDisplayString(),
                             "Source",
                             context.SourceType.ToDisplayString(),
                             sourceName
                             )
                         );
+                    throw new MappingGenerationException("Bad configuratoin");
                 }
 
                 var dest = context._destinationCandidateProperties.FirstOrDefault(
@@ -426,13 +427,14 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                     context.ExecutionContext.ReportDiagnostic(
                         Diagnostic.Create(
                             DiagnosticDescriptors.InvalidProperty,
-                            context.DestinationType.Locations.FirstOrDefault(),
+                            context.MapperType.Locations.FirstOrDefault(),
                             context.MapperType.ToDisplayString(),
                             "Destination",
                             context.DestinationType.ToDisplayString(),
                             destName
                             )
                         );
+                    throw new MappingGenerationException("Bad configuratoin");
                 }
 
                 if (source != null && dest != null)

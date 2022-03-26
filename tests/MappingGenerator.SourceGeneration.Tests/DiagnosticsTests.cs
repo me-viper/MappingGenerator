@@ -383,5 +383,107 @@ namespace Test
 
             await generator.RunAsync();
         }
+    
+        [Fact]
+        public async Task SourcePropertyMissing()
+        {
+            var code = @"
+namespace Test
+{
+    using System;
+    using Talk2Bits.MappingGenerator.Abstractions;
+
+    public class A { public string AA { get; set; } }
+    public class B { public string BB { get; set; } }
+
+    [MappingGenerator(typeof(A), typeof(B))]
+    [MappingGeneratorPropertyMapping(""CC"", ""BB"")]
+    public partial class TestMapper 
+    {
+    }
+}
+";
+            var generator = new CSharpSourceGeneratorVerifier<MappingSourceGenerator>.Test();
+            generator.TestState.Sources.Add(code);
+            generator.TestBehaviors = TestBehaviors.SkipGeneratedSourcesCheck;
+
+            var d1 = DiagnosticResult
+                .CompilerError("MG0005")
+                .WithArguments("Test.TestMapper", "Source", "Test.A", "CC")
+                .WithSpan(12, 26, 12, 36);
+
+            generator.TestState.ExpectedDiagnostics.Add(d1);
+
+            await generator.RunAsync();
+        }
+        
+        [Fact]
+        public async Task DestinationPropertyMissing()
+        {
+            var code = @"
+namespace Test
+{
+    using System;
+    using Talk2Bits.MappingGenerator.Abstractions;
+
+    public class A { public string AA { get; set; } }
+    public class B { public string BB { get; set; } }
+
+    [MappingGenerator(typeof(A), typeof(B))]
+    [MappingGeneratorPropertyMapping(""AA"", ""CC"")]
+    public partial class TestMapper 
+    {
+    }
+}
+";
+            var generator = new CSharpSourceGeneratorVerifier<MappingSourceGenerator>.Test();
+            generator.TestState.Sources.Add(code);
+            generator.TestBehaviors = TestBehaviors.SkipGeneratedSourcesCheck;
+
+            var d1 = DiagnosticResult
+                .CompilerError("MG0005")
+                .WithArguments("Test.TestMapper", "Destination", "Test.B", "CC")
+                .WithSpan(12, 26, 12, 36);
+
+            generator.TestState.ExpectedDiagnostics.Add(d1);
+
+            await generator.RunAsync();
+        }
+
+        [Fact]
+        public async Task NoDestinationForMappingMethod()
+        {
+            var code = @"
+namespace Test
+{
+    using System;
+    using Talk2Bits.MappingGenerator.Abstractions;
+
+    public class A {}
+    public class B {}
+
+    [MappingGenerator(typeof(A), typeof(B))]
+    public partial class TestMapper 
+    {
+        private string MapX(A source)
+        {
+            return null;
+        }
+    }
+}
+";
+            var generator = new CSharpSourceGeneratorVerifier<MappingSourceGenerator>.Test();
+            generator.TestState.Sources.Add(code);
+            generator.TestBehaviors = TestBehaviors.SkipGeneratedSourcesCheck;
+
+            var d1 = DiagnosticResult
+                .CompilerError("MG0011")
+                .WithArguments("Test.TestMapper", "Test.MapX", "Test.B", "X")
+                .WithSpan(8, 18, 8, 19);
+
+            generator.TestState.ExpectedDiagnostics.Add(d1);
+
+            await generator.RunAsync();
+        }
     }
 }
