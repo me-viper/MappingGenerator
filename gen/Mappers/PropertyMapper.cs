@@ -5,6 +5,8 @@ using MappingGenerator.SourceGeneration.Spec;
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using Talk2Bits.MappingGenerator.SourceGeneration;
+
 namespace MappingGenerator.SourceGeneration.Mappers
 {
     internal class PropertyMapper : BaseMapper

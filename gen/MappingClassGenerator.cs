@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using MappingGenerator.Abstractions;
+using MappingGenerator.SourceGeneration;
 using MappingGenerator.SourceGeneration.Mappers;
 using MappingGenerator.SourceGeneration.MappingSources;
 using MappingGenerator.SourceGeneration.Spec;
 
 using Microsoft.CodeAnalysis;
 
-namespace MappingGenerator.SourceGeneration
+using Talk2Bits.MappingGenerator.Abstractions;
+
+namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
     internal class MappingClassGenerator
     {

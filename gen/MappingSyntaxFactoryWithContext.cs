@@ -1,11 +1,12 @@
-﻿using MappingGenerator.Abstractions;
-
-using Microsoft.CodeAnalysis.CSharp;
+﻿using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using System;
 using System.Collections.Generic;
 using System.Text;
+
+using Talk2Bits.MappingGenerator.Abstractions;
+using Talk2Bits.MappingGenerator.SourceGeneration;
 
 namespace MappingGenerator.SourceGeneration
 {

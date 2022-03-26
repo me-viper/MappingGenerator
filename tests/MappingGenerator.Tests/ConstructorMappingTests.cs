@@ -1,11 +1,12 @@
-﻿using MappingGenerator.Abstractions;
-using MappingGenerator.Tests.Common;
+﻿using MappingGenerator.Tests.Common;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Talk2Bits.MappingGenerator.Abstractions;
 
 using Xunit;
 

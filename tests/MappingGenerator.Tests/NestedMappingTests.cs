@@ -1,7 +1,8 @@
 using Xunit;
 
-using MappingGenerator.Abstractions;
 using MappingGenerator.Tests.Common;
+
+using Talk2Bits.MappingGenerator.Abstractions;
 
 namespace MappingGenerator.Tests.NestedMapping
 {

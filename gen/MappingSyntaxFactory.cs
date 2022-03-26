@@ -2,11 +2,12 @@
 using System;
 using System.Collections.Generic;
 
-using MappingGenerator.Abstractions;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+using Talk2Bits.MappingGenerator.Abstractions;
+using Talk2Bits.MappingGenerator.SourceGeneration;
 
 namespace MappingGenerator.SourceGeneration
 {
@@ -414,7 +415,9 @@ namespace MappingGenerator.SourceGeneration
                     QualifiedName(QualifiedName(IdentifierName("System"), IdentifierName("Collections")), IdentifierName("ObjectModel"))
                     ),
                 UsingDirective(QualifiedName(IdentifierName("System"), IdentifierName("Linq"))),
-                UsingDirective(QualifiedName(IdentifierName("MappingGenerator"), IdentifierName("Abstractions"))),
+                UsingDirective(
+                    QualifiedName(QualifiedName(IdentifierName("Talk2Bits"), IdentifierName("MappingGenerator")), IdentifierName("Abstractions"))
+                    ),
             };
 
             return CompilationUnit()

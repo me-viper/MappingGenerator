@@ -5,13 +5,14 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-using MappingGenerator.Abstractions;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.CodeAnalysis.Testing.Verifiers;
+
+using Talk2Bits.MappingGenerator.Abstractions;
+using Talk2Bits.MappingGenerator.SourceGeneration;
 
 namespace MappingGenerator.SourceGeneration.Tests
 {

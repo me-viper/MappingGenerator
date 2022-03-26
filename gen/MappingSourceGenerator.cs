@@ -1,17 +1,18 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
-using MappingGenerator.Abstractions;
+using MappingGenerator.SourceGeneration;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace MappingGenerator.SourceGeneration
+using Talk2Bits.MappingGenerator.Abstractions;
+
+namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
 
     [Generator]

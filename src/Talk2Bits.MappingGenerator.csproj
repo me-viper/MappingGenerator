@@ -32,6 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\gen\bin\$(Configuration)\netstandard2.0\MappingGenerator.SourceGeneration.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="..\gen\bin\$(Configuration)\netstandard2.0\Talk2Bits.MappingGenerator.SourceGeneration.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 </Project>

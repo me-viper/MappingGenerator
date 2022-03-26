@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MappingGenerator.Abstractions
+namespace Talk2Bits.MappingGenerator.Abstractions
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class MappingGeneratorAttribute : Attribute

@@ -1,6 +1,3 @@
-
-using MappingGenerator.Abstractions;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Testing;
 
@@ -8,6 +5,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Reflection;
 using System.Threading.Tasks;
+
+using Talk2Bits.MappingGenerator.Abstractions;
+using Talk2Bits.MappingGenerator.SourceGeneration;
 
 using Xunit;
 
@@ -22,7 +22,7 @@ namespace MappingGenerator.SourceGeneration.Tests
 namespace Test
 {
     using System;
-    using MappingGenerator.Abstractions;
+    using Talk2Bits.MappingGenerator.Abstractions;
 
     public class A
     {
@@ -53,7 +53,7 @@ namespace Test
 namespace Test
 {
     using System;
-    using MappingGenerator.Abstractions;
+    using Talk2Bits.MappingGenerator.Abstractions;
 
     [MappingGenerator(typeof(object), typeof(string))]
     public class TestMapper {}
@@ -80,7 +80,7 @@ namespace Test
 //namespace Test
 //{
 //    using System;
-//    using MappingGenerator.Abstractions;
+//    using Talk2Bits.MappingGenerator.Abstractions;
 
 //    public class A { public string Val { get; set; } };
 //    public class B { public int Val { get; set;} }
@@ -110,7 +110,7 @@ namespace Test
 namespace Test
 {
     using System;
-    using MappingGenerator.Abstractions;
+    using Talk2Bits.MappingGenerator.Abstractions;
 
     public class A { public string Val { get; set;} }
     public class B { public string Val { get; set;} }
@@ -143,7 +143,7 @@ namespace Test
 namespace Test
 {{
     using System;
-    using MappingGenerator.Abstractions;
+    using Talk2Bits.MappingGenerator.Abstractions;
 
     public class A {{ }}
     public class B {{ public string Val {{ get; set; }} }}
@@ -212,7 +212,7 @@ namespace Test
 namespace Test
 {
     using System;
-    using MappingGenerator.Abstractions;
+    using Talk2Bits.MappingGenerator.Abstractions;
 
     public class A {}
     public class B {}
@@ -250,7 +250,7 @@ namespace Test
 namespace Test
 {
     using System;
-    using MappingGenerator.Abstractions;
+    using Talk2Bits.MappingGenerator.Abstractions;
 
     public class A {}
     public class B {}
@@ -291,7 +291,7 @@ namespace Test
 namespace Test
 {
     using System;
-    using MappingGenerator.Abstractions;
+    using Talk2Bits.MappingGenerator.Abstractions;
 
     public class A {}
     public class B {}
@@ -324,7 +324,7 @@ namespace Test
 namespace Test
 {
     using System;
-    using MappingGenerator.Abstractions;
+    using Talk2Bits.MappingGenerator.Abstractions;
 
     public class A<T> {}
     public class B<T> {}
@@ -356,7 +356,7 @@ namespace Test
 namespace Test
 {
     using System;
-    using MappingGenerator.Abstractions;
+    using Talk2Bits.MappingGenerator.Abstractions;
 
     public class A {}
     public class B 

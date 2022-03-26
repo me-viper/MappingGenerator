@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-using MappingGenerator.Abstractions;
-
 using Microsoft.CodeAnalysis;
 
-namespace MappingGenerator.SourceGeneration
+using Talk2Bits.MappingGenerator.Abstractions;
+
+namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
     internal class KnownTypeSymbols
     {

@@ -1,6 +1,4 @@
-﻿using MappingGenerator.Abstractions;
-
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Testing;
@@ -12,6 +10,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Talk2Bits.MappingGenerator.Abstractions;
+using Talk2Bits.MappingGenerator.SourceGeneration;
 
 using Xunit;
 using Xunit.Abstractions;
@@ -49,7 +50,7 @@ namespace MappingGenerator.SourceGeneration.Tests
 namespace Test
 {{
     using System;
-    using MappingGenerator.Abstractions;
+    using Talk2Bits.MappingGenerator.Abstractions;
 
     public class A {{}}
     public class B {{}}

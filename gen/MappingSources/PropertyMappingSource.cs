@@ -6,6 +6,8 @@ using MappingGenerator.SourceGeneration.Spec;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
+using Talk2Bits.MappingGenerator.SourceGeneration;
+
 namespace MappingGenerator.SourceGeneration.MappingSources
 {
     internal class PropertyMappingSource : BaseMappingSource

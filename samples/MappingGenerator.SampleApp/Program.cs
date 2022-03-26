@@ -1,5 +1,4 @@
-﻿using MappingGenerator.Abstractions;
-using MappingGenerator.SampleApp;
+﻿using MappingGenerator.SampleApp;
 
 using Microsoft.Extensions.DependencyInjection;
 

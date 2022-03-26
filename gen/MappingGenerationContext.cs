@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-using MappingGenerator.Abstractions;
+using MappingGenerator.SourceGeneration;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace MappingGenerator.SourceGeneration
+using Talk2Bits.MappingGenerator.Abstractions;
+
+namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
     internal class MappingGenerationContext
     {

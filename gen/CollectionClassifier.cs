@@ -2,6 +2,8 @@
 
 using Microsoft.CodeAnalysis;
 
+using Talk2Bits.MappingGenerator.SourceGeneration;
+
 namespace MappingGenerator.SourceGeneration
 {
     internal class CollectionClassifier

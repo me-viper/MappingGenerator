@@ -5,6 +5,8 @@ using MappingGenerator.SourceGeneration.Spec;
 
 using Microsoft.CodeAnalysis;
 
+using Talk2Bits.MappingGenerator.SourceGeneration;
+
 namespace MappingGenerator.SourceGeneration.MappingSources
 {
     internal abstract class BaseMappingSource

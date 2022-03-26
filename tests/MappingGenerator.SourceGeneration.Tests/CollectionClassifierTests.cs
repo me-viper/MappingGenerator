@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
+using Talk2Bits.MappingGenerator.SourceGeneration;
+
 using Xunit;
 
 namespace MappingGenerator.SourceGeneration.Tests
