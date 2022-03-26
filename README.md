@@ -29,7 +29,7 @@ Having source code for your mappings generated provides the following benefits:
 
 ## How do I get started?
 
-TBD: Nuget instructions.
+Install [Talk2Bits.MappingGenerator](https://www.nuget.org/packages/Talk2Bits.MappingGenerator) nuget package.
 
 Define source and destination:
 
