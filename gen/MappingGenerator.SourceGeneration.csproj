@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Compile Include="..\src\Abstractions\CollectionsHelper.cs" Link="Abstractions\CollectionsHelper.cs" />
+    <Compile Include="..\src\Abstractions\ConstructorAccessibility.cs" Link="Abstractions\ConstructorAccessibility.cs" />
     <Compile Include="..\src\Abstractions\IMapper.cs" Link="Abstractions\IMapper.cs" />
     <Compile Include="..\src\Abstractions\ImplementationType.cs" Link="Abstractions\ImplementationType.cs" />
     <Compile Include="..\src\Abstractions\MappingGeneratorAttribute.cs" Link="Abstractions\MappingGeneratorAttribute.cs" />

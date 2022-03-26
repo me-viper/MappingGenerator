@@ -38,6 +38,8 @@ namespace MappingGenerator.SourceGeneration
 
         public ImplementationType ImplementationType { get; private set; }
 
+        public ConstructorAccessibility ConstructorAccessibility { get; private set; }
+
         public string MapperName { get; private set; } = default!;
 
         public IReadOnlyCollection<IMethodSymbol> MappingMethods => _mappingMethods;
@@ -153,6 +155,9 @@ namespace MappingGenerator.SourceGeneration
 
                 if (string.Equals(mapperNamedArg.Key, nameof(MappingGeneratorAttribute.ImplementationType), StringComparison.Ordinal))
                     result.ImplementationType = (ImplementationType)((int?)mapperNamedArg.Value.Value ?? 0);
+
+                if (string.Equals(mapperNamedArg.Key, nameof(MappingGeneratorAttribute.ConstructorAccessibility), StringComparison.Ordinal))
+                    result.ConstructorAccessibility = (ConstructorAccessibility)((int?)mapperNamedArg.Value.Value ?? 0);
             }
 
             SetKnownMappers(result, knownMappers);

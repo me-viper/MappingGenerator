@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 
+using MappingGenerator.Abstractions;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -305,6 +307,20 @@ namespace MappingGenerator.SourceGeneration
             };
         }
 
+        public static IEnumerable<SyntaxToken> GetAccessibilityModifier(ConstructorAccessibility accessibility)
+        {
+            return accessibility switch
+            {
+                ConstructorAccessibility.Public => new[] { Token(SyntaxKind.PublicKeyword) },
+                ConstructorAccessibility.Private => new[] { Token(SyntaxKind.PrivateKeyword) },
+                ConstructorAccessibility.PrivateProtected => new[] { Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.ProtectedKeyword) },
+                ConstructorAccessibility.Protected => new[] { Token(SyntaxKind.ProtectedKeyword) },
+                ConstructorAccessibility.Internal => new[] { Token(SyntaxKind.InternalKeyword) },
+                ConstructorAccessibility.InternalProtected => new[] { Token(SyntaxKind.ProtectedKeyword), Token(SyntaxKind.InternalKeyword) },
+                _ => throw new NotSupportedException($"Invalid value {accessibility} for {typeof(ConstructorAccessibility)}"),
+            };
+        }
+
         public SyntaxTree Build(MappingSyntaxModel model)
         {
             var mapperInterface = MapperInterface(model.SourceType, model.DestinationType);
@@ -312,7 +328,7 @@ namespace MappingGenerator.SourceGeneration
             _syntaxFactoryWithContext = new MappingSyntaxFactoryWithContext(mapperInterface, model.Context.ImplementationType);
 
             var body = new List<StatementSyntax>();
-
+            
             body.Add(ArgumentNotNull("source"));
             body.Add(DeclareResultVar(model.Context.DestinationType, model.Context.DestinationConstructorMethodName));
             body.AddRange(model.MappingStatements);
@@ -328,6 +344,7 @@ namespace MappingGenerator.SourceGeneration
             classMembers.Add(
                 Constructor(
                     model.MapperType.Name,
+                    model.Context.ConstructorAccessibility,
                     model.ConstructorParameters,
                     model.ConstructorBody
                     )
@@ -712,11 +729,14 @@ namespace MappingGenerator.SourceGeneration
 
         private static ConstructorDeclarationSyntax Constructor(
             string typeName,
+            ConstructorAccessibility accessibility,
             IEnumerable<ParameterSyntax> parameters,
             IEnumerable<StatementSyntax> body)
         {
+            var modifiers = GetAccessibilityModifier(accessibility);
+
             return ConstructorDeclaration(Identifier(typeName))
-                .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
+                .WithModifiers(TokenList(modifiers))
                 .WithParameterList(ParameterList(SeparatedList(parameters)))
                 .WithBody(Block(body));
         }

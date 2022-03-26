@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using MappingGenerator.Abstractions;
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 using System;
@@ -8,11 +10,28 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
+using Xunit.Abstractions;
+
 namespace MappingGenerator.SourceGeneration.Tests
 {
     public class CompilationDependentTests
     {
-        protected Compilation Compilation = CreateCompilation(@"
+        protected ITestOutputHelper Output { get; }
+
+        public CompilationDependentTests(ITestOutputHelper output)
+        {
+            Output = output;
+        }
+
+        private IEnumerable<MetadataReference> DefaultReferences = new[]
+        {
+            MetadataReference.CreateFromFile(Assembly.Load("netstandard, Version=2.0.0.0").Location),
+            MetadataReference.CreateFromFile(Assembly.Load("System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a").Location),
+            MetadataReference.CreateFromFile(typeof(Binder).GetTypeInfo().Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(MappingGeneratorAttribute).GetTypeInfo().Assembly.Location),
+        };
+
+        protected Compilation EmptyCompilation => CreateCompilation(@"
 namespace MyCode
 {
     public class Program
@@ -23,10 +42,12 @@ namespace MyCode
     }
 }
 ");
-        private static Compilation CreateCompilation(string source)
-            => CSharpCompilation.Create("compilation",
+        protected Compilation CreateCompilation(string source)
+            => CSharpCompilation.Create(
+                "compilation",
                 new[] { CSharpSyntaxTree.ParseText(source) },
-                new[] { MetadataReference.CreateFromFile(typeof(Binder).GetTypeInfo().Assembly.Location) },
-                new CSharpCompilationOptions(OutputKind.ConsoleApplication));
+                DefaultReferences,
+                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+                );
     }
 }

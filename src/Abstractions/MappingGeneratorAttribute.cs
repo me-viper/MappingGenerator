@@ -19,6 +19,8 @@ namespace MappingGenerator.Abstractions
 
         public ImplementationType ImplementationType { get; set; }
 
+        public ConstructorAccessibility ConstructorAccessibility { get; set; } = ConstructorAccessibility.Public;
+
         public string Name { get; set; } = string.Empty;
     }
 }
