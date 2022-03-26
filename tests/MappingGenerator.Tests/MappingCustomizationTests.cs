@@ -130,7 +130,7 @@ namespace MappingGenerator.Tests.MappingCustomization
             return $"CustomMap{source.Value}";
         }
 
-        private string MapSourceValue(Source source)
+        private string MapDestinationValue(Source source)
         {
             return $"CustomMap{source.SourceValue}";
         }
@@ -157,7 +157,7 @@ namespace MappingGenerator.Tests.MappingCustomization
             return $"CustomMap{source.Value}";
         }
 
-        private string ExMapSourceValue(Source source)
+        private string ExMapDestinationValue(Source source)
         {
             return $"CustomMap{source.SourceValue}";
         }

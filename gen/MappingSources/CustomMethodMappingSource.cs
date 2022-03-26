@@ -23,7 +23,7 @@ namespace MappingGenerator.SourceGeneration.MappingSources
             if (!entry.IsWritable())
                 return null;
 
-            var name = Context.MapMethodName(entry.SourceName);
+            var name = Context.MapMethodName(entry.Name);
 
             var sourceMethod = _mappingMethods.FirstOrDefault(p => string.Equals(p.Name, name, entry.Comparer.StringComparison));
 

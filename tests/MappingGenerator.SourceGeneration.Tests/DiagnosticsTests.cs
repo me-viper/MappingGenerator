@@ -230,12 +230,12 @@ namespace Test
             var d1 = DiagnosticResult
                 .CompilerError("MG0005")
                 .WithArguments("Test.TestMapper", "Source", "Test.A", "AP")
-                .WithSpan(7, 18, 7, 19);
+                .WithSpan(12, 26, 12, 36);
 
             var d2 = DiagnosticResult
                 .CompilerError("MG0005")
                 .WithArguments("Test.TestMapper", "Destination", "Test.B", "BP")
-                .WithSpan(8, 18, 8, 19);
+                .WithSpan(12, 26, 12, 36);
 
             generator.TestState.ExpectedDiagnostics.Add(d2);
             generator.TestState.ExpectedDiagnostics.Add(d1);
@@ -477,9 +477,9 @@ namespace Test
             generator.TestBehaviors = TestBehaviors.SkipGeneratedSourcesCheck;
 
             var d1 = DiagnosticResult
-                .CompilerError("MG0011")
-                .WithArguments("Test.TestMapper", "Test.MapX", "Test.B", "X")
-                .WithSpan(8, 18, 8, 19);
+                .CompilerWarning("MG0011")
+                .WithArguments("Test.TestMapper", "Test.TestMapper.MapX(Test.A)", "Test.B", "X")
+                .WithSpan(13, 24, 13, 28);
 
             generator.TestState.ExpectedDiagnostics.Add(d1);
 

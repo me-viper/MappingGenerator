@@ -163,12 +163,12 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             }
 
             SetKnownMappers(result, knownMappers);
-            SetCustomMappingMethods(result);
             SetCustomConvertorMethods(result);
             SetSourceProperties(result);
             SetDestinationCandidateProperties(result);
             SetCustomizedMappings(result);
             SetDestinationProperties(result);
+            SetCustomMappingMethods(result);
 
             return result;
         }
@@ -223,9 +223,11 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         private static void SetCustomMappingMethods(MappingGenerationContext context)
         {
+            var prefix = $"{context.MapperName}Map";
+
             var mappingMethods = context.MapperType.GetMembers()
                 .OfType<IMethodSymbol>()
-                .Where(p => p.Name.StartsWith($"{context.MapperName}Map"))
+                .Where(p => p.Name.StartsWith(prefix))
                 .ToList();
 
             foreach (var mm in mappingMethods)
@@ -268,6 +270,24 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                             mm.Locations.FirstOrDefault(),
                             context.MapperType.ToDisplayString(),
                             context.SourceType.ToDisplayString()
+                            )
+                        );
+                    continue;
+                }
+
+                var propName = mm.Name.Substring(prefix.Length);
+                var hasMatch = context._destinationProperties.Any(p => string.Equals(p.Name, propName, StringComparison.Ordinal));
+
+                if (!hasMatch)
+                {
+                    context.ExecutionContext.ReportDiagnostic(
+                        Diagnostic.Create(
+                            DiagnosticDescriptors.MappingMethodHasNoDestination,
+                            mm.Locations.FirstOrDefault(),
+                            context.MapperType.ToDisplayString(),
+                            mm.ToDisplayString(),
+                            context.DestinationType.ToDisplayString(),
+                            propName
                             )
                         );
                     continue;
@@ -415,7 +435,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                             sourceName
                             )
                         );
-                    throw new MappingGenerationException("Bad configuratoin");
                 }
 
                 var dest = context._destinationCandidateProperties.FirstOrDefault(
@@ -434,13 +453,12 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                             destName
                             )
                         );
-                    throw new MappingGenerationException("Bad configuratoin");
                 }
 
-                if (source != null && dest != null)
-                {
-                    context._customizedMappings[dest.Name] = new CustomizedMapping(source);
-                }
+                if (source == null || dest == null)
+                    throw new MappingGenerationException("Bad configuratoin");
+
+                context._customizedMappings[dest.Name] = new CustomizedMapping(source);
             }
         }
     }
