@@ -22,7 +22,7 @@ namespace MappingGenerator.Tests.BasicTypesMapping
                 BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.NonPublic
                 );
 
-            var generic = method.MakeGenericMethod(type);
+            var generic = method!.MakeGenericMethod(type);
             generic.Invoke(this, new[] { value });
         }
 

@@ -1,0 +1,13 @@
+<Project>
+
+  <PropertyGroup>
+    <Authors>Andrii Kurochka</Authors>
+    <LangVersion>latest</LangVersion>
+    <NoWarn>$(NoWarn)</NoWarn>
+    <IsPackable>false</IsPackable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Features>strict</Features>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

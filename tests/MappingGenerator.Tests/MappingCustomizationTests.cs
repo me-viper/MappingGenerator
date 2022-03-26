@@ -109,7 +109,7 @@ namespace MappingGenerator.Tests.MappingCustomization
 
         public string? Ignore { get; set; } = default!;
 
-        public string DestinationValue { get; set; } = default!;
+        public string? DestinationValue { get; set; }
 
         public string? ConstructedValue { get; }
     }
