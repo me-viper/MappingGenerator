@@ -9,9 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{06A2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1D8078D2-387C-4443-85C2-E3B01383AB9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MappingGenerator", "src\MappingGenerator.csproj", "{319EBDA9-37FD-4957-803F-3805ABB4D324}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MappingGenerator", "src\Talk2Bits.MappingGenerator.csproj", "{319EBDA9-37FD-4957-803F-3805ABB4D324}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MappingGenerator.SourceGeneration", "gen\MappingGenerator.SourceGeneration.csproj", "{15CCD331-4C78-4CA8-8979-AB50D0CF9DC7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MappingGenerator.SourceGeneration", "gen\Talk2Bits.MappingGenerator.SourceGeneration.csproj", "{15CCD331-4C78-4CA8-8979-AB50D0CF9DC7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MappingGenerator.SourceGeneration.Tests", "tests\MappingGenerator.SourceGeneration.Tests\MappingGenerator.SourceGeneration.Tests.csproj", "{276CBEBA-4341-49A7-91E7-FCE0EA044FB3}"
 EndProject

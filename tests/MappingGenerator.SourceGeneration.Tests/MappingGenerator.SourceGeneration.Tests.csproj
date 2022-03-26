@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\gen\MappingGenerator.SourceGeneration.csproj" />
+    <ProjectReference Include="..\..\gen\Talk2Bits.MappingGenerator.SourceGeneration.csproj" />
   </ItemGroup>
 
 </Project>
