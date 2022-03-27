@@ -1,7 +1,1 @@
-﻿using MappingGenerator.SampleApp;
-
-using Microsoft.Extensions.DependencyInjection;
-
-using System.Collections.ObjectModel;
-
-Console.WriteLine("Hello, World!");
+﻿Console.WriteLine("Hello, World!");
