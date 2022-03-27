@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.CodeAnalysis;
 
-namespace MappingGenerator.SourceGeneration
+namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
     internal static class DiagnosticDescriptors
     {
@@ -101,6 +101,60 @@ namespace MappingGenerator.SourceGeneration
             "Mapping generator '{0}': Mapping method '{1}' has no valid targets. Destination type '{2}' doesn't have property '{3}'.",
             "MappingGenerator",
             DiagnosticSeverity.Warning,
+            true
+            );
+
+        public static DiagnosticDescriptor MapperNameDuplicate => new(
+            "MG0012",
+            "Name duplication",
+            "Mapping generator '{0}': Mapping generator has multiply mappers with name '{1}'.",
+            "MappingGenerator",
+            DiagnosticSeverity.Error,
+            true
+            );
+
+        public static DiagnosticDescriptor InvalidMapperName => new(
+            "MG0013",
+            "Invalid name",
+            "Mapping generator '{0}': Invalid mapper name '{1}'. Name sould be valid identifier.",
+            "MappingGenerator",
+            DiagnosticSeverity.Error,
+            true
+            );
+
+        public static DiagnosticDescriptor InconsistentAccessibilityModifiers => new(
+            "MG0014",
+            "Inconsistent constructor accessibility modifiers",
+            "Mapping generator '{0}': All mappers within mapping generator should have same constructor accessibility modifier.",
+            "MappingGenerator",
+            DiagnosticSeverity.Error,
+            true
+            );
+
+        public static DiagnosticDescriptor MapperConflict => new(
+            "MG0015",
+            "Multiple mappers with same source type",
+            "Mapping generator '{0}': Mapping generator already contains mapper '{1}' for source type '{2}'. Consider changing ImplementationType to Implementation.Explicit.",
+            "MappingGenerator",
+            DiagnosticSeverity.Error,
+            true
+            );
+
+        public static DiagnosticDescriptor MultiplyGenericsNotSupported => new(
+            "MG0016",
+            "Not supported",
+            "Mapping generator '{0}': Mapping generator can't implement multiple unbounded generic mappers.",
+            "MappingGenerator",
+            DiagnosticSeverity.Error,
+            true
+            );
+
+        public static DiagnosticDescriptor MapperConflictSameMapper => new(
+            "MG0017",
+            "Multiple mappers with same source and destination types",
+            "Mapping generator '{0}': Mapping generator already contains mapper '{1}' for source type '{2}' and destination type '{3}'.",
+            "MappingGenerator",
+            DiagnosticSeverity.Error,
             true
             );
     }

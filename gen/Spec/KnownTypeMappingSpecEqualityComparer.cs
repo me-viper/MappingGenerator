@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MappingGenerator.SourceGeneration.Spec
+namespace Talk2Bits.MappingGenerator.SourceGeneration.Spec
 {
     internal class KnownTypeMappingSpecEqualityComparer : IEqualityComparer<KnownTypeMappingSpec>
     {

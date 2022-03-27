@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using MappingGenerator.SourceGeneration.Spec;
-
 using Microsoft.CodeAnalysis;
 
-using Talk2Bits.MappingGenerator.SourceGeneration;
+using Talk2Bits.MappingGenerator.SourceGeneration.Spec;
 
-namespace MappingGenerator.SourceGeneration.MappingSources
+namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 {
     internal class KnownTypeMappingSource : BaseMappingSource
     {
@@ -16,9 +14,13 @@ namespace MappingGenerator.SourceGeneration.MappingSources
 
         private KnownMapper Mapper { get; }
 
-        public KnownTypeMappingSource(KnownMapper mapper, MappingGenerationContext context) : base(context)
+        private bool _isInternal;
+
+        public KnownTypeMappingSource(KnownMapper mapper, bool isInternal, MappingGenerationContext context) : base(context)
         {
             _sourceProperties = context.SourceProperties;
+            _isInternal = isInternal;
+
             Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
@@ -42,8 +44,10 @@ namespace MappingGenerator.SourceGeneration.MappingSources
             if (!entry.IsWritable())
                 return null;
 
-            var result = new KnownTypeMappingSpec(Mapper, entry);
-            result.MappingExpressions.Add(MappingSyntaxFactory.CallInnerMapper(Mapper.Name, sourceProperty.Name));
+            var memberName = Context.MemberNamingManager.GetMemberName(Mapper);
+
+            var result = new KnownTypeMappingSpec(memberName, Mapper, entry, _isInternal);
+            result.MappingExpressions.Add(MappingSyntaxFactory.CallInnerMapper(memberName, sourceProperty.Name));
             return result;
         }
 
@@ -64,7 +68,9 @@ namespace MappingGenerator.SourceGeneration.MappingSources
             if (!Mapper.CanMap(sourceClassification.ElementsType, destClassification.ElementsType))
                 return null;
 
-            var result = new KnownTypeMappingSpec(Mapper, entry);
+            var memberName = Context.MemberNamingManager.GetMemberName(Mapper);
+
+            var result = new KnownTypeMappingSpec(memberName, Mapper, entry, _isInternal);
 
             if (entry.EntryType != MappingDestinationType.Property || !entry.IsReadable())
             {
@@ -82,7 +88,7 @@ namespace MappingGenerator.SourceGeneration.MappingSources
                         sourceProperty.Name,
                         destClassification.ElementsType,
                         collectionType,
-                        Mapper.Name
+                        memberName
                         )
                     );
                 return result;
@@ -97,7 +103,7 @@ namespace MappingGenerator.SourceGeneration.MappingSources
                         sourceProperty.Name,
                         destClassification.ElementsType,
                         entry.Name,
-                        Mapper.Name
+                        memberName
                         )
                     );
                 return result;
@@ -112,7 +118,7 @@ namespace MappingGenerator.SourceGeneration.MappingSources
                 destClassification.IsArray
                 );
 
-            result.MappingExpressions.Add(MappingSyntaxFactory.CallInnerMapper(mi, Mapper.Name, sourceProperty.Name));
+            result.MappingExpressions.Add(MappingSyntaxFactory.CallInnerMapper(mi, memberName, sourceProperty.Name));
 
             return result;
         }

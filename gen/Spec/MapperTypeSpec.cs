@@ -5,7 +5,9 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace MappingGenerator.SourceGeneration.Spec
+using Talk2Bits.MappingGenerator.Abstractions;
+
+namespace Talk2Bits.MappingGenerator.SourceGeneration.Spec
 {
     internal class MapperTypeSpec
     {
@@ -19,6 +21,13 @@ namespace MappingGenerator.SourceGeneration.Spec
         
         private readonly List<ArgumentSyntax> _destinationConstructorArguments = new();
         
+        public ConstructorAccessibility ConstructorAccessibility { get; private set; }
+
+        public MapperTypeSpec(ConstructorAccessibility constructorAccessibility)
+        {
+            ConstructorAccessibility = constructorAccessibility;
+        }
+
         public bool HasCustomConstructor { get; set; }
 
         public IReadOnlyCollection<ArgumentSyntax> DestinationConstructorArguments => _destinationConstructorArguments;
@@ -60,6 +69,7 @@ namespace MappingGenerator.SourceGeneration.Spec
 
         public void Merge(MapperTypeSpec other)
         {
+            ConstructorAccessibility = other.ConstructorAccessibility;
             HasCustomConstructor = other.HasCustomConstructor;
 
             _destinationConstructorArguments.AddRange(other.DestinationConstructorArguments);

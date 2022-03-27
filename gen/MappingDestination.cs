@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace MappingGenerator.SourceGeneration
+namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
     internal record MappingDestination(
         string Name,

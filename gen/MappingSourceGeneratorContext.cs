@@ -1,9 +1,8 @@
-﻿
-using System;
+﻿using System;
 
 using Microsoft.CodeAnalysis;
 
-namespace MappingGenerator.SourceGeneration
+namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
     internal class MappingSourceGeneratorContext : IMappingSourceGeneratorContext
     {

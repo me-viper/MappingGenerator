@@ -3,12 +3,10 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 using Talk2Bits.MappingGenerator.Abstractions;
-using Talk2Bits.MappingGenerator.SourceGeneration;
 
-namespace MappingGenerator.SourceGeneration
+namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
     using static SyntaxFactory;
 

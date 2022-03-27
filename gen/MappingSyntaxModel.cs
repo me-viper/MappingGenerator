@@ -1,44 +1,104 @@
 ﻿using System.Collections.Generic;
-
-using MappingGenerator.SourceGeneration.Spec;
+using System.Linq;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using Talk2Bits.MappingGenerator.SourceGeneration;
+using Talk2Bits.MappingGenerator.Abstractions;
+using Talk2Bits.MappingGenerator.SourceGeneration.Spec;
 
-namespace MappingGenerator.SourceGeneration
+namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
-    internal record MappingSyntaxModel(
-        MappingGenerationContext Context,
+    internal record ConstructorOnlySyntaxModel(
+        IMappingSourceGeneratorContext Context,
         INamespaceSymbol Namespace,
         INamedTypeSymbol MapperType,
-        INamedTypeSymbol SourceType,
-        INamedTypeSymbol DestinationType)
+        KnownTypeSymbols KnownTypes)
     {
-        public MethodDeclarationSyntax? DestinationTypeConstructor { get; private set; }
+        private ConstructorAccessibility? _constructorAccessibility;
 
         public List<FieldDeclarationSyntax> Fields { get; } = new();
+
+        public ConstructorAccessibility ConstructorAccessibility => _constructorAccessibility ?? default;
 
         public List<ParameterSyntax> ConstructorParameters { get; } = new();
 
         public List<StatementSyntax> ConstructorBody { get; } = new();
 
-        public List<StatementSyntax> MappingStatements { get; } = new();
-
-        public void Populate(MapperTypeSpec mapperSpec)
+        public virtual bool TryPopulate(MapperTypeSpec mapperSpec, bool isAnchor)
         {
-            MappingStatements.AddRange(mapperSpec.MappingStatements);
+            if (!isAnchor)
+                return true;
+
+            if (_constructorAccessibility == null)
+                _constructorAccessibility = mapperSpec.ConstructorAccessibility;
+            else
+            {
+                if (_constructorAccessibility != mapperSpec.ConstructorAccessibility)
+                {
+                    Context.ReportDiagnostic(
+                        Diagnostic.Create(
+                            DiagnosticDescriptors.InconsistentAccessibilityModifiers,
+                            MapperType.Locations.FirstOrDefault(),
+                            MapperType.ToDisplayString()
+                            )
+                        );
+                    return false;
+                }
+            }
 
             foreach (var spec in mapperSpec.KnownMappingSpecs)
             {
-                var memberName = char.ToLower(spec.Mapper.Name[0]) + spec.Mapper.Name.Substring(1);
+                var memberName = spec.MemberName;
+
                 Fields.Add(MappingSyntaxFactory.InnerMapperField(spec.Mapper.SourceType, spec.Mapper.DestType, memberName));
-                ConstructorParameters.Add(
-                    MappingSyntaxFactory.InnerMapperConstructorParameter(spec.Mapper.SourceType, spec.Mapper.DestType, memberName)
-                    );
-                ConstructorBody.AddRange(MappingSyntaxFactory.InnerMapperConstructorStatement(memberName));
+
+                if (!spec.IsInternal)
+                {
+                    ConstructorParameters.Add(
+                        MappingSyntaxFactory.InnerMapperConstructorParameter(spec.Mapper.SourceType, spec.Mapper.DestType, memberName)
+                        );
+                    ConstructorBody.AddRange(MappingSyntaxFactory.InnerMapperConstructorStatement(memberName));
+                }
+                else
+                {
+                    ConstructorBody.AddRange(
+                        MappingSyntaxFactory.InnerMapperConstructorThisStatement(
+                            spec.Mapper.SourceType,
+                            spec.Mapper.DestType,
+                            memberName
+                            )
+                        );
+                }
             }
+
+            return true;
+        }
+    }
+
+    internal record MappingSyntaxModel(
+        IMappingSourceGeneratorContext Context,
+        string MapperName,
+        INamespaceSymbol Namespace,
+        INamedTypeSymbol MapperType,
+        INamedTypeSymbol SourceType,
+        INamedTypeSymbol DestinationType,
+        string DestinationConstructorMethodName,
+        ImplementationType ImplementationType,
+        KnownTypeSymbols KnownTypes) : ConstructorOnlySyntaxModel(Context, Namespace, MapperType, KnownTypes)
+    {
+        public string AfterMapMethodName => $"{MapperName}AfterMap";
+
+        public MethodDeclarationSyntax? DestinationTypeConstructor { get; private set; }
+
+        public List<StatementSyntax> MappingStatements { get; } = new();
+
+        public override bool TryPopulate(MapperTypeSpec mapperSpec, bool isAnchor)
+        {
+            if (!base.TryPopulate(mapperSpec, isAnchor))
+                return false;
+
+            MappingStatements.AddRange(mapperSpec.MappingStatements);
 
             if (!mapperSpec.HasCustomConstructor)
             {
@@ -51,10 +111,12 @@ namespace MappingGenerator.SourceGeneration
                 DestinationTypeConstructor = MappingSyntaxFactory.CreateMethod(
                     SourceType,
                     DestinationType,
-                    Context.DestinationConstructorMethodName,
+                    DestinationConstructorMethodName,
                     new[] { callDestinationConstructor }
                     );
             }
+
+            return true;
         }
     }
 }

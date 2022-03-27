@@ -2,7 +2,7 @@
 
 namespace Talk2Bits.MappingGenerator.Abstractions
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public class MappingGeneratorAttribute : Attribute
     {
         public MappingGeneratorAttribute(Type source, Type destination)

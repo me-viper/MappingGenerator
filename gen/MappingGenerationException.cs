@@ -1,8 +1,7 @@
-﻿
-using System;
+﻿using System;
 using System.Runtime.Serialization;
 
-namespace MappingGenerator.SourceGeneration
+namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
     internal class MappingGenerationException : Exception
     {

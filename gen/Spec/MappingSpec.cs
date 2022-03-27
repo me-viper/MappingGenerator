@@ -4,7 +4,7 @@ using System.Linq;
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace MappingGenerator.SourceGeneration.Spec
+namespace Talk2Bits.MappingGenerator.SourceGeneration.Spec
 {
     internal record MappingSpec(MappingDestination Destination)
     {

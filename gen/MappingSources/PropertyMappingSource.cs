@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using MappingGenerator.SourceGeneration.Spec;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-using Talk2Bits.MappingGenerator.SourceGeneration;
+using Talk2Bits.MappingGenerator.SourceGeneration.Spec;
 
-namespace MappingGenerator.SourceGeneration.MappingSources
+namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 {
     internal class PropertyMappingSource : BaseMappingSource
     {

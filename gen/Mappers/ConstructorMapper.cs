@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using MappingGenerator.SourceGeneration.MappingSources;
-using MappingGenerator.SourceGeneration.Spec;
-
 using Microsoft.CodeAnalysis;
 
-using Talk2Bits.MappingGenerator.SourceGeneration;
+using Talk2Bits.MappingGenerator.SourceGeneration.MappingSources;
+using Talk2Bits.MappingGenerator.SourceGeneration.Spec;
 
-namespace MappingGenerator.SourceGeneration.Mappers
+namespace Talk2Bits.MappingGenerator.SourceGeneration.Mappers
 {
     internal class ConstructorMapper : BaseMapper
     {
@@ -38,7 +36,7 @@ namespace MappingGenerator.SourceGeneration.Mappers
                 }
 
                 var hasMatch = false;
-                var tempSpec = new MapperTypeSpec();
+                var tempSpec = new MapperTypeSpec(context.ConstructorAccessibility);
 
                 foreach (var param in ctor.Parameters)
                 {
@@ -96,7 +94,7 @@ namespace MappingGenerator.SourceGeneration.Mappers
 
             var destinationConstructorCandidates = context.MapperType.GetMembers()
                 .OfType<IMethodSymbol>()
-                .Where(p => p.Name.Equals($"{context.MapperName}CreateDestination"))
+                .Where(p => p.Name.Equals(context.DestinationConstructorMethodName))
                 .ToList();
 
             foreach (var candidate in destinationConstructorCandidates)

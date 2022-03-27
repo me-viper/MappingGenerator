@@ -1,6 +1,8 @@
-﻿namespace MappingGenerator.SourceGeneration.Spec
+﻿namespace Talk2Bits.MappingGenerator.SourceGeneration.Spec
 {
     internal record KnownTypeMappingSpec(
+        string MemberName,
         KnownMapper Mapper,
-        MappingDestination Destination) : MappingSpec(Destination);
+        MappingDestination Destination,
+        bool IsInternal) : MappingSpec(Destination);
 }

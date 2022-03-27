@@ -1,13 +1,8 @@
-﻿
-using System;
+﻿using System;
 
-using MappingGenerator.SourceGeneration.Spec;
+using Talk2Bits.MappingGenerator.SourceGeneration.Spec;
 
-using Microsoft.CodeAnalysis;
-
-using Talk2Bits.MappingGenerator.SourceGeneration;
-
-namespace MappingGenerator.SourceGeneration.MappingSources
+namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 {
     internal abstract class BaseMappingSource
     {

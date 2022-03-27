@@ -39,7 +39,7 @@ namespace MappingGenerator.SourceGeneration.Tests
         }
 
         [Theory]
-        [InlineData(ConstructorAccessibility.Public)]
+        //[InlineData(ConstructorAccessibility.Public)]
         [InlineData(ConstructorAccessibility.Private)]
         [InlineData(ConstructorAccessibility.PrivateProtected)]
         [InlineData(ConstructorAccessibility.InternalProtected)]

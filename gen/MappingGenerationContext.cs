@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-using MappingGenerator.SourceGeneration;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -12,7 +10,44 @@ using Talk2Bits.MappingGenerator.Abstractions;
 
 namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
-    internal class MappingGenerationContext
+    internal class EmitContext
+    {
+        public INamedTypeSymbol MapperType { get; }
+
+        public IMappingSourceGeneratorContext ExecutionContext { get; }
+
+        public KnownTypeSymbols KnownTypes { get; }
+
+        public CollectionClassifier CollectionClassifier { get; }
+
+        protected EmitContext(INamedTypeSymbol mapperType, IMappingSourceGeneratorContext executionContext)
+        {
+            MapperType = mapperType ?? throw new ArgumentNullException(nameof(mapperType));
+            ExecutionContext = executionContext ?? throw new ArgumentNullException(nameof(executionContext));
+            KnownTypes = new KnownTypeSymbols(executionContext.Compilation);
+            CollectionClassifier = new CollectionClassifier(KnownTypes);
+        }
+
+        public static EmitContext Build(
+            INamedTypeSymbol mapperType, 
+            IMappingSourceGeneratorContext executionContext)
+        {
+            var result = new EmitContext(mapperType, executionContext);
+            return result;
+        }
+
+        public ConstructorOnlySyntaxModel CreateSyntaxXModel()
+        {
+            return new ConstructorOnlySyntaxModel(
+                ExecutionContext,
+                MapperType.ContainingNamespace,
+                MapperType,
+                KnownTypes
+                );
+        }
+    }
+
+    internal class MappingGenerationContext : EmitContext
     {
         private readonly HashSet<IMethodSymbol> _mappingMethods = new(SymbolEqualityComparer.Default);
 
@@ -26,23 +61,23 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         private readonly HashSet<MappingDefinition> _destinationProperties = new(MappingEntryEqualityComparer.IgnoreCase);
 
-        public INamedTypeSymbol MapperType { get; private set; } = default!;
+        protected KnownMapper Mapper { get; }
 
         public INamedTypeSymbol SourceType { get; private set; } = default!;
 
         public INamedTypeSymbol DestinationType { get; private set; } = default!;
 
+        public IReadOnlyCollection<KnownMapper> InternalMappers { get; private set; } = default!;
+
         public IReadOnlyCollection<KnownMapper> KnownMappers { get; private set; } = default!;
 
-        public IMappingSourceGeneratorContext ExecutionContext { get; }
+        public MissingMappingBehavior MissingMappingBehaviour => Mapper.MissingMappingBehavior;
 
-        public MissingMappingBehavior MissingMappingBehaviour { get; private set; }
+        public ImplementationType ImplementationType => Mapper.ImplementationType;
 
-        public ImplementationType ImplementationType { get; private set; }
+        public ConstructorAccessibility ConstructorAccessibility => Mapper.ConstructorAccessibility;
 
-        public ConstructorAccessibility ConstructorAccessibility { get; private set; }
-
-        public string MapperName { get; private set; } = default!;
+        private string MapperName => Mapper.LocalName ?? string.Empty;
 
         public IReadOnlyCollection<IMethodSymbol> MappingMethods => _mappingMethods;
 
@@ -50,21 +85,20 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         public ImmutableList<MappingDefinition> DestinationProperties => _destinationProperties.ToImmutableList();
 
+        public MemberNamingManager MemberNamingManager { get; private set; } = default!;
+
         public string DestinationConstructorMethodName => $"{MapperName}CreateDestination";
 
         public string AfterMapMethodName => $"{MapperName}AfterMap";
 
+        public string DestinationConstructorName => $"{MapperName}CreateDestination";
+
         public string MapMethodName(string suffix) => $"{MapperName}Map{suffix}";
 
-        public KnownTypeSymbols KnownTypes { get; }
-
-        public CollectionClassifier CollectionClassifier { get; }
-
-        private MappingGenerationContext(IMappingSourceGeneratorContext executionContext)
+        private MappingGenerationContext(KnownMapper mapperType, IMappingSourceGeneratorContext executionContext) 
+            : base(mapperType.Mapper, executionContext)
         {
-            ExecutionContext = executionContext;
-            KnownTypes = new KnownTypeSymbols(executionContext.Compilation);
-            CollectionClassifier = new CollectionClassifier(KnownTypes);
+            Mapper = mapperType;
         }
 
         public MappingDefinition MakeMappingDefinition(IPropertySymbol symbol)
@@ -112,56 +146,43 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         public MappingSyntaxModel CreateSyntaxModel()
         {
             return new MappingSyntaxModel(
-                this,
+                ExecutionContext,
+                MapperName,
                 MapperType.ContainingNamespace,
                 MapperType,
                 SourceType,
-                DestinationType
+                DestinationType,
+                DestinationConstructorMethodName,
+                ImplementationType,
+                KnownTypes
                 );
         }
 
         public static MappingGenerationContext Build(
-            INamedTypeSymbol mapperType, 
+            KnownMapper mapperType, 
             INamedTypeSymbol sourceType,
             INamedTypeSymbol destinationType,
+            IEnumerable<KnownMapper> internalMappers,
             IEnumerable<KnownMapper> knownMappers,
-            IMappingSourceGeneratorContext executionContext)
+            IMappingSourceGeneratorContext executionContext,
+            MemberNamingManager memberNamingManager)
         {
+            if (internalMappers == null)
+                throw new ArgumentNullException(nameof(internalMappers));
+
             if (knownMappers == null)
                 throw new ArgumentNullException(nameof(knownMappers));
             
-            var result = new MappingGenerationContext(executionContext);
+            if (memberNamingManager == null)
+                throw new ArgumentNullException(nameof(memberNamingManager));
+            
+            var result = new MappingGenerationContext(mapperType, executionContext);
 
-            result.MapperType = mapperType ?? throw new ArgumentNullException(nameof(mapperType));
             result.SourceType = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
             result.DestinationType = destinationType ?? throw new ArgumentNullException(nameof(destinationType));
+            result.MemberNamingManager = memberNamingManager;
 
-            var mappingAttr = mapperType.GetAttributes().FirstOrDefault(
-                p => string.Equals(p.AttributeClass?.ToDisplayString(), typeof(MappingGeneratorAttribute).FullName)
-                );
-
-            if (mappingAttr == null)
-            {
-                throw new MappingGenerationException(
-                    $"Mapper type '{mapperType.ToDisplayString()}' does not have '{typeof(MappingGeneratorAttribute).FullName}' specified"
-                    );
-            }
-
-            foreach (var mapperNamedArg in mappingAttr.NamedArguments)
-            {
-                if (string.Equals(mapperNamedArg.Key, nameof(MappingGeneratorAttribute.MissingMappingBehavior), StringComparison.Ordinal))
-                    result.MissingMappingBehaviour = (MissingMappingBehavior)((int?)mapperNamedArg.Value.Value ?? 0);
-
-                if (string.Equals(mapperNamedArg.Key, nameof(MappingGeneratorAttribute.Name), StringComparison.Ordinal))
-                    result.MapperName = (string?)mapperNamedArg.Value.Value ?? string.Empty;
-
-                if (string.Equals(mapperNamedArg.Key, nameof(MappingGeneratorAttribute.ImplementationType), StringComparison.Ordinal))
-                    result.ImplementationType = (ImplementationType)((int?)mapperNamedArg.Value.Value ?? 0);
-
-                if (string.Equals(mapperNamedArg.Key, nameof(MappingGeneratorAttribute.ConstructorAccessibility), StringComparison.Ordinal))
-                    result.ConstructorAccessibility = (ConstructorAccessibility)((int?)mapperNamedArg.Value.Value ?? 0);
-            }
-
+            SetInternalKnownMappers(result, internalMappers);
             SetKnownMappers(result, knownMappers);
             SetCustomConvertorMethods(result);
             SetSourceProperties(result);
@@ -197,6 +218,15 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 var entry = result.MakeMappingDefinition(prop);
                 result._destinationProperties.Add(entry);
             }
+        }
+
+        private static void SetInternalKnownMappers(MappingGenerationContext context, IEnumerable<KnownMapper> knownMappers)
+        {
+            var km = knownMappers.Where(
+                p => !(p.SourceType.Equals(context.SourceType, SymbolEqualityComparer.Default) && p.DestType.Equals(context.DestinationType, SymbolEqualityComparer.Default))
+                );
+
+            context.InternalMappers = new List<KnownMapper>(km);
         }
 
         private static void SetKnownMappers(MappingGenerationContext context, IEnumerable<KnownMapper> knownMappers)

@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 
-using MappingGenerator.SourceGeneration.MappingSources;
-using MappingGenerator.SourceGeneration.Spec;
-
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using Talk2Bits.MappingGenerator.SourceGeneration;
+using Talk2Bits.MappingGenerator.SourceGeneration.MappingSources;
+using Talk2Bits.MappingGenerator.SourceGeneration.Spec;
 
-namespace MappingGenerator.SourceGeneration.Mappers
+namespace Talk2Bits.MappingGenerator.SourceGeneration.Mappers
 {
     internal class PropertyMapper : BaseMapper
     {

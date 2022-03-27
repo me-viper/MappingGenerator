@@ -1,21 +1,41 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Talk2Bits.MappingGenerator.Abstractions;
-using Talk2Bits.MappingGenerator.SourceGeneration;
 
-namespace MappingGenerator.SourceGeneration
+namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
     using static SyntaxFactory;
 
     internal class MappingSyntaxFactory
     {
         private MappingSyntaxFactoryWithContext _syntaxFactoryWithContext = default!;
+
+        private IReadOnlyCollection<UsingDirectiveSyntax> _knownUsings;
+
+        public MappingSyntaxFactory()
+        {
+            _knownUsings = new[]
+            {
+                UsingDirective(IdentifierName("System")),
+                UsingDirective(
+                    QualifiedName(QualifiedName(IdentifierName("System"), IdentifierName("Collections")), IdentifierName("Generic"))
+                    ),
+                UsingDirective(
+                    QualifiedName(QualifiedName(IdentifierName("System"), IdentifierName("Collections")), IdentifierName("ObjectModel"))
+                    ),
+                UsingDirective(QualifiedName(IdentifierName("System"), IdentifierName("Linq"))),
+                UsingDirective(
+                    QualifiedName(QualifiedName(IdentifierName("Talk2Bits"), IdentifierName("MappingGenerator")), IdentifierName("Abstractions"))
+                    ),
+            };
+        }
 
         public static InvocationExpressionSyntax CallMappingMethod(string methodName)
         {
@@ -39,6 +59,24 @@ namespace MappingGenerator.SourceGeneration
         public static ParameterSyntax InnerMapperConstructorParameter(ITypeSymbol sourceType, ITypeSymbol destinationType, string name)
         {
             return Parameter(Identifier(name)).WithType(MapperInterface(sourceType, destinationType));
+        }
+
+        public static IEnumerable<StatementSyntax> InnerMapperConstructorThisStatement(
+            ITypeSymbol sourceType, 
+            ITypeSymbol destinationType,
+            string member)
+        {
+            return List(
+                new[]
+                {
+                    ExpressionStatement(
+                        AssignmentExpression(
+                            SyntaxKind.SimpleAssignmentExpression,
+                            ThisMemberAccess(member),
+                            CastExpression(MapperInterface(sourceType, destinationType), ThisExpression())
+                            )
+                        )
+                });
         }
 
         public static IEnumerable<StatementSyntax> InnerMapperConstructorStatement(string member)
@@ -322,18 +360,67 @@ namespace MappingGenerator.SourceGeneration
             };
         }
 
+        public SyntaxTree BuildConstructorOnly(ConstructorOnlySyntaxModel model)
+        {
+            var nsFqn = CreateQualifiedName(model.Namespace.ToDisplayString());
+
+            var typeParameters = new SeparatedSyntaxList<TypeParameterSyntax>()
+                .AddRange(model.MapperType.TypeArguments.Select(p => TypeParameter(Identifier(p.Name))));
+
+            TypeParameterListSyntax? typeParametersList = null;
+
+            if (typeParameters.Count > 0)
+            {
+                typeParametersList = TypeParameterList(typeParameters);
+            }
+
+            var classMembers = new List<MemberDeclarationSyntax>();
+            classMembers.AddRange(model.Fields);
+
+            classMembers.Add(
+                Constructor(
+                    model.MapperType.Name,
+                    model.ConstructorAccessibility,
+                    model.ConstructorParameters,
+                    model.ConstructorBody
+                    )
+                );
+
+            return CompilationUnit()
+                .WithMembers(
+                    SingletonList<MemberDeclarationSyntax>(
+                        NamespaceDeclaration(nsFqn)
+                            //.WithNamespaceKeyword(NullableKeyword(true))
+                            .WithUsings(List(_knownUsings))
+                            .WithMembers(
+                                SingletonList<MemberDeclarationSyntax>(
+                                    ClassDeclaration(model.MapperType.Name)
+                                        .WithModifiers(
+                                            TokenList(new[] { Token(SyntaxKind.PartialKeyword) })
+                                            )
+                                        .WithTypeParameterList(typeParametersList)
+                                        .WithMembers(List(classMembers))
+                                        )
+                                )
+                            )
+                    )
+                //.WithEndOfFileToken(NullableKeyword(false))
+                .NormalizeWhitespace()
+                .SyntaxTree;
+        }
+
         public SyntaxTree Build(MappingSyntaxModel model)
         {
             var mapperInterface = MapperInterface(model.SourceType, model.DestinationType);
             
-            _syntaxFactoryWithContext = new MappingSyntaxFactoryWithContext(mapperInterface, model.Context.ImplementationType);
+            _syntaxFactoryWithContext = new MappingSyntaxFactoryWithContext(mapperInterface, model.ImplementationType);
 
             var body = new List<StatementSyntax>();
             
             body.Add(ArgumentNotNull("source"));
-            body.Add(DeclareResultVar(model.Context.DestinationType, model.Context.DestinationConstructorMethodName));
+            body.Add(DeclareResultVar(model.DestinationType, model.DestinationConstructorMethodName));
             body.AddRange(model.MappingStatements);
-            body.Add(CallAfterMapMethod(model.Context.AfterMapMethodName));
+            body.Add(CallAfterMapMethod(model.AfterMapMethodName));
             body.Add(ReturnResult());
 
             var nsFqn = CreateQualifiedName(model.Namespace.ToDisplayString());
@@ -342,19 +429,23 @@ namespace MappingGenerator.SourceGeneration
 
             var classMembers = new List<MemberDeclarationSyntax>();
             classMembers.AddRange(model.Fields);
-            classMembers.Add(
-                Constructor(
-                    model.MapperType.Name,
-                    model.Context.ConstructorAccessibility,
-                    model.ConstructorParameters,
-                    model.ConstructorBody
-                    )
-                );
 
-            var enumerable = model.Context.KnownTypes.IEnumerableType;
-            var list = model.Context.KnownTypes.ListType;
-            var hashSet = model.Context.KnownTypes.HashSetType;
-            var collection = model.Context.KnownTypes.CollectionType;
+            if (model.ConstructorBody.Count > 0 || model.ConstructorAccessibility != default)
+            {
+                classMembers.Add(
+                    Constructor(
+                        model.MapperType.Name,
+                        model.ConstructorAccessibility,
+                        model.ConstructorParameters,
+                        model.ConstructorBody
+                        )
+                    ); 
+            }
+
+            var enumerable = model.KnownTypes.IEnumerableType;
+            var list = model.KnownTypes.ListType;
+            var hashSet = model.KnownTypes.HashSetType;
+            var collection = model.KnownTypes.CollectionType;
 
             var sourceEnumerable = enumerable.Construct(model.SourceType);
             var listInterface = MapperInterface(sourceEnumerable, list.Construct(model.DestinationType));
@@ -387,45 +478,24 @@ namespace MappingGenerator.SourceGeneration
             classMembers.Add(MapManyMethodDeclarationSyntax(sourceEnumerable, collection.Construct(model.DestinationType), mapCollectionBody));
             classMembers.Add(MapManyMethodDeclarationSyntax(sourceEnumerable, model.DestinationType, mapToArrayBody, true));
 
-            classMembers.Add(AfterMapMethod(sourceFqn, destFqn, model.Context.AfterMapMethodName));
+            classMembers.Add(AfterMapMethod(sourceFqn, destFqn, model.AfterMapMethodName));
 
-            var typeParameters = new List<SyntaxNodeOrToken>();
-
-            foreach (var tp in model.MapperType.TypeArguments)
-            {
-                typeParameters.Add(TypeParameter(Identifier(tp.Name)));
-                typeParameters.Add(Token(SyntaxKind.CommaToken));
-            }
+            var typeParameters = new SeparatedSyntaxList<TypeParameterSyntax>()
+                .AddRange(model.MapperType.TypeArguments.Select(p => TypeParameter(Identifier(p.Name))));
 
             TypeParameterListSyntax? typeParametersList = null;
 
             if (typeParameters.Count > 0)
             {
-                typeParameters.RemoveAt(typeParameters.Count - 1);
-                typeParametersList = TypeParameterList(SeparatedList<TypeParameterSyntax>(typeParameters));
+                typeParametersList = TypeParameterList(typeParameters);
             }
-
-            var usings = new[]
-            {
-                UsingDirective(IdentifierName("System")),
-                UsingDirective(
-                    QualifiedName(QualifiedName(IdentifierName("System"), IdentifierName("Collections")), IdentifierName("Generic"))
-                    ),
-                UsingDirective(
-                    QualifiedName(QualifiedName(IdentifierName("System"), IdentifierName("Collections")), IdentifierName("ObjectModel"))
-                    ),
-                UsingDirective(QualifiedName(IdentifierName("System"), IdentifierName("Linq"))),
-                UsingDirective(
-                    QualifiedName(QualifiedName(IdentifierName("Talk2Bits"), IdentifierName("MappingGenerator")), IdentifierName("Abstractions"))
-                    ),
-            };
 
             return CompilationUnit()
                 .WithMembers(
                     SingletonList<MemberDeclarationSyntax>(
                         NamespaceDeclaration(nsFqn)
                             //.WithNamespaceKeyword(NullableKeyword(true))
-                            .WithUsings(List(usings))
+                            .WithUsings(List(_knownUsings))
                             .WithMembers(
                                 SingletonList<MemberDeclarationSyntax>(
                                     ClassDeclaration(model.MapperType.Name)
