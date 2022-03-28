@@ -1,33 +1,27 @@
-# Custom Type Converters
-
-You can provide custom type converters by defining function:
-
-```csharp
-<DESTINATION-TYPE> Convert<ANY-SUFFIX>(<SOURCE-TYPE>)
-{}
-```
-
-**Note**. Custom type conversion will be used for all mapping of type `<SOURCE-TYPE>` to `<DESTINATION-TYPE>`.
+# Basic mapping
 
 ```csharp
 public class Source
 {
-    public string Number { get; set; }
+    public int Number { get; set; }
+
+    public string Text { get; set; }
+
+    public long BigNumber { get; set; }
 }
 
 public class Destination
 {
     public int Number { get; set; }
+
+    public string Text { get; set; }
+
+    public long BigNumber { get; set; }
 }
 
 [MappingGenerator(typeof(Source), typeof(Destination))]
 public partial class Mapper
-{ 
-    private int Convert(string source)
-    {
-        return int.Parse(source);
-    }
-}
+{ }
 ```
 
 Generated code (removed redundant parts and added comments for brevity):
@@ -35,15 +29,24 @@ Generated code (removed redundant parts and added comments for brevity):
 ```csharp
 partial class Mapper : IMapper<Source, Destination>
 {
+    private Destination CreateDestination(Source source)
+    {
+        return new Destination()
+        {};
+    }
+
     public Destination Map(Source source)
     {
         if (source == null)
             throw new ArgumentNullException(nameof(source));
         var result = CreateDestination(source);
 
-        // Custom type converter called.
-        result.Number = Convert(source.Number);
+        // Properties are matched by name and type.
+        result.Number = source.Number;
+        result.Text = source.Text;
 
+        // Explicit cast generated.
+        result.BigNumber = (int)source.BigNumber;
         AfterMap(source, result);
         return result;
     }

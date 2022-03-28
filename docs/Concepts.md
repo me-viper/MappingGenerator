@@ -6,7 +6,7 @@ All generated mappers can be registered in DI container and will work out of box
 
 ## All generated mappings are reusable
 
-If MappingGenerator generated mapping A => B it will reuse this mapping whenever A => B mapping is required. For more information see [Nested Mappings](./NestedMappings.md) section.
+If MappingGenerator generated mapping A => B it will reuse this mapping whenever A => B mapping is required. For more information see [Reusing Mappings](./ReusingMappings.md) section.
 
 ## Mappings for collection types generated out of box
 

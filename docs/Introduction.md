@@ -54,8 +54,9 @@ Anchor class may:
 
 The matching performed in the following way:
 
-* Constructor parameters are matched by name (case insensitive) and type.
-* Properties are matched by name (case sensitive) and type.
+* Constructor parameters are matched by name (case insensitive).
+* Properties are matched by name (case sensitive).
+* Implicit, explicit or [custom type](./CustomTypeConverters.md) conversion should exist between source and destination.
 
 **Note**. If match is found, destination property is removed from candidates list (e.g. if MappingGenerator matched constructor argument `someValue` it will not map property `SomeValue` since it considers them the same).
 

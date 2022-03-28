@@ -1,31 +1,33 @@
-# Custom Type Converters
+# Executing post mapping logic
 
-You can provide custom type converters by defining function:
+MappingGenerator generates partial `AfterMap` method which is called after mapping is done.
 
 ```csharp
-<DESTINATION-TYPE> Convert<ANY-SUFFIX>(<SOURCE-TYPE>)
+partial void <MAPPER-NAME>AfterMap(Source source, Destination result)
 {}
 ```
-
-**Note**. Custom type conversion will be used for all mapping of type `<SOURCE-TYPE>` to `<DESTINATION-TYPE>`.
 
 ```csharp
 public class Source
 {
-    public string Number { get; set; }
+    public int Number { get; set; }
+
+    public string Text { get; set; }
 }
 
 public class Destination
 {
     public int Number { get; set; }
+
+    public string Text { get; set; }
 }
 
 [MappingGenerator(typeof(Source), typeof(Destination))]
 public partial class Mapper
 { 
-    private int Convert(string source)
+    private partial void AfterMap(Source source, Destination result);
     {
-        return int.Parse(source);
+        result.Number = result.Number + 100;
     }
 }
 ```
@@ -41,9 +43,10 @@ partial class Mapper : IMapper<Source, Destination>
             throw new ArgumentNullException(nameof(source));
         var result = CreateDestination(source);
 
-        // Custom type converter called.
-        result.Number = Convert(source.Number);
+        result.Number = source.Number;
+        result.Text = source.Text;
 
+        // Will call your AfterMap method.
         AfterMap(source, result);
         return result;
     }

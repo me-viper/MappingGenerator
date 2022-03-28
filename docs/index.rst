@@ -20,12 +20,14 @@ Check out the :doc:`GettingStarted` page first.
    :maxdepth: 2
    :caption: Features
    
+   BasicMapping
    Configuration
-   KeepingMappingsUpToDate
    Construction
+   AfterMap
    CustomMapping
-   CustomTypeConverters
+   ReusingMappings
    NestedMappings
+   CustomTypeConverters
    DependencyInjection
    ListsAndArrays
    OpenGenerics
