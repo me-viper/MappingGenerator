@@ -72,6 +72,8 @@ var result = mapper.Map(source);
 
 ```
 
+For more information check out the [getting started](https://mappinggenerator.readthedocs.io/en/latest/GettingStarted.html) guide.
+
 ## Features
 
 ### Basic mapping
