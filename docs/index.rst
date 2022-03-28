@@ -12,7 +12,7 @@ Check out the :doc:`GettingStarted` page first.
    
    GettingStarted
    Introduction
-   Conventions
+   Concepts
 
 .. _feature-docs:
 
