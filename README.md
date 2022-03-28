@@ -9,7 +9,7 @@ Having source code for your mappings generated provides the following benefits:
 * All debugging features are available. You can step-in to your mappings, set breakpoints etc.
 * If mapping can't be done or has issues you get compiler errors rather than runtime errors.
 
-For more information check out the [guide](https://mappinggenerator.readthedocs.io/en/latest/index.html) guide.
+For more information check out the [guide](https://mappinggenerator.readthedocs.io/en/latest/index.html).
 
 ## How do I get started?
 
