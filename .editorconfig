@@ -15,6 +15,9 @@ tab_width = 2
 end_of_line = crlf
 insert_final_newline = false
 
+[*.rst]
+end_of_line = lf
+
 [*.md]
 max_line_length = 0
 trim_trailing_whitespace = false

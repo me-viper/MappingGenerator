@@ -3,7 +3,9 @@
 ###############################################################################
 * text=auto
 
-*.{sh,ps1} text eol=lf
+*.bat text eol=crlf
+*.{sh,ps1,py,rst} text eol=lf
+Makefile text eol=lf
 
 *.cs     diff=csharp
 
