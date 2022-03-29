@@ -29,13 +29,76 @@ Compilation error:
 
 `Mapping generator 'Mapper': Failed to resolve mapping for type 'B' property 'Val'.`
 
-
 ## Naming mappers
+
+You can name generated mappers by adding `MappingGenerator.Name` parameter:
+
+```csharp
+[MappingGenerator(typeof(Source), typeof(Destination), Name = "My")]
+public partial class Mapper
+{
+}
+```
+
+**Important**. `Name` must be valid C# identifier.
+
+This might be useful if anchor class contains more than one mapper and you want to avoid naming conflicts (for more information see [Multiple Mappings](./MultipleMappers.md) section).
+
+Naming a mapper has the following effects:
+
+* `CreateDestination` method => `<NAME>CreateDestination`
+* `AfterMap` method => `<NAME>AfterMap`
+* `Map<PROPERTY>` methods => `<NAME>Map<PROPERTY>`
+* Fields and constructor parameters naming
+
+Generated code (removed redundant parts and added comments for brevity):
+
+```csharp
+partial class Mapper : IMapper<Source, Destination>
+{
+    private Destination MyCreateDestination(Source source)
+    {
+        ...
+    }
+
+    public Destination Map(Source source)
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+        var result = MyCreateDestination(source);
+
+        ...
+
+        MyAfterMap(source, result);
+        return result;
+    }
+
+    private partial void MyAfterMap(Source source, Destination result);
+}
+```
 
 ## Mapping constructor generation options
 
+You can control accessibility of constructor generated for anchor class with `MappingGenerator.ConstructorAccessibility` parameter which can have the following values:
+
+* **Public**. Constructor will be `public` (Default).
+* **Private**. Constructor will be `private`.
+* **PrivateProtected**. Constructor will be `private protected`.
+* **Protected**. Constructor will be `protected`.
+* **Internal**. Constructor will be `internal`.
+* **InternalProtected**. Constructor will be `protected internal`.
+* **Suppress**. No constructor will be generated.
+
+**Important**. If you set `MappingGenerator.ConstructorAccessibility = ConstructorAccessibility.Suppress` it's up to you to initialize all generated fields otherwise you will get runtime `NullReferenceException` errors.
+
 ## Mapping implementation generation options
 
+You can control how generated mappers implement `IMapper<Source, Destination>` interface with `MappingGenerator.ImplementationType` parameter which can have the following options:
+
+* **Implicit**. Implicit implementation.
+* **Explicit**. Explicit implementation.
+
+**Note**. `IMapper<IEnumerable<Source>, ...>` interfaces always have explicit implementation.
 
 ## Ignore destination property
 
