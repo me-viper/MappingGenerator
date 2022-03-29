@@ -1,4 +1,4 @@
-# Custom Mapping
+# Custom mapping
 
 You can provide custom mapping for property by adding function:
 

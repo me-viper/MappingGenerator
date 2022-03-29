@@ -55,3 +55,5 @@ var mapper = new Mapper();
 var result = mapper.Map(source);
 
 ```
+
+For more information check out [Getting Started](https://mappinggenerator.readthedocs.io/en/latest/GettingStarted.html) guide.

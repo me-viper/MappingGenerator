@@ -1,1 +1,1 @@
-# Multiple Mappings
+# Multiple mappings

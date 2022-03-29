@@ -45,4 +45,4 @@ Check out the :doc:`GettingStarted` page first.
 Examples
 ========
 
-The source code contains unit tests for all of the features listed above. Use the GitHub search to find relevant examples.
+The source code contains unit tests for all of the features listed above. Use the `GitHub <https://github.com/me-viper/MappingGenerator/tree/master/tests/MappingGenerator.Tests>`_ search to find relevant examples.
