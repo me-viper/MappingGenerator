@@ -31,6 +31,7 @@ Check out the :doc:`GettingStarted` page first.
    DependencyInjection
    ListsAndArrays
    OpenGenerics
+   MultipleMappers
 
 .. _misc-docs:
 

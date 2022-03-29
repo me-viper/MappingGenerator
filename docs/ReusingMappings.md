@@ -1,6 +1,6 @@
 # Reusing generated mappings
 
-MappingGenerator will reuse other mappings.
+MappingGenerator will reuse other generated mappings.
 
 ```csharp
 public class InnerSource
@@ -36,22 +36,12 @@ public partial class InnerMapper
 }
 ```
 
-Generated code (removed redundant parts and added comments for clarity):
+Generated code (removed redundant parts and added comments for brevity):
 
 ```csharp
 // Mapping for InnerSource => InnerDestination
 partial class InnerMapper : IMapper<InnerSource, InnerDestination>
 {
-    public Mapper()
-    {
-    }
-
-    private InnerDestination CreateDestination(Source source)
-    {
-        return new InnerDestination()
-        {};
-    }
-
     public InnerDestination Map(InnerSource source)
     {
         if (source == null)
