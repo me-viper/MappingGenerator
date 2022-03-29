@@ -2,7 +2,9 @@
 
 ## Mapping constructor parameters
 
-MappingGenerator will try to find destination object's constructor that has parameters that can be mapped from source object.
+MappingGenerator will try to find destination object's constructor with the most parameters that can be mapped from source object.
+
+**Note**. If MappingGenerator fails to find appropriate constructor if will produce compilation error.
 
 ```csharp
 public class Source
@@ -50,6 +52,9 @@ partial class Mapper : IMapper<Source, Destination>
         var result = CreateDestination(source);
 
         result.Number = source.Number;
+        
+        // NOTE. Mapping result.Text = source.Text is omitted
+        // because MappingGenerator considers mapping was done in constructor.
 
         AfterMap(source, result);
         return result;
@@ -82,7 +87,7 @@ public partial class Mapper
 }
 ```
 
-Generated code (removed redundant parts and added comments for clarity):
+Generated code (removed redundant parts and added comments for brevity):
 
 ```csharp
 partial class Mapper : IMapper<Source, Destination>
@@ -104,6 +109,9 @@ partial class Mapper : IMapper<Source, Destination>
 
         result.Number = source.Number;
 
+        // NOTE. Mapping result.Text = source.Text is omitted
+        // because MappingGenerator considers mapping have been done already.
+
         AfterMap(source, result);
         return result;
     }
@@ -114,12 +122,14 @@ partial class Mapper : IMapper<Source, Destination>
 
 ## Custom construction
 
-You can control have destination object is constructed by adding function:
+You can control how destination object is constructed by defining function:
 
 ```csharp
 <DESTINATION-TYPE> <MAPPER-NAME>CreateDestination(Source source)
 {}
 ```
+
+**Note**. If you need to do some pre-mapping logic, custom constructor is the right place for it.
 
 ```csharp
 public class Source
@@ -154,16 +164,12 @@ Generated code (removed redundant parts and added comments for brevity):
 ```csharp
 partial class Mapper : IMapper<Source, Destination>
 {
-    public Mapper()
-    {
-    }
-
     public Destination Map(Source source)
     {
         if (source == null)
             throw new ArgumentNullException(nameof(source));
         
-        // Your CreateDestination method used.
+        // Your custom CreateDestination method used.
         var result = CreateDestination(source);
 
         result.Number = source.Number;

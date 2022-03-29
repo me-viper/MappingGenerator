@@ -1,8 +1,5 @@
 # Configuration
 
-## Naming mappers
-
-
 ## Keeping eye on missing mappings
 
 You can control how MappingGenerator behaves if it was not able to map everything in destination object with MissingMappingBehavior parameter. Options are:
@@ -31,6 +28,14 @@ public partial class Mapper
 Compilation error:
 
 `Mapping generator 'Mapper': Failed to resolve mapping for type 'B' property 'Val'.`
+
+
+## Naming mappers
+
+## Mapping constructor generation options
+
+## Mapping implementation generation options
+
 
 ## Ignore destination property
 

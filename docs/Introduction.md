@@ -70,6 +70,30 @@ Mapping strategies are applied in the following order:
 
 **Note**. If strategy produced mapping resolution process stops.
 
+## What is generated
+
+In general for:
+
+```csharp
+[MappingGenerator(typeof(Source), typeof(Destination))]
+public partial class Mapper
+{}
+```
+
+By default MappingGenerator generates the following:
+
+* Partial class `Mapper` implementing `IMapper<Source, Destination>` interface.
+* Implicit implementation for `IMapper<Source, Destination>.Map` method.
+* `CreateDestination` method to construct Destination.
+* Explicit implementations of:
+  * `IMapper<IEnumerable<Source>>, List<Destination>>`
+  * `IMapper<IEnumerable<Source>>, HashSet<Destination>>`
+  * `IMapper<IEnumerable<Source>>, Collection<Destination>>`
+  * `IMapper<IEnumerable<Source>>, Destination[]>`
+* Partial `AfterMap(Source, Destination)` method.
+* Private fields for other mappers current mapper depends on.
+* Constructor to initialize these fields.
+
 ## Limitations
 
 * MappingGenerator can't access members of source and destination objects if they are not accessible from anchor class (e.g. no access to `private` members).
