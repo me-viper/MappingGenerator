@@ -66,6 +66,8 @@ partial class Mapper : IMapper<Source, Destination>
 
 ## Mapping init only properties
 
+MappingGenerator will try to map all init-only properties the same way it maps ordinary properties.
+
 ```csharp
 public class Source
 {
@@ -122,7 +124,7 @@ partial class Mapper : IMapper<Source, Destination>
 
 ## Custom construction
 
-You can control how destination object is constructed by defining function:
+You can control how destination object is constructed by defining function manually:
 
 ```csharp
 <DESTINATION-TYPE> <MAPPER-NAME>CreateDestination(Source source)
@@ -152,6 +154,7 @@ public class Destination
 [MappingGenerator(typeof(Source), typeof(Destination))]
 public partial class Mapper
 { 
+    // Custom destination construction.
     private Destination CreateDestination(Source source)
     {
         return new Destination("input");
@@ -164,6 +167,8 @@ Generated code (removed redundant parts and added comments for brevity):
 ```csharp
 partial class Mapper : IMapper<Source, Destination>
 {
+    // CreateDestination is not generated.
+
     public Destination Map(Source source)
     {
         if (source == null)

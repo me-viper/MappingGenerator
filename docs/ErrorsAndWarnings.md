@@ -1,0 +1,1 @@
+# MappingGenerator Errors and Warnings

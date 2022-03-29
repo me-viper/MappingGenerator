@@ -38,6 +38,7 @@ Check out the :doc:`GettingStarted` page first.
    :maxdepth: 2
    :caption: How To
 
+   ErrorsAndWarnings
    HowTos
       
 Examples
