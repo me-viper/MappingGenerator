@@ -11,6 +11,8 @@ Having source code for your mappings generated provides the following benefits:
 * All debugging features are available. You can step-in to your mappings, set breakpoints etc.
 * If mapping can't be done or has issues you get compiler errors rather than runtime errors.
 
+**Note**. C# source generators require NET5.0 or higher.
+
 ## How do I get started?
 
 Install [Talk2Bits.MappingGenerator](https://www.nuget.org/packages/Talk2Bits.MappingGenerator) nuget package.

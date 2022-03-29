@@ -1,6 +1,6 @@
 # MappingGenerator
 
-MappingGenerator is C# source generator that allows generating object mapping code on compilation stage.
+MappingGenerator is C# [source generator](https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview) that allows generating object mapping code on compilation stage.
 
 Having source code for your mappings generated provides the following benefits:
 
@@ -8,6 +8,8 @@ Having source code for your mappings generated provides the following benefits:
 * You see code for all your mappings. Nothing is hidden.
 * All debugging features are available. You can step-in to your mappings, set breakpoints etc.
 * If mapping can't be done or has issues you get compiler errors rather than runtime errors.
+
+**Note**. C# source generators require NET5.0 or higher.
 
 For more information check out the [guide](https://mappinggenerator.readthedocs.io/en/latest/index.html).
 
