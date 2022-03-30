@@ -1,4 +1,4 @@
-![CI](https://github.com/me-viper/MappingGenerator/actions/workflows/dotnet.yml/badge.svg)
+![CI](https://github.com/me-viper/MappingGenerator/actions/workflows/ci.yml/badge.svg)
 [![NuGet](https://img.shields.io/nuget/v/Talk2Bits.MappingGenerator.svg)](https://www.nuget.org/packages/Talk2Bits.MappingGenerator/)
 [![DOC](https://readthedocs.org/projects/mappinggenerator/badge)](https://readthedocs.org/projects/mappinggenerator)
 
