@@ -1,5 +1,7 @@
 # Concepts
 
+## Minimal runtime dependencies
+
 ## All generated mappings are DI ready
 
 All generated mappers can be registered in DI container and will work out of box. For more information see [Dependency Injection](./DependencyInjection.md) section.
