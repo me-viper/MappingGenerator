@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace MappingGenerator.Tests.Common
 {
+    public interface IDestination<T>
+    {
+        T GetValue();
+    }
+
     public record Source<T>
     {
         public T Value { get; set; } = default!;
@@ -16,9 +21,11 @@ namespace MappingGenerator.Tests.Common
         public T2 Value2 { get; set; } = default!;
     }
 
-    public record Destination<T>
+    public record Destination<T> : IDestination<T>
     {
         public T Value { get; set; } = default!;
+
+        public T GetValue() => Value;
     }
 
     public record Destination<T1, T2> : Destination<T1>
@@ -44,9 +51,28 @@ namespace MappingGenerator.Tests.Common
         public string? InnerText { get; set; }
     }
 
+    public record DestinationInitOnly<T> : IDestination<T>
+    {
+        public T Value { get; init; } = default!;
+
+        public T GetValue() => Value;
+    }
+
     public record DestinationInitOnly<T1, T2> : Destination<T1>
     {
         public T2 Value2 { get; init; } = default!;
+    }
+
+    public record DestinationConstructor<T> : IDestination<T>
+    {
+        public DestinationConstructor(T value)
+        {
+            Value = value;
+        }
+
+        public T Value { get; } = default!;
+
+        public T GetValue() => Value;
     }
 
     public record DestinationConstructor<T1, T2> : Destination<T1>
