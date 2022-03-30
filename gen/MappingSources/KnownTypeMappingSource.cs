@@ -16,7 +16,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 
         private bool _isInternal;
 
-        public KnownTypeMappingSource(KnownMapper mapper, bool isInternal, MappingGenerationContext context) : base(context)
+        public KnownTypeMappingSource(KnownMapper mapper, bool isInternal, MappingEmitContext context) : base(context)
         {
             _sourceProperties = context.SourceProperties;
             _isInternal = isInternal;

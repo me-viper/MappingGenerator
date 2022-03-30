@@ -24,7 +24,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.Mappers
                 expression
                 );
 
-        public void Map(MapperTypeSpec mapperSpec, MappingGenerationContext context)
+        public void Map(MapperTypeSpec mapperSpec, MappingEmitContext context)
         {
             foreach (var prop in context.DestinationProperties)
             {

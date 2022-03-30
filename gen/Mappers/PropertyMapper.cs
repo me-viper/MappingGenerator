@@ -18,7 +18,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.Mappers
         private static StatementSyntax MakeStatement(string name, ExpressionSyntax expression) =>
             MappingSyntaxFactory.PropertyMapping(name, expression);
 
-        public void Map(MapperTypeSpec mapperSpec, MappingGenerationContext context)
+        public void Map(MapperTypeSpec mapperSpec, MappingEmitContext context)
         {
             foreach (var prop in context.DestinationProperties)
             {

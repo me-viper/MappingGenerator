@@ -12,7 +12,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
     {
         private readonly IReadOnlyCollection<IPropertySymbol> _sourceProperties;
 
-        public PropertyMappingSource(MappingGenerationContext context) : base(context)
+        public PropertyMappingSource(MappingEmitContext context) : base(context)
         {
             _sourceProperties = context.SourceProperties;
         }

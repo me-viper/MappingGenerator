@@ -6,9 +6,9 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 {
     internal abstract class BaseMappingSource
     {
-        protected MappingGenerationContext Context { get; }
+        protected MappingEmitContext Context { get; }
 
-        protected BaseMappingSource(MappingGenerationContext context)
+        protected BaseMappingSource(MappingEmitContext context)
         {
             Context = context ?? throw new ArgumentNullException(nameof(context));
         }

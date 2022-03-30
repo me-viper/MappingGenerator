@@ -11,7 +11,7 @@ using Talk2Bits.MappingGenerator.SourceGeneration.Spec;
 
 namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
-    internal class MappingClassGenerator
+    internal class Generator
     {
         private readonly INamedTypeSymbol _mapperType;
 
@@ -23,7 +23,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         public string FileName => _mapperType.ToDisplayString().Replace('<', '[').Replace('>', ']');
 
-        public MappingClassGenerator(
+        public Generator(
             INamedTypeSymbol mapper,
             IReadOnlyCollection<KnownMapper> internalMappers,
             IEnumerable<KnownMapper> knownMappers)
@@ -42,7 +42,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             _internalMappers = mappers;
         }
 
-        public IEnumerable<SyntaxNode> Build(IMappingSourceGeneratorContext executionContext)
+        public IEnumerable<SyntaxNode> Build(IGeneratorContext executionContext)
         {
             var mapperContextSpec = new ContextSpec();
             var mst = new MappingSyntaxFactory();
@@ -84,12 +84,12 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             return result;
         }
 
-        private MappingSyntaxModel? BuildMapper(
+        private MapperInstanceSyntaxModel? BuildMapper(
             KnownMapper mapperToGenerate, 
-            IMappingSourceGeneratorContext executionContext,
+            IGeneratorContext executionContext,
             Func<MapperTypeSpec, bool>? populate = null)
         {
-            var context = MappingGenerationContext.Build(
+            var context = MappingEmitContext.Build(
                 mapperToGenerate,
                 mapperToGenerate.SourceType,
                 mapperToGenerate.DestType,

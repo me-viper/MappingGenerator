@@ -405,7 +405,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             };
         }
 
-        public SyntaxTree BuildConstructorOnly(ConstructorOnlySyntaxModel model)
+        public SyntaxTree BuildConstructorOnly(MapperAnchorSyntaxModel model)
         {
             var nsFqn = CreateQualifiedName(model.Namespace.ToDisplayString());
 
@@ -454,7 +454,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 .SyntaxTree;
         }
 
-        public SyntaxTree Build(MappingSyntaxModel model)
+        public SyntaxTree Build(MapperInstanceSyntaxModel model)
         {
             var mapperInterface = MapperInterface(model.SourceType, model.DestinationType);
             

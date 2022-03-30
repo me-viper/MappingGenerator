@@ -9,9 +9,9 @@ using Talk2Bits.MappingGenerator.SourceGeneration.Spec;
 
 namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
-    internal record ConstructorOnlySyntaxModel(
-        IMappingSourceGeneratorContext Context,
-        INamespaceSymbol Namespace,
+    internal record MapperAnchorSyntaxModel(
+        IGeneratorContext Context,
+        INamespaceSymbol Namespace, 
         INamedTypeSymbol MapperType,
         KnownTypeSymbols KnownTypes)
     {
@@ -70,49 +70,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                             )
                         );
                 }
-            }
-
-            return true;
-        }
-    }
-
-    internal record MappingSyntaxModel(
-        IMappingSourceGeneratorContext Context,
-        string MapperName,
-        INamespaceSymbol Namespace,
-        INamedTypeSymbol MapperType,
-        INamedTypeSymbol SourceType,
-        INamedTypeSymbol DestinationType,
-        string DestinationConstructorMethodName,
-        ImplementationType ImplementationType,
-        KnownTypeSymbols KnownTypes) : ConstructorOnlySyntaxModel(Context, Namespace, MapperType, KnownTypes)
-    {
-        public string AfterMapMethodName => $"{MapperName}AfterMap";
-
-        public LocalFunctionStatementSyntax? DestinationTypeConstructor { get; private set; }
-
-        public List<StatementSyntax> MappingStatements { get; } = new();
-
-        public override bool TryPopulate(MapperTypeSpec mapperSpec, bool isAnchor)
-        {
-            if (!base.TryPopulate(mapperSpec, isAnchor))
-                return false;
-
-            MappingStatements.AddRange(mapperSpec.MappingStatements);
-
-            if (!mapperSpec.HasCustomConstructor)
-            {
-                var callDestinationConstructor = MappingSyntaxFactory.CallConstructor(
-                    DestinationType, 
-                    mapperSpec.DestinationConstructorArguments, 
-                    mapperSpec.InitStatements
-                    );
-
-                DestinationTypeConstructor = MappingSyntaxFactory.CreateMethod(
-                    DestinationType,
-                    DestinationConstructorMethodName,
-                    new[] { callDestinationConstructor }
-                    );
             }
 
             return true;

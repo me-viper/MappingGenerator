@@ -14,7 +14,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.Mappers
         {
         }
 
-        public void Map(MapperTypeSpec mapperSpec, MappingGenerationContext context)
+        public void Map(MapperTypeSpec mapperSpec, MappingEmitContext context)
         {
             var destinationConstructor = TryFindCustomConstructor(context);
 
@@ -88,7 +88,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.Mappers
             }
         }
 
-        private static IMethodSymbol? TryFindCustomConstructor(MappingGenerationContext context)
+        private static IMethodSymbol? TryFindCustomConstructor(MappingEmitContext context)
         {
             IMethodSymbol? destinationConstructor = null;
 

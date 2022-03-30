@@ -10,44 +10,7 @@ using Talk2Bits.MappingGenerator.Abstractions;
 
 namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
-    internal class EmitContext
-    {
-        public INamedTypeSymbol MapperType { get; }
-
-        public IMappingSourceGeneratorContext ExecutionContext { get; }
-
-        public KnownTypeSymbols KnownTypes { get; }
-
-        public CollectionClassifier CollectionClassifier { get; }
-
-        protected EmitContext(INamedTypeSymbol mapperType, IMappingSourceGeneratorContext executionContext)
-        {
-            MapperType = mapperType ?? throw new ArgumentNullException(nameof(mapperType));
-            ExecutionContext = executionContext ?? throw new ArgumentNullException(nameof(executionContext));
-            KnownTypes = new KnownTypeSymbols(executionContext.Compilation);
-            CollectionClassifier = new CollectionClassifier(KnownTypes);
-        }
-
-        public static EmitContext Build(
-            INamedTypeSymbol mapperType, 
-            IMappingSourceGeneratorContext executionContext)
-        {
-            var result = new EmitContext(mapperType, executionContext);
-            return result;
-        }
-
-        public ConstructorOnlySyntaxModel CreateSyntaxXModel()
-        {
-            return new ConstructorOnlySyntaxModel(
-                ExecutionContext,
-                MapperType.ContainingNamespace,
-                MapperType,
-                KnownTypes
-                );
-        }
-    }
-
-    internal class MappingGenerationContext : EmitContext
+    internal class MappingEmitContext : EmitContext
     {
         private readonly HashSet<IMethodSymbol> _mappingMethods = new(SymbolEqualityComparer.Default);
 
@@ -93,7 +56,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         public string MapMethodName(string suffix) => $"{MapperName}Map{suffix}";
 
-        private MappingGenerationContext(KnownMapper mapperType, IMappingSourceGeneratorContext executionContext) 
+        private MappingEmitContext(KnownMapper mapperType, IGeneratorContext executionContext) 
             : base(mapperType.Mapper, executionContext)
         {
             Mapper = mapperType;
@@ -141,9 +104,9 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             return null;
         }
 
-        public MappingSyntaxModel CreateSyntaxModel()
+        public MapperInstanceSyntaxModel CreateSyntaxModel()
         {
-            return new MappingSyntaxModel(
+            return new MapperInstanceSyntaxModel(
                 ExecutionContext,
                 MapperName,
                 MapperType.ContainingNamespace,
@@ -156,13 +119,13 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 );
         }
 
-        public static MappingGenerationContext Build(
+        public static MappingEmitContext Build(
             KnownMapper mapperType, 
             INamedTypeSymbol sourceType,
             INamedTypeSymbol destinationType,
             IEnumerable<KnownMapper> internalMappers,
             IEnumerable<KnownMapper> knownMappers,
-            IMappingSourceGeneratorContext executionContext,
+            IGeneratorContext executionContext,
             MemberNamingManager memberNamingManager)
         {
             if (internalMappers == null)
@@ -174,7 +137,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             if (memberNamingManager == null)
                 throw new ArgumentNullException(nameof(memberNamingManager));
             
-            var result = new MappingGenerationContext(mapperType, executionContext);
+            var result = new MappingEmitContext(mapperType, executionContext);
 
             result.SourceType = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
             result.DestinationType = destinationType ?? throw new ArgumentNullException(nameof(destinationType));
@@ -192,7 +155,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             return result;
         }
 
-        private static void SetDestinationProperties(MappingGenerationContext result)
+        private static void SetDestinationProperties(MappingEmitContext result)
         {
             foreach (var prop in result._destinationCandidateProperties)
             {
@@ -218,7 +181,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             }
         }
 
-        private static void SetInternalKnownMappers(MappingGenerationContext context, IEnumerable<KnownMapper> knownMappers)
+        private static void SetInternalKnownMappers(MappingEmitContext context, IEnumerable<KnownMapper> knownMappers)
         {
             var km = knownMappers.Where(
                 p => !(p.SourceType.Equals(context.SourceType, SymbolEqualityComparer.Default) && p.DestType.Equals(context.DestinationType, SymbolEqualityComparer.Default))
@@ -227,7 +190,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             context.InternalMappers = new List<KnownMapper>(km);
         }
 
-        private static void SetKnownMappers(MappingGenerationContext context, IEnumerable<KnownMapper> knownMappers)
+        private static void SetKnownMappers(MappingEmitContext context, IEnumerable<KnownMapper> knownMappers)
         {
             var knownMappersToIgnore = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
             var knownMappersToIgnoreAttr = context.MapperType.GetAttributes().Where(
@@ -249,7 +212,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             context.KnownMappers = new List<KnownMapper>(km);
         }
 
-        private static void SetCustomMappingMethods(MappingGenerationContext context)
+        private static void SetCustomMappingMethods(MappingEmitContext context)
         {
             var prefix = $"{context.MapperName}Map";
 
@@ -325,7 +288,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             }
         }
         
-        private static void SetCustomConvertorMethods(MappingGenerationContext context)
+        private static void SetCustomConvertorMethods(MappingEmitContext context)
         {
             var mappingMethods = context.MapperType.GetMembers()
                 .OfType<IMethodSymbol>()
@@ -369,7 +332,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             }
         }
 
-        private static void SetSourceProperties(MappingGenerationContext context)
+        private static void SetSourceProperties(MappingEmitContext context)
         {
             void GetSourceMembers(INamedTypeSymbol? type)
             {
@@ -391,7 +354,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             GetSourceMembers(context.SourceType);
         }
 
-        private static void SetDestinationCandidateProperties(MappingGenerationContext context)
+        private static void SetDestinationCandidateProperties(MappingEmitContext context)
         {
             var ignoreAttr = context.MapperType.GetAttributes()
                 .Where(
@@ -432,7 +395,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             GetDestMembers(context.DestinationType);
         }
 
-        private static void SetCustomizedMappings(MappingGenerationContext context)
+        private static void SetCustomizedMappings(MappingEmitContext context)
         {
             var customAttr = context.MapperType.GetAttributes()
                 .Where(

@@ -126,8 +126,8 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
             foreach (var mapper in knownMappers)
             {
-                var generator = new MappingClassGenerator(mapper.Key, mapper.Value, allKnownMappers);
-                var generatorContext = new MappingSourceGeneratorContext(compilation, context.ReportDiagnostic);
+                var generator = new Generator(mapper.Key, mapper.Value, allKnownMappers);
+                var generatorContext = new GeneratorContext(compilation, context.ReportDiagnostic);
 
                 try
                 {

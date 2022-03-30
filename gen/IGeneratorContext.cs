@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
-    public interface IMappingSourceGeneratorContext
+    public interface IGeneratorContext
     {
         Compilation Compilation { get; }
 

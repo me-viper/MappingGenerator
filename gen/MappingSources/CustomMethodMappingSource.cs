@@ -11,7 +11,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
     {
         private readonly IReadOnlyCollection<IMethodSymbol> _mappingMethods;
 
-        public CustomMethodMappingSource(MappingGenerationContext context) : base(context)
+        public CustomMethodMappingSource(MappingEmitContext context) : base(context)
         {
             _mappingMethods = context.MappingMethods;
         }
