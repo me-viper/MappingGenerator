@@ -89,7 +89,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
     {
         public string AfterMapMethodName => $"{MapperName}AfterMap";
 
-        public MethodDeclarationSyntax? DestinationTypeConstructor { get; private set; }
+        public LocalFunctionStatementSyntax? DestinationTypeConstructor { get; private set; }
 
         public List<StatementSyntax> MappingStatements { get; } = new();
 
@@ -109,7 +109,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                     );
 
                 DestinationTypeConstructor = MappingSyntaxFactory.CreateMethod(
-                    SourceType,
                     DestinationType,
                     DestinationConstructorMethodName,
                     new[] { callDestinationConstructor }

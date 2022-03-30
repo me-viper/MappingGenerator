@@ -461,9 +461,17 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             _syntaxFactoryWithContext = new MappingSyntaxFactoryWithContext(mapperInterface, model.ImplementationType);
 
             var body = new List<StatementSyntax>();
-            
+
             body.Add(ArgumentNotNull("source"));
-            body.Add(DeclareResultVar(model.DestinationType, model.DestinationConstructorMethodName));
+
+            if (model.DestinationTypeConstructor == null)
+                body.Add(DeclareResultVar(model.DestinationConstructorMethodName, false));
+            else
+            {
+                body.Add(model.DestinationTypeConstructor);
+                body.Add(DeclareResultVar(model.DestinationConstructorMethodName, true));
+            }
+            
             body.AddRange(model.MappingStatements);
             body.Add(CallAfterMapMethod(model.AfterMapMethodName));
             body.Add(ReturnResult());
@@ -507,9 +515,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 Token(SyntaxKind.CommaToken),
                 SimpleBaseType(MapperInterface(sourceEnumerable, model.DestinationType, isDestinationArray: true)),
             };
-
-            if (model.DestinationTypeConstructor != null)
-                classMembers.Add(model.DestinationTypeConstructor);
 
             classMembers.Add(_syntaxFactoryWithContext.MapMethod(sourceFqn, destFqn, body));
 
@@ -648,14 +653,14 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             return ReturnStatement(IdentifierName("result"));
         }
 
-        private static StatementSyntax DeclareResultVar(INamedTypeSymbol destinationType, string createMethod)
+        private static StatementSyntax DeclareResultVar(string createMethod, bool isLocal)
         {
             return LocalDeclarationStatement(
                 VariableDeclaration(IdentifierName(Identifier(TriviaList(), SyntaxKind.VarKeyword, "var", "var", TriviaList())))
                     .WithVariables(
                         SingletonSeparatedList(
                             VariableDeclarator(Identifier("result"))
-                                .WithInitializer(EqualsValueClause(CallCreateMethod(createMethod)))
+                                .WithInitializer(EqualsValueClause(CallCreateMethod(createMethod, isLocal)))
                             )
                         )
                 );
@@ -911,27 +916,22 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 );
         }
 
-        public static MethodDeclarationSyntax CreateMethod(
-            INamedTypeSymbol sourceType,
+        public static LocalFunctionStatementSyntax CreateMethod(
             INamedTypeSymbol destinationType,
             string name,
             IEnumerable<StatementSyntax> destinationTypeConstructor)
         {
-            var srcFqn = CreateQualifiedName(sourceType);
             var dstFqn = CreateQualifiedName(destinationType);
 
-            return MethodDeclaration(dstFqn, Identifier(name))
-                .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword)))
-                .WithParameterList(
-                    ParameterList(
-                        SingletonSeparatedList(Parameter(Identifier("source")).WithType(srcFqn))
-                        )
-                    )
+            return LocalFunctionStatement(dstFqn, Identifier(name))
                 .WithBody(Block(destinationTypeConstructor));
         }
 
-        private static ExpressionSyntax CallCreateMethod(string name)
+        private static ExpressionSyntax CallCreateMethod(string name, bool isLocal)
         {
+            if (isLocal)
+                return InvocationExpression(IdentifierName(name));
+
             return InvocationExpression(IdentifierName(name))
                 .WithArgumentList(
                     ArgumentList(
