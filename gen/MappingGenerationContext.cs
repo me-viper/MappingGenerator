@@ -87,8 +87,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         public MemberNamingManager MemberNamingManager { get; private set; } = default!;
 
-        public string DestinationConstructorMethodName => $"{MapperName}CreateDestination";
-
         public string AfterMapMethodName => $"{MapperName}AfterMap";
 
         public string DestinationConstructorName => $"{MapperName}CreateDestination";
@@ -152,7 +150,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 MapperType,
                 SourceType,
                 DestinationType,
-                DestinationConstructorMethodName,
+                DestinationConstructorName,
                 ImplementationType,
                 KnownTypes
                 );

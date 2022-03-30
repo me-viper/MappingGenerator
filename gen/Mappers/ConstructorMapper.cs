@@ -94,7 +94,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.Mappers
 
             var destinationConstructorCandidates = context.MapperType.GetMembers()
                 .OfType<IMethodSymbol>()
-                .Where(p => p.Name.Equals(context.DestinationConstructorMethodName))
+                .Where(p => p.Name.Equals(context.DestinationConstructorName))
                 .ToList();
 
             foreach (var candidate in destinationConstructorCandidates)
