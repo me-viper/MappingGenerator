@@ -1,3 +1,6 @@
+![CI](https://github.com/me-viper/MappingGenerator/actions/workflows/dotnet.yml/badge.svg)
+[![NuGet](https://img.shields.io/nuget/v/Talk2Bits.MappingGenerator.svg)](https://www.nuget.org/packages/Talk2Bits.MappingGenerator/)
+
 # MappingGenerator
 
 MappingGenerator is C# [source generator](https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview) that allows generating object mapping code on compilation stage.
