@@ -79,43 +79,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 
             var result = new MappingSpec(entry);
 
-            if (entry.EntryType != MappingDestinationType.Property || !entry.IsReadable())
-            {
-                ITypeSymbol collectionType;
-
-                if (destClassification.IsType)
-                    collectionType = destClassification.CollectionType;
-                else
-                    collectionType = Context.KnownTypes.ListType.Construct(destClassification.ElementsType);
-
-                if (conv.IsImplicit)
-                {
-                    var expr = MappingSyntaxFactory.CallCopyToNew(
-                        Context.KnownTypes.CollectionHelpers,
-                        destClassification.ElementsType,
-                        collectionType,
-                        sourceProperty.Name
-                        );
-                    result.MappingExpressions.Add(expr);
-                    return result;
-                }
-
-                if (converter != null)
-                {
-                    var expr = MappingSyntaxFactory.CallCopyToNew(
-                        Context.KnownTypes.CollectionHelpers,
-                        sourceClassification.ElementsType,
-                        sourceProperty.Name,
-                        destClassification.ElementsType,
-                        collectionType,
-                        converter.Name
-                        );
-                    result.MappingExpressions.Add(expr);
-                    return result;
-                } 
-            }
-
-            if (destClassification.IsCollection)
+            if (entry.EntryType == MappingDestinationType.Property && entry.IsReadable() && destClassification.IsCollection)
             {
                 if (conv.IsImplicit)
                 {
@@ -125,6 +89,21 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
                             destClassification.ElementsType,
                             sourceProperty.Name,
                             entry.Name
+                            )
+                        );
+                    return result;
+                }
+
+                if (conv.IsExplicit)
+                {
+                    result.MappingStatements.Add(
+                        MappingSyntaxFactory.CallCopyTo(
+                            Context.KnownTypes.CollectionHelpers,
+                            sourceClassification.ElementsType,
+                            sourceProperty.Name,
+                            destClassification.ElementsType,
+                            entry.Name,
+                            MappingSyntaxFactory.ExplicitCastConverter(destClassification.ElementsType)
                             )
                         );
                     return result;
@@ -146,7 +125,56 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
                 }
             }
 
-            return null;
+            if (!entry.IsWritable())
+                return null;
+
+            ITypeSymbol collectionType;
+
+            if (destClassification.IsType)
+                collectionType = destClassification.CollectionType;
+            else
+                collectionType = Context.KnownTypes.ListType.Construct(destClassification.ElementsType);
+
+            if (converter != null)
+            {
+                var expr = MappingSyntaxFactory.CallCopyToNew(
+                    Context.KnownTypes.CollectionHelpers,
+                    sourceClassification.ElementsType,
+                    sourceProperty.Name,
+                    destClassification.ElementsType,
+                    collectionType,
+                    converter.Name
+                    );
+                result.MappingExpressions.Add(expr);
+                return result;
+            }
+
+            if (!conv.Exists)
+                return null;
+
+            if (conv.IsImplicit)
+            {
+                var expr = MappingSyntaxFactory.CallCopyToNew(
+                    Context.KnownTypes.CollectionHelpers,
+                    destClassification.ElementsType,
+                    collectionType,
+                    sourceProperty.Name
+                    );
+                result.MappingExpressions.Add(expr);
+                return result;
+            }
+
+            result.MappingExpressions.Add(
+                MappingSyntaxFactory.CallCopyToNew(
+                    Context.KnownTypes.CollectionHelpers,
+                    sourceClassification.ElementsType,
+                    sourceProperty.Name,
+                    destClassification.ElementsType,
+                    collectionType,
+                    MappingSyntaxFactory.ExplicitCastConverter(destClassification.ElementsType)
+                    )
+                );
+            return result;
         }
     }
 }

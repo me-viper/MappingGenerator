@@ -144,13 +144,22 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                     );
         }
 
+        public static SimpleLambdaExpressionSyntax ExplicitCastConverter(ITypeSymbol targetType)
+        {
+            var type = CreateQualifiedName(targetType);
+
+            return SimpleLambdaExpression(Parameter(Identifier("p")))
+                .WithModifiers(TokenList(Token(SyntaxKind.StaticKeyword)))
+                .WithExpressionBody(CastExpression(type, IdentifierName("p")));
+        }
+
         public static ExpressionSyntax CallCopyToNew(
             ITypeSymbol helperType,
             ITypeSymbol sourceType,
             string sourceProperty,
             ITypeSymbol destinationType,
             ITypeSymbol collectionType,
-            string mapperMember)
+            ExpressionSyntax converter)
         {
             var helperFqn = CreateQualifiedName(helperType);
             var srcFqn = CreateQualifiedName(sourceType);
@@ -183,10 +192,28 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                             {
                                 Argument(MemberAccess("source", sourceProperty)),
                                 Token(SyntaxKind.CommaToken),
-                                Argument(IdentifierName(mapperMember))
+                                Argument(converter)
                             })
                         )
                     );
+        }
+
+        public static ExpressionSyntax CallCopyToNew(
+            ITypeSymbol helperType,
+            ITypeSymbol sourceType,
+            string sourceProperty,
+            ITypeSymbol destinationType,
+            ITypeSymbol collectionType,
+            string mapperMember)
+        {
+            return CallCopyToNew(
+                helperType,
+                sourceType,
+                sourceProperty,
+                destinationType,
+                collectionType,
+                IdentifierName(mapperMember)
+                );
         }
 
         public static StatementSyntax CallCopyTo(
@@ -237,6 +264,24 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             string destinationProperty,
             string mapperMember)
         {
+            return CallCopyTo(
+                helperType,
+                sourceType,
+                sourceProperty,
+                destinationType,
+                destinationProperty,
+                IdentifierName(mapperMember)
+                );
+        }
+
+        public static StatementSyntax CallCopyTo(
+            ITypeSymbol helperType,
+            ITypeSymbol sourceType,
+            string sourceProperty,
+            ITypeSymbol destinationType,
+            string destinationProperty,
+            ExpressionSyntax converter)
+        {
             var helperFqn = CreateQualifiedName(helperType);
             var srcFqn = CreateQualifiedName(sourceType);
             var dstFqn = CreateQualifiedName(destinationType);
@@ -269,7 +314,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                                 Token(SyntaxKind.CommaToken),
                                 Argument(MemberAccess("result", destinationProperty)),
                                 Token(SyntaxKind.CommaToken),
-                                Argument(IdentifierName(mapperMember))
+                                Argument(converter)
                             })
                         )
                     )

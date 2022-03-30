@@ -5,17 +5,19 @@ using MappingGenerator.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 using Talk2Bits.MappingGenerator.Abstractions;
 
-namespace MappingGenerator.Tests.CollectionsConvert
+namespace MappingGenerator.Tests.CollectionsExplicitCast
 {
-    using Source = Source<string, IEnumerable<string>>;
+    using Source = Source<long, IEnumerable<long>>;
     using DestinationWithCollection = DestinationWithCollection<int, List<int>>;
     using DestinationConstructor = DestinationConstructor<int, List<int>>;
     using DestinationInitOnly = DestinationInitOnly<int, List<int>>;
 
-    public class CollectionsConvertTests
+    public class CollectionsExplicitCastTests
     {
         [Fact]
         public void ListWithConstructor()
@@ -24,8 +26,8 @@ namespace MappingGenerator.Tests.CollectionsConvert
 
             var source = new Source
             {
-                Value = "1",
-                Value2 = numbers.Select(p => p.ToString()).ToList()
+                Value = 1,
+                Value2 = numbers.Select(static p => (long)p).ToList()
             };
 
             var expected = new DestinationConstructor(numbers.ToList()) { Value = 1 };
@@ -43,8 +45,8 @@ namespace MappingGenerator.Tests.CollectionsConvert
 
             var source = new Source
             {
-                Value = "1",
-                Value2 = numbers.Select(p => p.ToString()).ToList()
+                Value = 1,
+                Value2 = numbers.Select(static p => (long)p).ToList()
             };
 
             var expected = new DestinationWithCollection { Value = 1 };
@@ -63,8 +65,8 @@ namespace MappingGenerator.Tests.CollectionsConvert
 
             var source = new Source
             {
-                Value = "1",
-                Value2 = numbers.Select(p => p.ToString()).ToList()
+                Value = 1,
+                Value2 = numbers.Select(static p => (long)p).ToList()
             };
 
             var expected = new DestinationInitOnly { Value = 1, Value2 = numbers.ToList() };
@@ -78,28 +80,13 @@ namespace MappingGenerator.Tests.CollectionsConvert
 
     [MappingGenerator(typeof(Source), typeof(DestinationConstructor))]
     public partial class CollectionsConstructorMapper
-    {
-        private int Convert(string source)
-        {
-            return int.Parse(source);
-        }
-    }
+    { }
 
     [MappingGenerator(typeof(Source), typeof(DestinationWithCollection))]
     public partial class CollectionsMapper
-    {
-        private static int Convert(string source)
-        {
-            return int.Parse(source);
-        }
-    }
+    { }
 
     [MappingGenerator(typeof(Source), typeof(DestinationInitOnly))]
     public partial class CollectionsInitMapper
-    {
-        private static int Convert(string source)
-        {
-            return int.Parse(source);
-        }
-    }
+    { }
 }
