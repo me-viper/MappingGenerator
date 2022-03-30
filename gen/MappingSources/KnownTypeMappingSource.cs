@@ -62,7 +62,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 
             var destClassification = classifier.ClassifyCollectionType(entry.Type);
 
-            if (!destClassification.IsType && !destClassification.IsCollection || destClassification.ElementsType == null)
+            if (!destClassification.IsEnumerable || destClassification.ElementsType == null)
                 return null;
 
             if (!Mapper.CanMap(sourceClassification.ElementsType, destClassification.ElementsType))
@@ -72,29 +72,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 
             var result = new KnownTypeMappingSpec(memberName, Mapper, entry, _isInternal);
 
-            if (entry.EntryType != MappingDestinationType.Property || !entry.IsReadable())
-            {
-                ITypeSymbol collectionType;
-
-                if (destClassification.IsType)
-                    collectionType = destClassification.CollectionType;
-                else
-                    collectionType = Context.KnownTypes.ListType.Construct(destClassification.ElementsType);
-
-                result.MappingExpressions.Add(
-                    MappingSyntaxFactory.CallCopyToNew(
-                        Context.KnownTypes.CollectionHelpers,
-                        sourceClassification.ElementsType,
-                        sourceProperty.Name,
-                        destClassification.ElementsType,
-                        collectionType,
-                        memberName
-                        )
-                    );
-                return result;
-            }
-
-            if (destClassification.IsCollection)
+            if (entry.EntryType == MappingDestinationType.Property && destClassification.IsCollection)
             {
                 result.MappingStatements.Add(
                     MappingSyntaxFactory.CallCopyTo(

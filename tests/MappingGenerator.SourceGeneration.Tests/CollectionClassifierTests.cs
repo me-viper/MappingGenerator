@@ -83,6 +83,23 @@ namespace MyCode
             Assert.Equal(intType, result.ElementsType, SymbolEqualityComparer.Default);
         }
 
+        [Fact]
+        public void ICollection()
+        {
+            var intType = _compilation.GetSpecialType(SpecialType.System_Int32);
+
+            var classifier = new CollectionClassifier(_knownTypes);
+            var sourceType = _knownTypes.ICollectionType.Construct(intType);
+            var entry = new MappingDefinition("Test", sourceType, null!, null);
+
+            var result = classifier.ClassifyCollectionType(entry.Type);
+
+            Assert.True(result.IsEnumerable);
+            Assert.False(result.IsType);
+            Assert.True(result.IsCollection);
+            Assert.Equal(intType, result.ElementsType, SymbolEqualityComparer.Default);
+        }
+
         private static Compilation CreateCompilation(string source)
             => CSharpCompilation.Create("compilation",
                 new[] { CSharpSyntaxTree.ParseText(source) },

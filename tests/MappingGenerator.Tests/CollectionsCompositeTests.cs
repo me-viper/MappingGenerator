@@ -14,9 +14,13 @@ using Talk2Bits.MappingGenerator.Abstractions;
 namespace MappingGenerator.Tests.CollectionsComposite
 {
     using Source = Source<int, IEnumerable<SourceInner>>;
-    using DestinationWithCollection = DestinationWithCollection<int, List<DestinationInner>, DestinationInner>;
-    using DestinationConstructor = DestinationConstructor<int, List<DestinationInner>>;
-    using DestinationInitOnly = DestinationInitOnly<int, List<DestinationInner>>;
+    using ListWithCollection = DestinationWithCollection<int, List<DestinationInner>, DestinationInner>;
+    using ListWithConstructor = DestinationConstructor<int, List<DestinationInner>>;
+    using ListWithInitOnly = DestinationInitOnly<int, List<DestinationInner>>;
+
+    using EnumerableWithCollection = DestinationWithCollection<int, List<DestinationInner>, DestinationInner>;
+    using EnumerableWithConstructor = DestinationConstructor<int, IEnumerable<DestinationInner>>;
+    using EnumerableWithInitOnly = DestinationInitOnly<int, List<DestinationInner>>;
 
     public class CollectionsCompositeTests
     {
@@ -32,9 +36,30 @@ namespace MappingGenerator.Tests.CollectionsComposite
             };
 
             var inners = numbers.Select(p => new DestinationInner { InnerText = $"T{p}", InnerNumber = p }).ToList();
-            var expected = new DestinationConstructor(inners) { Value = 1 };
+            var expected = new ListWithConstructor(inners) { Value = 1 };
 
-            var mapper = new CollectionsConstructorMapper(new InnerMapper());
+            var mapper = new ListConstructorMapper(new InnerMapper());
+            var result = mapper.Map(source);
+
+            Assert.Equal(expected.Value, result.Value);
+            Assert.Equal(expected.Value2, result.Value2);
+        }
+        
+        [Fact]
+        public void EnumerableWithConstructor()
+        {
+            var numbers = new[] { 1, 2, 3, 4, 5 };
+            
+            var source = new Source
+            {
+                Value = 1,
+                Value2 = numbers.Select(p => new SourceInner { InnerText = $"T{p}", InnerNumber = p }).ToList()
+            };
+
+            var inners = numbers.Select(p => new DestinationInner { InnerText = $"T{p}", InnerNumber = p }).ToList();
+            var expected = new EnumerableWithConstructor(inners) { Value = 1 };
+
+            var mapper = new EnumerableConstructorMapper(new InnerMapper());
             var result = mapper.Map(source);
 
             Assert.Equal(expected.Value, result.Value);
@@ -53,7 +78,7 @@ namespace MappingGenerator.Tests.CollectionsComposite
             };
 
             var inners = numbers.Select(p => new DestinationInner { InnerText = $"T{p}", InnerNumber = p }).ToList();
-            var expected = new DestinationWithCollection { Value = 1 };
+            var expected = new ListWithCollection { Value = 1 };
             expected.Value2.AddRange(inners);
             var mapper = new CollectionsMapper(new InnerMapper());
             var result = mapper.Map(source);
@@ -74,7 +99,7 @@ namespace MappingGenerator.Tests.CollectionsComposite
             };
 
             var inners = numbers.Select(p => new DestinationInner { InnerText = $"T{p}", InnerNumber = p }).ToList();
-            var expected = new DestinationInitOnly { Value = 1, Value2 = inners };
+            var expected = new ListWithInitOnly { Value = 1, Value2 = inners };
             var mapper = new CollectionsInitMapper(new InnerMapper());
             var result = mapper.Map(source);
 
@@ -83,15 +108,19 @@ namespace MappingGenerator.Tests.CollectionsComposite
         }
     }
 
-    [MappingGenerator(typeof(Source), typeof(DestinationConstructor))]
-    public partial class CollectionsConstructorMapper
+    [MappingGenerator(typeof(Source), typeof(ListWithConstructor))]
+    public partial class ListConstructorMapper
+    { }
+    
+    [MappingGenerator(typeof(Source), typeof(EnumerableWithConstructor))]
+    public partial class EnumerableConstructorMapper
     { }
 
-    [MappingGenerator(typeof(Source), typeof(DestinationWithCollection))]
+    [MappingGenerator(typeof(Source), typeof(ListWithCollection))]
     public partial class CollectionsMapper
     { }
 
-    [MappingGenerator(typeof(Source), typeof(DestinationInitOnly))]
+    [MappingGenerator(typeof(Source), typeof(ListWithInitOnly))]
     public partial class CollectionsInitMapper
     { }
 }

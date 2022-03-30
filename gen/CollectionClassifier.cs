@@ -47,11 +47,13 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             
             if (namedType.ConstructedFrom.Equals(_knownTypes.ICollectionType, SymbolEqualityComparer.Default))
             {
+                result.IsEnumerable = true;
                 result.IsCollection = true;
             }
 
             if (namedType.ConstructedFrom.Equals(_knownTypes.IListType, SymbolEqualityComparer.Default))
             {
+                result.IsEnumerable = true;
                 result.IsCollection = true;
             }
 
