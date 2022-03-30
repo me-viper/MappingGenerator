@@ -3,8 +3,11 @@
 namespace Talk2Bits.MappingGenerator.Abstractions
 {
 
+    /// <summary>
+    /// Defines mapping correspondence betwee source type property and destination type property.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class MappingGeneratorPropertyMappingAttribute : Attribute
+    public class MappingGeneratorPropertyMappingAttribute : ScopedMapperAttribute
     {
         public MappingGeneratorPropertyMappingAttribute(string source, string destination)
         {
@@ -18,8 +21,14 @@ namespace Talk2Bits.MappingGenerator.Abstractions
             Destination = destination;
         }
 
+        /// <summary>
+        /// Source property.
+        /// </summary>
         public string Source { get; }
 
+        /// <summary>
+        /// Destination property. 
+        /// </summary>
         public string Destination { get; }
     }
 }
