@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
     internal class MemberNamingManager
     {
-        private Dictionary<string, KnownMapper> _usedNames = new();
+        private readonly Dictionary<string, KnownMapper> _usedNames = new();
 
         public string GetMemberName(KnownMapper mapper)
         {
-            string MemberNameInner(KnownMapper m, int? suffix = null)
+            var mapperName = $"{char.ToLower(mapper.Name[0])}{mapper.Name.Substring(1)}";
+            
+            string MemberNameInner(int? suffix = null)
             {
-                var name = char.ToLower(mapper.Name[0]) + mapper.Name.Substring(1) + (suffix?.ToString() ?? string.Empty);
+                var name = mapperName + (suffix?.ToString() ?? string.Empty);
 
                 if (!_usedNames.TryGetValue(name, out var mp))
                 {
@@ -23,10 +24,10 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 if (mp.Equals(mapper))
                     return name;
 
-                return MemberNameInner(m, (suffix ?? 0) + 1);
+                return MemberNameInner((suffix ?? 0) + 1);
             }
 
-            return MemberNameInner(mapper);
+            return MemberNameInner();
         }
     }
 }

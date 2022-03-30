@@ -17,7 +17,9 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
     {
         private MappingSyntaxFactoryWithContext _syntaxFactoryWithContext = default!;
 
-        private IReadOnlyCollection<UsingDirectiveSyntax> _knownUsings;
+        private readonly IReadOnlyCollection<UsingDirectiveSyntax> _knownUsings;
+
+        private readonly NameSyntax _compilerGenerated;
 
         public MappingSyntaxFactory()
         {
@@ -35,6 +37,17 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                     QualifiedName(QualifiedName(IdentifierName("Talk2Bits"), IdentifierName("MappingGenerator")), IdentifierName("Abstractions"))
                     ),
             };
+
+            _compilerGenerated = QualifiedName(
+                QualifiedName(
+                    QualifiedName(
+                        IdentifierName("System"), 
+                        IdentifierName("Runtime")
+                        ),
+                        IdentifierName("CompilerServices")
+                    ),
+                    IdentifierName("CompilerGeneratedAttribute")
+                );
         }
 
         public static InvocationExpressionSyntax CallMappingMethod(string methodName)
@@ -61,7 +74,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             return Parameter(Identifier(name)).WithType(MapperInterface(sourceType, destinationType));
         }
 
-        public static IEnumerable<StatementSyntax> InnerMapperConstructorThisStatement(
+        public static SyntaxList<ExpressionStatementSyntax> InnerMapperConstructorThisStatement(
             ITypeSymbol sourceType, 
             ITypeSymbol destinationType,
             string member)
@@ -79,7 +92,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 });
         }
 
-        public static IEnumerable<StatementSyntax> InnerMapperConstructorStatement(string member)
+        public static SyntaxList<StatementSyntax> InnerMapperConstructorStatement(string member)
         {
             return List(
                 new []
@@ -440,6 +453,9 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                             .WithMembers(
                                 SingletonList<MemberDeclarationSyntax>(
                                     ClassDeclaration(model.MapperType.Name)
+                                        // .WithAttributeLists(
+                                        //     SingletonList(AttributeList(SingletonSeparatedList(Attribute(_compilerGenerated))))
+                                        //     )
                                         .WithModifiers(
                                             TokenList(new[] { Token(SyntaxKind.PartialKeyword) })
                                             )
@@ -577,7 +593,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                     );
         }
 
-        private InvocationExpressionSyntax CallMapMethod(TypeSyntax mapInterface)
+        private static InvocationExpressionSyntax CallMapMethod(TypeSyntax mapInterface)
         {
             return InvocationExpression(
                     MemberAccessExpression(
@@ -675,7 +691,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 ReturnStatement(
                     ObjectCreationExpression(
                         GenericName(Identifier("Collection"))
-                        .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(destinationTypeSyntax)))
+                        .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList(destinationTypeSyntax)))
                         )
                     .WithArgumentList(
                         ArgumentList(

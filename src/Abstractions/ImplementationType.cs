@@ -2,7 +2,7 @@
 {
     public enum ImplementationType
     {
-        Implict,
+        Implicit,
         Explicit
     }
 }

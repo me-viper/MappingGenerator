@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Talk2Bits.MappingGenerator.Abstractions;
 
@@ -25,13 +27,10 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         public INamedTypeSymbol ListType { get; }
 
         public INamedTypeSymbol HashSetType { get; }
-
+        
         public KnownTypeSymbols(Compilation compilation)
         {
-            if (compilation == null)
-                throw new ArgumentNullException(nameof(compilation));
-
-            _compilation = compilation;
+            _compilation = compilation ?? throw new ArgumentNullException(nameof(compilation));
 
             CollectionHelpers = compilation.GetTypeByMetadataName(typeof(CollectionsHelper).FullName)!;
 
@@ -43,7 +42,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             HashSetType = compilation.GetTypeByMetadataName(typeof(HashSet<>).FullName)!;
         }
 
-        public bool IsInSameClassHieararchy(ITypeSymbol source, ITypeSymbol destination)
+        public bool IsInSameClassHierarchy(ITypeSymbol source, ITypeSymbol destination)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));

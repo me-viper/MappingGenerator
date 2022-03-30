@@ -195,11 +195,11 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 return false;
             }
 
-            if (mapper.ImplementationType == ImplementationType.Implict)
+            if (mapper.ImplementationType == ImplementationType.Implicit)
             {
                 var conflictingMapper = mappers
                     .FirstOrDefault(
-                        p => p.ImplementationType == ImplementationType.Implict 
+                        p => p.ImplementationType == ImplementationType.Implicit 
                             && p.SourceType.Equals(mapper.SourceType, SymbolEqualityComparer.Default)
                         );
 
@@ -255,10 +255,10 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             var destTypeArgsCount = 0;
 
             if (source.IsUnboundGenericType)
-                sourceTypeArgsCount = source.TypeArguments.Count();
+                sourceTypeArgsCount = source.TypeArguments.Length;
 
             if (dest.IsUnboundGenericType)
-                destTypeArgsCount = dest.TypeArguments.Count();
+                destTypeArgsCount = dest.TypeArguments.Length;
 
             if (sourceTypeArgsCount + destTypeArgsCount != typeParameters.Length)
             {

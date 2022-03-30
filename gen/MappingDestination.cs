@@ -58,9 +58,9 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             return false;
         }
 
-        public MappingEntryEqualityComparer Comparer { get; } =
+        public MappingDefinitionEqualityComparer Comparer { get; } =
             EntryType == MappingDestinationType.Parameter
-                ? MappingEntryEqualityComparer.IgnoreCase
-                : MappingEntryEqualityComparer.Default;
+                ? MappingDefinitionEqualityComparer.IgnoreCase
+                : MappingDefinitionEqualityComparer.Default;
     }
 }

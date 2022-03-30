@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
-    internal class MappingEntryEqualityComparer : IEqualityComparer<MappingDefinition>
+    internal class MappingDefinitionEqualityComparer : IEqualityComparer<MappingDefinition>
     {
         public StringComparison StringComparison { get; init; }
 
-        public static MappingEntryEqualityComparer Default { get; } = new() { StringComparison = StringComparison.Ordinal };
+        public static MappingDefinitionEqualityComparer Default { get; } = new() { StringComparison = StringComparison.Ordinal };
 
-        public static MappingEntryEqualityComparer IgnoreCase { get; } =
+        public static MappingDefinitionEqualityComparer IgnoreCase { get; } =
             new() { StringComparison = StringComparison.OrdinalIgnoreCase };
 
         public bool Equals(MappingDefinition x, MappingDefinition y)

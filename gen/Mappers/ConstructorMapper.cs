@@ -99,8 +99,8 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.Mappers
 
             foreach (var candidate in destinationConstructorCandidates)
             {
-                if (candidate.Parameters.Count() != 1
-                    || !candidate.Parameters.First().Type.Equals(context.SourceType, SymbolEqualityComparer.Default))
+                if (candidate.Parameters.Length != 1
+                    || !candidate.Parameters[0].Type.Equals(context.SourceType, SymbolEqualityComparer.Default))
                 {
                     context.ExecutionContext.ReportDiagnostic(
                         Diagnostic.Create(

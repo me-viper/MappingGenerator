@@ -30,7 +30,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             return result;
         }
 
-        public MapperAnchorSyntaxModel CreateSyntaxXModel()
+        public MapperAnchorSyntaxModel CreateAnchorSyntaxModel()
         {
             return new MapperAnchorSyntaxModel(
                 ExecutionContext,

@@ -44,7 +44,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         public IEnumerable<SyntaxNode> Build(IGeneratorContext executionContext)
         {
-            var mapperContextSpec = new ContextSpec();
             var mst = new MappingSyntaxFactory();
 
             var result = new List<SyntaxNode>();
@@ -62,7 +61,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             }
 
             var emitContext = EmitContext.Build(_mapperType, executionContext);
-            var anchorClassModel = emitContext.CreateSyntaxXModel();
+            var anchorClassModel = emitContext.CreateAnchorSyntaxModel();
 
             // 1. Merge constructors.
             // 2. Generate separate partial class with constructor only.

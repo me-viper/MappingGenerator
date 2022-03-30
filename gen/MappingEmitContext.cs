@@ -22,10 +22,10 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         private readonly HashSet<IPropertySymbol> _destinationCandidateProperties = new(SymbolEqualityComparer.Default);
 
-        private readonly HashSet<MappingDefinition> _destinationProperties = new(MappingEntryEqualityComparer.IgnoreCase);
+        private readonly HashSet<MappingDefinition> _destinationProperties = new(MappingDefinitionEqualityComparer.IgnoreCase);
 
-        protected KnownMapper Mapper { get; }
-
+        private KnownMapper Mapper { get; }
+        
         public INamedTypeSymbol SourceType { get; private set; } = default!;
 
         public INamedTypeSymbol DestinationType { get; private set; } = default!;
@@ -197,7 +197,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 p => string.Equals(p.AttributeClass?.ToDisplayString(), typeof(MappingGeneratorMappersIgnoreAttribute).FullName)
                 );
 
-            foreach (var args in knownMappersToIgnoreAttr.SelectMany(p => p.ConstructorArguments))
+            foreach (var args in knownMappersToIgnoreAttr.SelectMany(static p => p.ConstructorArguments))
             {
                 var values = args.Values.Select(p => (INamedTypeSymbol?)p.Value).Where(p => p != null);
 
@@ -447,7 +447,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 }
 
                 if (source == null || dest == null)
-                    throw new MappingGenerationException("Bad configuratoin");
+                    throw new MappingGenerationException("Bad configuration");
 
                 context._customizedMappings[dest.Name] = new CustomizedMapping(source);
             }

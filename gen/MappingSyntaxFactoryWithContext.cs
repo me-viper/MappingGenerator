@@ -12,9 +12,9 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
     internal class MappingSyntaxFactoryWithContext
     {
-        private NameSyntax _mapInterface;
+        private readonly NameSyntax _mapInterface;
 
-        private ImplementationType _implementationType;
+        private readonly ImplementationType _implementationType;
 
         public MappingSyntaxFactoryWithContext(NameSyntax mapInterface, ImplementationType implementationType)
         {
@@ -43,7 +43,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 .WithBody(Block(body));
         }
 
-        private MethodDeclarationSyntax MapMethodImplicit(
+        private static MethodDeclarationSyntax MapMethodImplicit(
             NameSyntax sourceFqn,
             NameSyntax destFqn,
             IEnumerable<StatementSyntax> body)
