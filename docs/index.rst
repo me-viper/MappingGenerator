@@ -12,7 +12,6 @@ Check out the :doc:`GettingStarted` page first.
    
    GettingStarted
    Introduction
-   Concepts
 
 .. _feature-docs:
 
