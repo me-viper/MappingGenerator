@@ -38,12 +38,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
             if (collectionSpec != null)
                 return collectionSpec;
 
-            var sourceType = sourceProperty.Type;
-            var converter = Context.TryGetTypeConverter(sourceType, entry.Type);
-
-            if (converter != null)
-                sourceType = converter.ReturnType;
-
             if (!Mapper.CanMap(sourceProperty.Type, entry.Type))
                 return null;
 
@@ -53,7 +47,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
             var memberName = Context.MemberNamingManager.GetMemberName(Mapper);
 
             var result = new KnownTypeMappingSpec(memberName, Mapper, entry, _isInternal);
-            result.MappingExpressions.Add(MappingSyntaxFactory.CallInnerMapper(memberName, sourceProperty.Name, converter));
+            result.MappingExpressions.Add(MappingSyntaxFactory.CallInnerMapper(memberName, sourceProperty.Name));
             return result;
         }
 

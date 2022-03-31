@@ -108,31 +108,15 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 });
         }
 
-        public static InvocationExpressionSyntax CallInnerMapper(
-            string member,
-            string sourceProperty,
-            IMethodSymbol? converter = null)
+        public static InvocationExpressionSyntax CallInnerMapper(string member, string sourceProperty)
         {
-            if (converter == null)
-                return CallInnerMapper(sourceProperty, member, p => p);
-            
-            return CallInnerMapper(member, sourceProperty, p => CallConvertMethod(converter.Name, p));
-        }
-
-        public static InvocationExpressionSyntax CallInnerMapper(
-            string member, 
-            string sourceProperty,
-            Func<ExpressionSyntax, ExpressionSyntax> wrapper)
-        {
-            ExpressionSyntax argument = wrapper(MemberAccess("source", sourceProperty));
-
             return InvocationExpression(
                 MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
                     ThisMemberAccess(member),
                     IdentifierName("Map")
                     )
-                ).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(argument))));
+                ).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(MemberAccess("source", sourceProperty)))));
         }
 
         public static ExpressionSyntax CallCopyToNew(

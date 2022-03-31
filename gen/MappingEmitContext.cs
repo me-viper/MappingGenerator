@@ -145,7 +145,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
             SetInternalKnownMappers(result, internalMappers);
             SetKnownMappers(result, knownMappers);
-            SetCustomConverterMethods(result);
+            SetCustomConvertorMethods(result);
             SetSourceProperties(result);
             SetDestinationCandidateProperties(result);
             SetCustomizedMappings(result);
@@ -288,7 +288,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             }
         }
         
-        private static void SetCustomConverterMethods(MappingEmitContext context)
+        private static void SetCustomConvertorMethods(MappingEmitContext context)
         {
             var mappingMethods = context.MapperType.GetMembers()
                 .OfType<IMethodSymbol>()
