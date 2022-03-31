@@ -26,7 +26,6 @@ Check out the :doc:`GettingStarted` page first.
    AfterMap
    CustomMapping
    ReusingMappings
-   NestedMappings
    CustomTypeConverters
    DependencyInjection
    ListsAndArrays
