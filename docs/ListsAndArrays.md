@@ -96,8 +96,13 @@ var result = mapper.Map(source);
 When mapping enumerable properties the following rules apply:
 
 * If source is `null` MappingGenerator will map empty collection.
-* If destination implements `ICollection` (can be readonly property), it's cleared and will be repopulated with mapped elements of source.
-* If destination is `IEnumerable` (must have setter) it will be replaced with new `List<T>` instance with mapped elements of source.
+* If destination is read-only property:
+  * If destination implements `ICollection` and is `null` nothing will happen.
+  * If destination implements `ICollection` and is not `null`, it's cleared and will be repopulated with mapped elements of source.
+* If destination is read-write property:
+  * If destination implements `ICollection` and is `null` it will be replaced with new `List<T>` instance with mapped elements of source.
+  * If destination implements `ICollection` and is not `null`, it's cleared and will be repopulated with mapped elements of source.
+  * If destination is `IEnumerable` it will be replaced with new `List<T>` instance with mapped elements of source.
 * Constructor parameters and init-only properties always initialized new `List<T>` instance with mapped elements of source.
 
 The following sample demonstrates more MappingGenerator features:
