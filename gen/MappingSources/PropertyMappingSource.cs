@@ -155,7 +155,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
             // If we have implicit convertion A => B, doesn't mean we have convertion IEnumerable<A> => IEnumerable<B>.
             if (conv.IsImplicit)
             {
-                if (Context.KnownTypes.IsInSameClassHierarchy(sourceProperty.Type, entry.Type))
+                if (Context.KnownTypes.IsInSameClassHierarchy(sourceClassification.ElementsType, destClassification.ElementsType))
                 {
                     var expr = MappingSyntaxFactory.CallCopyToNew(
                         Context.KnownTypes.CollectionHelpers,
