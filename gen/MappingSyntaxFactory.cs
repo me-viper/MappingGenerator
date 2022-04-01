@@ -21,6 +21,8 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         private readonly NameSyntax _compilerGenerated;
 
+        private static readonly NameSyntax _collectionsHelper = IdentifierName("CollectionsHelper");
+
         public MappingSyntaxFactory()
         {
             _knownUsings = new[]
@@ -119,20 +121,27 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 ).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(MemberAccess("source", sourceProperty)))));
         }
 
+        public static SimpleLambdaExpressionSyntax ExplicitCastConverter(ITypeSymbol targetType)
+        {
+            var type = CreateQualifiedName(targetType);
+
+            return SimpleLambdaExpression(Parameter(Identifier("p")))
+                .WithModifiers(TokenList(Token(SyntaxKind.StaticKeyword)))
+                .WithExpressionBody(CastExpression(type, IdentifierName("p")));
+        }
+
         public static ExpressionSyntax CallCopyToNew(
-            ITypeSymbol helperType,
             ITypeSymbol elementsType,
             ITypeSymbol collectionType,
             string sourceProperty)
         {
-            var helperFqn = CreateQualifiedName(helperType);
             var elementsFqn = CreateQualifiedName(elementsType);
             var collectionFqn = CreateQualifiedName(collectionType);
 
             return InvocationExpression(
                 MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
-                    helperFqn,
+                    _collectionsHelper,
                     GenericName(Identifier("CopyToNew"))
                     .WithTypeArgumentList(
                         TypeArgumentList(
@@ -157,24 +166,13 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                     );
         }
 
-        public static SimpleLambdaExpressionSyntax ExplicitCastConverter(ITypeSymbol targetType)
-        {
-            var type = CreateQualifiedName(targetType);
-
-            return SimpleLambdaExpression(Parameter(Identifier("p")))
-                .WithModifiers(TokenList(Token(SyntaxKind.StaticKeyword)))
-                .WithExpressionBody(CastExpression(type, IdentifierName("p")));
-        }
-
         public static ExpressionSyntax CallCopyToNew(
-            ITypeSymbol helperType,
             ITypeSymbol sourceType,
             string sourceProperty,
             ITypeSymbol destinationType,
             ITypeSymbol collectionType,
             ExpressionSyntax converter)
         {
-            var helperFqn = CreateQualifiedName(helperType);
             var srcFqn = CreateQualifiedName(sourceType);
             var dstFqn = CreateQualifiedName(destinationType);
             var collectionFqn = CreateQualifiedName(collectionType);
@@ -182,7 +180,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             return InvocationExpression(
                 MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
-                    helperFqn,
+                    _collectionsHelper,
                     GenericName(Identifier("CopyToNew"))
                     .WithTypeArgumentList(
                         TypeArgumentList(
@@ -212,7 +210,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         }
 
         public static ExpressionSyntax CallCopyToNew(
-            ITypeSymbol helperType,
             ITypeSymbol sourceType,
             string sourceProperty,
             ITypeSymbol destinationType,
@@ -220,7 +217,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             string mapperMember)
         {
             return CallCopyToNew(
-                helperType,
                 sourceType,
                 sourceProperty,
                 destinationType,
@@ -230,19 +226,17 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         }
 
         public static StatementSyntax CallCopyTo(
-            ITypeSymbol helperType,
             ITypeSymbol type,
             string sourceProperty,
             string destinationProperty)
         {
-            var helperFqn = CreateQualifiedName(helperType);
             var srcFqn = CreateQualifiedName(type);
 
             return ExpressionStatement(
                 InvocationExpression(
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
-                        helperFqn,
+                        _collectionsHelper,
                         GenericName(Identifier("CopyTo"))
                         .WithTypeArgumentList(
                             TypeArgumentList(
@@ -270,7 +264,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         }
 
         public static StatementSyntax CallCopyTo(
-            ITypeSymbol helperType,
             ITypeSymbol sourceType,
             string sourceProperty,
             ITypeSymbol destinationType,
@@ -278,7 +271,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             string mapperMember)
         {
             return CallCopyTo(
-                helperType,
                 sourceType,
                 sourceProperty,
                 destinationType,
@@ -288,14 +280,12 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         }
 
         public static StatementSyntax CallCopyTo(
-            ITypeSymbol helperType,
             ITypeSymbol sourceType,
             string sourceProperty,
             ITypeSymbol destinationType,
             string destinationProperty,
             ExpressionSyntax converter)
         {
-            var helperFqn = CreateQualifiedName(helperType);
             var srcFqn = CreateQualifiedName(sourceType);
             var dstFqn = CreateQualifiedName(destinationType);
 
@@ -303,7 +293,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 InvocationExpression(
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
-                        helperFqn,
+                        _collectionsHelper,
                         GenericName(Identifier("CopyTo"))
                         .WithTypeArgumentList(
                             TypeArgumentList(

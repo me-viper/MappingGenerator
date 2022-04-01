@@ -89,7 +89,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
                         {
                             result.MappingStatements.Add(
                             MappingSyntaxFactory.CallCopyTo(
-                                Context.KnownTypes.CollectionHelpers,
                                 destClassification.ElementsType,
                                 sourceProperty.Name,
                                 entry.Name
@@ -101,7 +100,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 
                     result.MappingStatements.Add(
                         MappingSyntaxFactory.CallCopyTo(
-                            Context.KnownTypes.CollectionHelpers,
                             sourceClassification.ElementsType,
                             sourceProperty.Name,
                             destClassification.ElementsType,
@@ -116,7 +114,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
                 {
                     result.MappingStatements.Add(
                         MappingSyntaxFactory.CallCopyTo(
-                            Context.KnownTypes.CollectionHelpers,
                             sourceClassification.ElementsType,
                             sourceProperty.Name,
                             destClassification.ElementsType,
@@ -141,7 +138,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
             if (converter != null)
             {
                 var expr = MappingSyntaxFactory.CallCopyToNew(
-                    Context.KnownTypes.CollectionHelpers,
                     sourceClassification.ElementsType,
                     sourceProperty.Name,
                     destClassification.ElementsType,
@@ -161,7 +157,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
                 if (Context.KnownTypes.IsInSameClassHierarchy(sourceClassification.ElementsType, destClassification.ElementsType))
                 {
                     var expr = MappingSyntaxFactory.CallCopyToNew(
-                        Context.KnownTypes.CollectionHelpers,
                         destClassification.ElementsType,
                         collectionType,
                         sourceProperty.Name
@@ -173,7 +168,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 
             result.MappingExpressions.Add(
                 MappingSyntaxFactory.CallCopyToNew(
-                    Context.KnownTypes.CollectionHelpers,
                     sourceClassification.ElementsType,
                     sourceProperty.Name,
                     destClassification.ElementsType,

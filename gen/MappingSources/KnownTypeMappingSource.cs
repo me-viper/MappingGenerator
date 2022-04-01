@@ -76,7 +76,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
             {
                 result.MappingStatements.Add(
                     MappingSyntaxFactory.CallCopyTo(
-                        Context.KnownTypes.CollectionHelpers,
                         sourceClassification.ElementsType,
                         sourceProperty.Name,
                         destClassification.ElementsType,
