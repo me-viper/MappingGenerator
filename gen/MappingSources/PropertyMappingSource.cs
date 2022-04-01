@@ -81,21 +81,24 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 
             if (entry.EntryType == MappingDestinationType.Property && entry.IsReadable() && destClassification.IsCollection)
             {
-                if (conv.IsImplicit)
+                if (conv.Exists)
                 {
-                    result.MappingStatements.Add(
-                        MappingSyntaxFactory.CallCopyTo(
-                            Context.KnownTypes.CollectionHelpers,
-                            destClassification.ElementsType,
-                            sourceProperty.Name,
-                            entry.Name
-                            )
-                        );
-                    return result;
-                }
+                    if (conv.IsImplicit)
+                    {
+                        if (Context.KnownTypes.IsInSameClassHierarchy(sourceClassification.ElementsType, destClassification.ElementsType))
+                        {
+                            result.MappingStatements.Add(
+                            MappingSyntaxFactory.CallCopyTo(
+                                Context.KnownTypes.CollectionHelpers,
+                                destClassification.ElementsType,
+                                sourceProperty.Name,
+                                entry.Name
+                                )
+                            );
+                            return result;
+                        }
+                    }
 
-                if (conv.IsExplicit)
-                {
                     result.MappingStatements.Add(
                         MappingSyntaxFactory.CallCopyTo(
                             Context.KnownTypes.CollectionHelpers,
