@@ -54,6 +54,42 @@ namespace Talk2Bits.MappingGenerator.Abstractions
             return result;
         }
 
+        public static TCollection CopyToExistingOrNew<T, TCollection>(IEnumerable<T>? source, TCollection? destination)
+            where TCollection : ICollection<T>, new()
+        {
+            if (destination == null)
+                return CopyToNew<T, TCollection>(source);
+
+            CopyTo(source, destination);
+            return destination;
+        }
+
+        public static TCollection CopyToExistingOrNew<TIn, TOut, TCollection>(
+            IEnumerable<TIn>? source,
+            TCollection? destination,
+            IMapper<TIn, TOut> mapper)
+            where TCollection : ICollection<TOut>, new()
+        {
+            if (destination == null)
+                return CopyToNew<TIn, TOut, TCollection>(source, mapper);
+
+            CopyTo(source, destination, mapper);
+            return destination;
+        }
+
+        public static TCollection CopyToExistingOrNew<TIn, TOut, TCollection>(
+            IEnumerable<TIn>? source,
+            TCollection? destination,
+            Converter<TIn, TOut> mapper)
+            where TCollection : ICollection<TOut>, new()
+        {
+            if (destination == null)
+                return CopyToNew<TIn, TOut, TCollection>(source, mapper);
+
+            CopyTo(source, destination, mapper);
+            return destination;
+        }
+
         public static void CopyTo<T>(
             IEnumerable<T>? source,
             ICollection<T>? destination)

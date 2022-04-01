@@ -20,13 +20,13 @@ namespace MappingGenerator.Tests.Common
     {
         private Func<TIn> _produceSource;
 
-        private TOut _produceExpected;
+        private TOut? _produceExpected;
 
         private IMapper<Source<TIn>, TDestination> _mapper;
 
         public CollectionTestCase(
             Func<TIn> sourceValue,
-            TOut expected,
+            TOut? expected,
             IMapper<Source<TIn>, TDestination> mapper)
         {
             _produceSource = sourceValue;
@@ -41,8 +41,19 @@ namespace MappingGenerator.Tests.Common
             var expected = _produceExpected;
             var result = _mapper.Map(source);
 
+            if (expected == null)
+            {
+                Assert.Null(result.GetValue());
+                return;
+            }
+
             Assert.False(ReferenceEquals(expected, result.GetValue()));
             Assert.Equal(expected, result.GetValue());
+        }
+
+        public override string? ToString()
+        {
+            return $"<{typeof(TDestination)}> {typeof(TIn)} => {typeof(TOut)}";
         }
     }
 }

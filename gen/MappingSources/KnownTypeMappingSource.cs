@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 using Talk2Bits.MappingGenerator.SourceGeneration.Spec;
 
@@ -74,14 +75,16 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 
             if (entry.EntryType == MappingDestinationType.Property && destClassification.IsCollection)
             {
-                result.MappingStatements.Add(
-                    MappingSyntaxFactory.CallCopyTo(
-                        sourceClassification.ElementsType,
-                        sourceProperty.Name,
-                        destClassification.ElementsType,
-                        entry.Name,
-                        memberName
-                        )
+                MappingSyntaxFactory.CallConvertAndCopyTo(
+                    sourceClassification.ElementsType,
+                    sourceProperty.Name,
+                    destClassification.ElementsType,
+                    MappingSyntaxFactory.DestinationMember(entry.Name),
+                    destClassification.CollectionType,
+                    SyntaxFactory.IdentifierName(memberName),
+                    entry.IsWritable(),
+                    result.MappingExpressions.Add,
+                    result.MappingStatements.Add
                     );
                 return result;
             }

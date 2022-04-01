@@ -130,6 +130,11 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 .WithExpressionBody(CastExpression(type, IdentifierName("p")));
         }
 
+        public static ExpressionSyntax DestinationMember(string destinationProperty)
+        {
+            return MemberAccess("result", destinationProperty);
+        }
+
         public static ExpressionSyntax CallCopyToNew(
             ITypeSymbol elementsType,
             ITypeSymbol collectionType,
@@ -142,7 +147,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
                     _collectionsHelper,
-                    GenericName(Identifier("CopyToNew"))
+                    GenericName(Identifier(nameof(CollectionsHelper.CopyToNew)))
                     .WithTypeArgumentList(
                         TypeArgumentList(
                             SeparatedList<TypeSyntax>(
@@ -166,13 +171,14 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                     );
         }
 
-        public static ExpressionSyntax CallCopyToNew(
+        public static ExpressionSyntax CallConvertAndCopyToNew(
             ITypeSymbol sourceType,
             string sourceProperty,
             ITypeSymbol destinationType,
             ITypeSymbol collectionType,
             ExpressionSyntax converter)
         {
+
             var srcFqn = CreateQualifiedName(sourceType);
             var dstFqn = CreateQualifiedName(destinationType);
             var collectionFqn = CreateQualifiedName(collectionType);
@@ -181,7 +187,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
                     _collectionsHelper,
-                    GenericName(Identifier("CopyToNew"))
+                    GenericName(Identifier(nameof(CollectionsHelper.CopyToNew)))
                     .WithTypeArgumentList(
                         TypeArgumentList(
                             SeparatedList<TypeSyntax>(
@@ -209,26 +215,161 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                     );
         }
 
-        public static ExpressionSyntax CallCopyToNew(
+        public static ExpressionSyntax CallCopyToExistingOrNew(
+            ITypeSymbol elementsType,
+            ITypeSymbol collectionType,
+            string sourceProperty,
+            ExpressionSyntax destinationSyntax)
+        {
+            var elementsFqn = CreateQualifiedName(elementsType);
+            var collectionFqn = CreateQualifiedName(collectionType);
+
+            return InvocationExpression(
+                MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    _collectionsHelper,
+                    GenericName(Identifier(nameof(CollectionsHelper.CopyToExistingOrNew)))
+                    .WithTypeArgumentList(
+                        TypeArgumentList(
+                            SeparatedList<TypeSyntax>(
+                                new SyntaxNodeOrToken[]
+                                {
+                                    elementsFqn,
+                                    Token(SyntaxKind.CommaToken),
+                                    collectionFqn,
+                                })
+                            )
+                        )
+                    )
+                ).WithArgumentList(
+                    ArgumentList(
+                        SeparatedList<ArgumentSyntax>(
+                            new SyntaxNodeOrToken[]
+                            {
+                                Argument(MemberAccess("source", sourceProperty)),
+                                Token(SyntaxKind.CommaToken),
+                                Argument(destinationSyntax)
+                            })
+                        )
+                    );
+        }
+
+        public static ExpressionSyntax CallConvertAndCopyToExistingOrNew(
             ITypeSymbol sourceType,
             string sourceProperty,
             ITypeSymbol destinationType,
+            ExpressionSyntax destinationSyntax,
             ITypeSymbol collectionType,
-            string mapperMember)
+            ExpressionSyntax converter)
         {
-            return CallCopyToNew(
-                sourceType,
-                sourceProperty,
-                destinationType,
-                collectionType,
-                IdentifierName(mapperMember)
-                );
+
+            var srcFqn = CreateQualifiedName(sourceType);
+            var dstFqn = CreateQualifiedName(destinationType);
+            var collectionFqn = CreateQualifiedName(collectionType);
+
+            return InvocationExpression(
+                MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    _collectionsHelper,
+                    GenericName(Identifier(nameof(CollectionsHelper.CopyToExistingOrNew)))
+                    .WithTypeArgumentList(
+                        TypeArgumentList(
+                            SeparatedList<TypeSyntax>(
+                                new SyntaxNodeOrToken[]
+                                {
+                                    srcFqn,
+                                    Token(SyntaxKind.CommaToken),
+                                    dstFqn,
+                                    Token(SyntaxKind.CommaToken),
+                                    collectionFqn
+                                })
+                            )
+                        )
+                    )
+                ).WithArgumentList(
+                    ArgumentList(
+                        SeparatedList<ArgumentSyntax>(
+                            new SyntaxNodeOrToken[]
+                            {
+                                Argument(MemberAccess("source", sourceProperty)),
+                                Token(SyntaxKind.CommaToken),
+                                Argument(destinationSyntax),
+                                Token(SyntaxKind.CommaToken),
+                                Argument(converter)
+                            })
+                        )
+                    );
         }
 
-        public static StatementSyntax CallCopyTo(
+        public static void CallCopyTo(
+            ITypeSymbol sourceType,
+            string sourceProperty,
+            ExpressionSyntax destinationSyntax,
+            ITypeSymbol collectionType,
+            bool isWritable,
+            Action<ExpressionSyntax> appendExpression,
+            Action<StatementSyntax> appendStatement)
+        {
+            if (isWritable)
+            {
+                var expr = CallCopyToExistingOrNew(
+                    sourceType,
+                    collectionType,
+                    sourceProperty,
+                    destinationSyntax
+                    );
+                appendExpression(expr);
+                return;
+            }
+
+            var stmt = CallCopyToExisting(
+                sourceType,
+                sourceProperty,
+                destinationSyntax
+                );
+            appendStatement(stmt);
+        }
+
+        public static void CallConvertAndCopyTo(
+            ITypeSymbol sourceType,
+            string sourceProperty,
+            ITypeSymbol destinationType,
+            ExpressionSyntax destinationSyntax,
+            ITypeSymbol collectionType,
+            ExpressionSyntax converter,
+            bool isWritable,
+            Action<ExpressionSyntax> appendExpression,
+            Action<StatementSyntax> appendStatement)
+        {
+            if (isWritable)
+            {
+                var expr = CallConvertAndCopyToExistingOrNew(
+                    sourceType,
+                    sourceProperty,
+                    destinationType,
+                    destinationSyntax,
+                    collectionType,
+                    converter
+                    );
+                appendExpression(expr);
+                return;
+            }
+
+            var stmt = CallConvertAndCopyToExisting(
+                sourceType,
+                sourceProperty,
+                destinationType, 
+                destinationSyntax,
+                converter
+                );
+            appendStatement(stmt);
+        }
+
+
+        private static StatementSyntax CallCopyToExisting(
             ITypeSymbol type,
             string sourceProperty,
-            string destinationProperty)
+            ExpressionSyntax destinationSyntax)
         {
             var srcFqn = CreateQualifiedName(type);
 
@@ -237,7 +378,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
                         _collectionsHelper,
-                        GenericName(Identifier("CopyTo"))
+                        GenericName(Identifier(nameof(CollectionsHelper.CopyTo)))
                         .WithTypeArgumentList(
                             TypeArgumentList(
                                 SeparatedList<TypeSyntax>(
@@ -256,34 +397,18 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                             {
                                 Argument(MemberAccess("source", sourceProperty)),
                                 Token(SyntaxKind.CommaToken),
-                                Argument(MemberAccess("result", destinationProperty))
+                                Argument(destinationSyntax)
                             })
                         )
                     )
                 );
         }
 
-        public static StatementSyntax CallCopyTo(
+        private static StatementSyntax CallConvertAndCopyToExisting(
             ITypeSymbol sourceType,
             string sourceProperty,
             ITypeSymbol destinationType,
-            string destinationProperty,
-            string mapperMember)
-        {
-            return CallCopyTo(
-                sourceType,
-                sourceProperty,
-                destinationType,
-                destinationProperty,
-                IdentifierName(mapperMember)
-                );
-        }
-
-        public static StatementSyntax CallCopyTo(
-            ITypeSymbol sourceType,
-            string sourceProperty,
-            ITypeSymbol destinationType,
-            string destinationProperty,
+            ExpressionSyntax destinationSyntax,
             ExpressionSyntax converter)
         {
             var srcFqn = CreateQualifiedName(sourceType);
@@ -294,7 +419,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
                         _collectionsHelper,
-                        GenericName(Identifier("CopyTo"))
+                        GenericName(Identifier(nameof(CollectionsHelper.CopyTo)))
                         .WithTypeArgumentList(
                             TypeArgumentList(
                                 SeparatedList<TypeSyntax>(
@@ -315,7 +440,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                             {
                                 Argument(MemberAccess("source", sourceProperty)),
                                 Token(SyntaxKind.CommaToken),
-                                Argument(MemberAccess("result", destinationProperty)),
+                                Argument(destinationSyntax),
                                 Token(SyntaxKind.CommaToken),
                                 Argument(converter)
                             })

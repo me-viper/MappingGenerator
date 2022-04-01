@@ -87,39 +87,45 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
                     {
                         if (Context.KnownTypes.IsInSameClassHierarchy(sourceClassification.ElementsType, destClassification.ElementsType))
                         {
-                            result.MappingStatements.Add(
                             MappingSyntaxFactory.CallCopyTo(
                                 destClassification.ElementsType,
                                 sourceProperty.Name,
-                                entry.Name
-                                )
-                            );
+                                MappingSyntaxFactory.DestinationMember(entry.Name),
+                                destClassification.CollectionType,
+                                entry.IsWritable(),
+                                result.MappingExpressions.Add,
+                                result.MappingStatements.Add
+                                );
                             return result;
                         }
                     }
 
-                    result.MappingStatements.Add(
-                        MappingSyntaxFactory.CallCopyTo(
-                            sourceClassification.ElementsType,
-                            sourceProperty.Name,
-                            destClassification.ElementsType,
-                            entry.Name,
-                            MappingSyntaxFactory.ExplicitCastConverter(destClassification.ElementsType)
-                            )
+                    MappingSyntaxFactory.CallConvertAndCopyTo(
+                        sourceClassification.ElementsType,
+                        sourceProperty.Name,
+                        destClassification.ElementsType,
+                        MappingSyntaxFactory.DestinationMember(entry.Name),
+                        destClassification.CollectionType,
+                        MappingSyntaxFactory.ExplicitCastConverter(destClassification.ElementsType),
+                        entry.IsWritable(),
+                        result.MappingExpressions.Add,
+                        result.MappingStatements.Add
                         );
                     return result;
                 }
 
                 if (converter != null)
                 {
-                    result.MappingStatements.Add(
-                        MappingSyntaxFactory.CallCopyTo(
-                            sourceClassification.ElementsType,
-                            sourceProperty.Name,
-                            destClassification.ElementsType,
-                            entry.Name,
-                            converter.Name
-                            )
+                    MappingSyntaxFactory.CallConvertAndCopyTo(
+                        sourceClassification.ElementsType,
+                        sourceProperty.Name,
+                        destClassification.ElementsType,
+                        MappingSyntaxFactory.DestinationMember(entry.Name),
+                        destClassification.CollectionType,
+                        SyntaxFactory.IdentifierName(converter.Name),
+                        entry.IsWritable(),
+                        result.MappingExpressions.Add,
+                        result.MappingStatements.Add
                         );
                     return result;
                 }
@@ -137,12 +143,12 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 
             if (converter != null)
             {
-                var expr = MappingSyntaxFactory.CallCopyToNew(
+                var expr = MappingSyntaxFactory.CallConvertAndCopyToNew(
                     sourceClassification.ElementsType,
                     sourceProperty.Name,
                     destClassification.ElementsType,
                     collectionType,
-                    converter.Name
+                    SyntaxFactory.IdentifierName(converter.Name)
                     );
                 result.MappingExpressions.Add(expr);
                 return result;
@@ -167,7 +173,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
             }
 
             result.MappingExpressions.Add(
-                MappingSyntaxFactory.CallCopyToNew(
+                MappingSyntaxFactory.CallConvertAndCopyToNew(
                     sourceClassification.ElementsType,
                     sourceProperty.Name,
                     destClassification.ElementsType,

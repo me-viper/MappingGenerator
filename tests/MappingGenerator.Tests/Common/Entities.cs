@@ -8,7 +8,7 @@ namespace MappingGenerator.Tests.Common
 {
     public interface IDestination<T>
     {
-        T GetValue();
+        T? GetValue();
     }
 
     public record Source<T>
@@ -49,6 +49,13 @@ namespace MappingGenerator.Tests.Common
         public int InnerNumber { get; set; }
 
         public string? InnerText { get; set; }
+    }
+
+    public record DestinationReadOnly<T> : IDestination<T>
+    {
+        public T Value { get; } = default!;
+
+        public T GetValue() => Value;
     }
 
     public record DestinationInitOnly<T> : IDestination<T>
