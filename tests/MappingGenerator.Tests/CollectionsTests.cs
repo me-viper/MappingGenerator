@@ -40,22 +40,16 @@ namespace MappingGenerator.Tests.Collections
         public static IEnumerable<object> ProppertyMappingTestCases = new List<object>
         {
             IEnurableToDestinationIEnumerable(static () => new int[] { 1, 2, 3 }, new int[] { 1, 2, 3 }, new EnumerableMapper()),
-            IEnurableToDestinationIEnumerable(static () => new int[] { 1, 2, 3 }, new long[] { 1, 2, 3 }, new EnumerableMapper()),
             IEnurableToDestinationIEnumerable(static () => new long[] { 1, 2, 3 }, new int[] { 1, 2, 3 }, new EnumerableMapper()),
             IEnurableToDestinationIEnumerable(static () => new A[] { new B() }, new B[] { new B() }, new EnumerableMapper()),
             IEnurableToDestinationIEnumerable(static () => new B[] { new B() }, new A[] { new B() }, new EnumerableMapper()),
-            IEnurableToDestinationHashSet(static () => new int[] { 1, 2, 3 }, new int[] { 1, 2, 3 }, new HashSetMapper()),
-            IEnurableToDestinationHashSet(static () => new int[] { 1, 2, 3 }, new long[] { 1, 2, 3 }, new HashSetMapper()),
-            IEnurableToDestinationHashSet(static () => new long[] { 1, 2, 3 }, new int[] { 1, 2, 3 }, new HashSetMapper()),
             IEnurableToDestinationHashSet(static () => new A[] { new B() }, new B[] { new B() }, new HashSetMapper()),
-            IEnurableToDestinationHashSet(static () => new B[] { new B() }, new A[] { new B() }, new HashSetMapper()),
             IEnurableToReadOnlyDestinationHashSet(static () => new A[] { new B() }, (B[]?)null, new HashSetMapper()),
         }.Select(p => new object[] { p });
 
         public static IEnumerable<object> ConstructorMappingTestCases = new List<object>
         {
             IEnurableToDestinationConstructorIEnumerable(static () => new int[] { 1, 2, 3 }, new int[] { 1, 2, 3 }, new EnumerableMapper()),
-            IEnurableToDestinationConstructorIEnumerable(static () => new int[] { 1, 2, 3 }, new long[] { 1, 2, 3 }, new EnumerableMapper()),
             IEnurableToDestinationConstructorIEnumerable(static () => new long[] { 1, 2, 3 }, new int[] { 1, 2, 3 }, new EnumerableMapper()),
             IEnurableToDestinationConstructorIEnumerable(static () => new A[] { new B() }, new B[] { new B() }, new EnumerableMapper()),
             IEnurableToDestinationConstructorIEnumerable(static () => new B[] { new B() }, new A[] { new B() }, new EnumerableMapper()),
@@ -64,7 +58,6 @@ namespace MappingGenerator.Tests.Collections
         public static IEnumerable<object> InitProppertiesMappingTestCases = new List<object>
         {
             IEnurableToDestinationInitIEnumerable(static () => new int[] { 1, 2, 3 }, new int[] { 1, 2, 3 }, new EnumerableMapper()),
-            IEnurableToDestinationInitIEnumerable(static () => new int[] { 1, 2, 3 }, new long[] { 1, 2, 3 }, new EnumerableMapper()),
             IEnurableToDestinationInitIEnumerable(static () => new long[] { 1, 2, 3 }, new int[] { 1, 2, 3 }, new EnumerableMapper()),
             IEnurableToDestinationInitIEnumerable(static () => new A[] { new B() }, new B[] { new B() }, new EnumerableMapper()),
             IEnurableToDestinationInitIEnumerable(static () => new B[] { new B() }, new A[] { new B() }, new EnumerableMapper()),
@@ -145,19 +138,16 @@ namespace MappingGenerator.Tests.Collections
 
     // Properties. IEnumerable.
     [MappingGenerator(typeof(Source<IEnumerable<int>>), typeof(Destination<IEnumerable<int>>), ImplementationType = ImplementationType.Explicit)]
-    [MappingGenerator(typeof(Source<IEnumerable<int>>), typeof(Destination<IEnumerable<long>>), ImplementationType = ImplementationType.Explicit)]
     [MappingGenerator(typeof(Source<IEnumerable<long>>), typeof(Destination<IEnumerable<int>>), ImplementationType = ImplementationType.Explicit)]
     [MappingGenerator(typeof(Source<IEnumerable<B>>), typeof(Destination<IEnumerable<A>>), ImplementationType = ImplementationType.Explicit)]
     [MappingGenerator(typeof(Source<IEnumerable<A>>), typeof(Destination<IEnumerable<B>>), ImplementationType = ImplementationType.Explicit)]
     // Constructor.
     [MappingGenerator(typeof(Source<IEnumerable<int>>), typeof(DestinationConstructor<IEnumerable<int>>), ImplementationType = ImplementationType.Explicit)]
-    [MappingGenerator(typeof(Source<IEnumerable<int>>), typeof(DestinationConstructor<IEnumerable<long>>), ImplementationType = ImplementationType.Explicit)]
     [MappingGenerator(typeof(Source<IEnumerable<long>>), typeof(DestinationConstructor<IEnumerable<int>>), ImplementationType = ImplementationType.Explicit)]
     [MappingGenerator(typeof(Source<IEnumerable<B>>), typeof(DestinationConstructor<IEnumerable<A>>), ImplementationType = ImplementationType.Explicit)]
     [MappingGenerator(typeof(Source<IEnumerable<A>>), typeof(DestinationConstructor<IEnumerable<B>>), ImplementationType = ImplementationType.Explicit)]
     // InitOnly.
     [MappingGenerator(typeof(Source<IEnumerable<int>>), typeof(DestinationInitOnly<IEnumerable<int>>), ImplementationType = ImplementationType.Explicit)]
-    [MappingGenerator(typeof(Source<IEnumerable<int>>), typeof(DestinationInitOnly<IEnumerable<long>>), ImplementationType = ImplementationType.Explicit)]
     [MappingGenerator(typeof(Source<IEnumerable<long>>), typeof(DestinationInitOnly<IEnumerable<int>>), ImplementationType = ImplementationType.Explicit)]
     [MappingGenerator(typeof(Source<IEnumerable<B>>), typeof(DestinationInitOnly<IEnumerable<A>>), ImplementationType = ImplementationType.Explicit)]
     [MappingGenerator(typeof(Source<IEnumerable<A>>), typeof(DestinationInitOnly<IEnumerable<B>>), ImplementationType = ImplementationType.Explicit)]
@@ -166,10 +156,6 @@ namespace MappingGenerator.Tests.Collections
     }
 
     // Properties. HashSet.
-    [MappingGenerator(typeof(Source<IEnumerable<int>>), typeof(Destination<HashSet<int>>), ImplementationType = ImplementationType.Explicit)]
-    [MappingGenerator(typeof(Source<IEnumerable<int>>), typeof(Destination<HashSet<long>>), ImplementationType = ImplementationType.Explicit)]
-    [MappingGenerator(typeof(Source<IEnumerable<long>>), typeof(Destination<HashSet<int>>), ImplementationType = ImplementationType.Explicit)]
-    [MappingGenerator(typeof(Source<IEnumerable<B>>), typeof(Destination<HashSet<A>>), ImplementationType = ImplementationType.Explicit)]
     [MappingGenerator(typeof(Source<IEnumerable<A>>), typeof(Destination<HashSet<B>>), ImplementationType = ImplementationType.Explicit)]
     // Readonly properties. HashSet.
     [MappingGenerator(typeof(Source<IEnumerable<A>>), typeof(DestinationReadOnly<HashSet<B>>), ImplementationType = ImplementationType.Explicit)]
