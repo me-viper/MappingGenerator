@@ -28,7 +28,7 @@ partial class Mapper : IMapper<Source, Destination>
 }
 ```
 
-Anchor classes have the following limitations:
+Anchor classes have the following requirements:
 
 * Anchor class needs to be `partial`.
 * Anchor class can't be nested class.
@@ -85,11 +85,6 @@ By default MappingGenerator generates the following:
 * Partial class `Mapper` implementing `IMapper<Source, Destination>` interface.
 * Implicit implementation for `IMapper<Source, Destination>.Map` method.
 * `CreateDestination` method to construct Destination.
-* Explicit implementations of:
-  * `IMapper<IEnumerable<Source>>, List<Destination>>`
-  * `IMapper<IEnumerable<Source>>, HashSet<Destination>>`
-  * `IMapper<IEnumerable<Source>>, Collection<Destination>>`
-  * `IMapper<IEnumerable<Source>>, Destination[]>`
 * Partial `AfterMap(Source, Destination)` method.
 * Private fields for other mappers current mapper depends on.
 * Constructor to initialize these fields.

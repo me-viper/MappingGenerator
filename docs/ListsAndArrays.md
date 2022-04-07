@@ -31,12 +31,7 @@ public partial class Mapper
 Generated code (removed redundant parts and added comments for clarity):
 
 ```csharp
-partial class Mapper : 
-    IMapper<Source, Destination>, 
-    IMapper<IEnumerable<Source>, List<Destination>>, 
-    IMapper<IEnumerable<Source>, HashSet<Destination>>, 
-    IMapper<IEnumerable<Source>, System.Collections.ObjectModel.Collection<Destination>>, 
-    IMapper<IEnumerable<Source>, Destination[]>
+partial class Mapper : IMapper<Source, Destination>
 {
     public Destination Map(Source source)
     {
@@ -48,35 +43,6 @@ partial class Mapper :
         return result;
     }
 
-    // !!! Explicit interface implementation.
-    List<Destination> IMapper<IEnumerable<Source>, List<Destination>>.Map(IEnumerable<Source> source)
-    {
-        source ??= Enumerable.Empty<Source>();
-        return new List<Destination>(source.Select(Map));
-    }
-
-    // !!! Explicit interface implementation.
-    HashSet<Destination> IMapper<IEnumerable<Source>, HashSet<Destination>>.Map(IEnumerable<Source> source)
-    {
-        source ??= Enumerable.Empty<Source>();
-        return new HashSet<Destination>(source.Select(Map));
-    }
-
-    // !!! Explicit interface implementation.
-    Collection<Destination> IMapper<IEnumerable<Source>, Collection<Destination>>.Map(IEnumerable<Source> source)
-    {
-        var result = ((IMapper<IEnumerable<Source>, List<Destination>>)this).Map(source);
-        // Collection is wrapper over IList.
-        return new Collection<Destination>(result);
-    }
-
-    // !!! Explicit interface implementation.
-    Destination[] IMapper<IEnumerable<Source>, Destination[]>.Map(IEnumerable<Source> source)
-    {
-        source ??= Enumerable.Empty<Source>();
-        return source.Select(Map).ToArray();
-    }
-
     partial void AfterMap(Source source, Destination result);
 }
 ```
@@ -85,9 +51,14 @@ Usage:
 
 ```csharp
 var source = new Source[] { ... };
-// Collection mappers require explicit cast.
-var mapper = (IMapper<IEnumerable<Source>, List<Destination>)new Mapper(source);
-var result = mapper.Map(source);
+
+var mapper = new Mapper(source);
+IEnumerable<Destination> enumerable = mapper.Map(source);
+Destination[] array = mapper.ToArray(source);
+List<Destination> list = mapper.ToList(source);
+IList<Destination> ilist = mapper.ToList(source);
+Collection<Destination> collection = mapper.ToCollection(source);
+HashSet<Destination> collection = mapper.ToHashSet(source);
 
 ```
 
@@ -122,7 +93,11 @@ public class Source
 
     public IEnumerable<C> Simple { get; set; } = new List<C>();
 
+    public IEnumerable<C> ReadOnly { get; set; } = new List<C>();
+
     public IEnumerable<A> Collection { get; set; } = new List<A>();
+
+    public HashSet<A> HashSet { get; set; } = new HashSet<A>();
 
     public IEnumerable<long> ExplicitCast { get; set; } = new List<long>();
 
@@ -135,7 +110,11 @@ public class Destination
 
     public IEnumerable<C> Simple { get; set; } = default!;
 
+    public List<C> ReadOnly { get; } = default!;
+
     public ICollection<B> Collection { get; set; } = default!;
+
+    public HashSet<A> HashSet { get; set; } = new HashSet<A>();
 
     public ICollection<int> ExplicitCast { get; set; } = default!;
 
@@ -185,19 +164,37 @@ partial class Mapper : IMapper<Source, Destination>
         var result = CreateDestination();
 
         // Reused existing mapper A => B.
-        result.Nested = ((IMapper<IEnumerable<A>, IEnumerable<B>>)this.aBMapper).Map(source.Nested);
+        result.Nested = this.aBMapper.ToList(source.Nested);
         
         // Destination is writable IEnumerable.
-        result.Simple = CollectionsHelper.CopyToNew<C, List<C>>(source.Simple);
+        result.Simple = CollectionsHelper.CopyToNewList<C, List<C>>(source.Simple);
         
-        // Destination is ICollection.
-        CollectionsHelper.CopyTo<A, B>(source.Collection, result.Collection, aBMapper);
+        // Destination is read-only ICollection.
+        CollectionsHelper.CopyTo<C>(source.ReadOnly, result.ReadOnly);
+
+        // Destination is read-write ICollection.
+        if (result.Collection == null)
+            result.Collection = CollectionsHelper.CopyToNewList<A, B>(source.Collection, p => aBMapper.Map(p));
+        else
+            CollectionsHelper.CopyTo<A, B>(source.Collection, result.Collection, p => aBMapper.Map(p));
+
+        // Destination is read-write HashSet.
+        if (result.HashSet == null)
+            result.HashSet = CollectionsHelper.CopyToNewHashSet<A>(source.HashSet);
+        else
+            CollectionsHelper.CopyTo<A>(source.HashSet, result.HashSet);
         
-        // Generated required explicit cast.
-        CollectionsHelper.CopyTo< long ,  int >(source.ExplicitCast, result.ExplicitCast, static p => ( int )p);
+        // Destination required explicit cast.
+        if (result.ExplicitCast == null)
+            result.ExplicitCast = CollectionsHelper.CopyToNewList<long, int>(source.ExplicitCast, static p => (int)p);
+        else
+            CollectionsHelper.CopyTo<long, int>(source.ExplicitCast, result.ExplicitCast, static p => (int)p);
         
         // IEnumerable<D> has implicit cast to ICollection<C> because D is child class of C.
-        CollectionsHelper.CopyTo<C>(source.Covariation, result.Covariation);
+        if (result.Covariation == null)
+            result.Covariation = CollectionsHelper.CopyToNewList<C>(source.Covariation);
+        else
+            CollectionsHelper.CopyTo<C>(source.Covariation, result.Covariation);
         
         AfterMap(source, result);
         return result;
