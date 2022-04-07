@@ -132,16 +132,6 @@ namespace Talk2Bits.MappingGenerator.Abstractions
             return result;
         }
 
-        public static TCollection CopyToExistingOrNew<T, TCollection>(IEnumerable<T>? source, TCollection? destination)
-            where TCollection : ICollection<T>, new()
-        {
-            if (destination == null)
-                return CopyToNew<T, TCollection>(source);
-
-            CopyTo(source, destination);
-            return destination;
-        }
-
         public static void CopyTo<T>(
             IEnumerable<T>? source,
             ICollection<T>? destination)
@@ -180,28 +170,6 @@ namespace Talk2Bits.MappingGenerator.Abstractions
 
             foreach (var src in source)
                 destination.Add(mapper(src));
-        }
-
-        public static void CopyTo<TIn, TOut>(
-            IEnumerable<TIn>? source, 
-            ICollection<TOut>? destination,
-            IMapper<TIn, TOut> mapper)
-        {
-            if (mapper == null)
-                throw new ArgumentNullException(nameof(mapper));
-
-            if (destination == null)
-                return;
-
-            if (ReferenceEquals(source, destination))
-                return;
-
-            destination.Clear();
-
-            source ??= Enumerable.Empty<TIn>();
-
-            foreach (var src in source)
-                destination.Add(mapper.Map(src));
         }
     }
 }

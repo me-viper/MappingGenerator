@@ -7,6 +7,14 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE;GENERATOR</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE;GENERATOR</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\src\Abstractions\CollectionsHelper.cs" Link="Abstractions\CollectionsHelper.cs" />
     <Compile Include="..\src\Abstractions\ConstructorAccessibility.cs" Link="Abstractions\ConstructorAccessibility.cs" />
