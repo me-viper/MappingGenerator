@@ -92,13 +92,9 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
             if (!entry.IsWritable())
                 return null;
 
-            var mi = MappingSyntaxFactory.MapperInterface(
-                sourceClassification.CollectionType,
-                destClassification.CollectionType,
-                destClassification.IsArray
+            result.MappingExpressions.Add(
+                MappingSyntaxFactory.CallInnerMapper(destClassification.CollectionKind, memberName, sourceProperty.Name)
                 );
-
-            result.MappingExpressions.Add(MappingSyntaxFactory.CallInnerMapper(mi, memberName, sourceProperty.Name));
 
             return result;
         }

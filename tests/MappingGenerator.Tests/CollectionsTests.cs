@@ -67,38 +67,38 @@ namespace MappingGenerator.Tests.Collections
             IEnurableToDestinationIEnumerable<TIn, TOut>(
                 Func<IEnumerable<TIn>> source,
                 IEnumerable<TOut> expected,
-                object mapper)
+                IMapper<Source<IEnumerable<TIn>>, Destination<IEnumerable<TOut>>> mapper)
         {
             return new CollectionTestCase<IEnumerable<TIn>, Destination<IEnumerable<TOut>>, IEnumerable<TOut>>(
                 source,
                 expected,
-                (IMapper<Source<IEnumerable<TIn>>, Destination<IEnumerable<TOut>>>)mapper
+                mapper
                 );
         }
 
-       private static CollectionTestCase<IEnumerable<TIn>, Destination<HashSet<TOut>>, HashSet<TOut>>
-            IEnurableToDestinationHashSet<TIn, TOut>(
-                Func<IEnumerable<TIn>> source,
-                IEnumerable<TOut> expected,
-                object mapper)
+        private static CollectionTestCase<IEnumerable<TIn>, Destination<HashSet<TOut>>, HashSet<TOut>>
+             IEnurableToDestinationHashSet<TIn, TOut>(
+                 Func<IEnumerable<TIn>> source,
+                 IEnumerable<TOut> expected,
+                 IMapper<Source<IEnumerable<TIn>>, Destination<HashSet<TOut>>> mapper)
         {
             return new CollectionTestCase<IEnumerable<TIn>, Destination<HashSet<TOut>>, HashSet<TOut>>(
                 source,
                 new HashSet<TOut>(expected),
-                (IMapper<Source<IEnumerable<TIn>>, Destination<HashSet<TOut>>>)mapper
+                mapper
                 );
         }
 
-       private static CollectionTestCase<IEnumerable<TIn>, DestinationReadOnly<HashSet<TOut>>, HashSet<TOut>>
-            IEnurableToReadOnlyDestinationHashSet<TIn, TOut>(
-                Func<IEnumerable<TIn>> source,
-                IEnumerable<TOut>? expected,
-                object mapper)
+        private static CollectionTestCase<IEnumerable<TIn>, DestinationReadOnly<HashSet<TOut>>, HashSet<TOut>>
+             IEnurableToReadOnlyDestinationHashSet<TIn, TOut>(
+                 Func<IEnumerable<TIn>> source,
+                 IEnumerable<TOut>? expected,
+                 IMapper<Source<IEnumerable<TIn>>, DestinationReadOnly<HashSet<TOut>>> mapper)
         {
             return new CollectionTestCase<IEnumerable<TIn>, DestinationReadOnly<HashSet<TOut>>, HashSet<TOut>>(
                 source,
                 expected == null ? null : new HashSet<TOut>(expected),
-                (IMapper<Source<IEnumerable<TIn>>, DestinationReadOnly<HashSet<TOut>>>)mapper
+                mapper
                 );
         }
 
@@ -106,25 +106,25 @@ namespace MappingGenerator.Tests.Collections
             IEnurableToDestinationConstructorIEnumerable<TIn, TOut>(
                 Func<IEnumerable<TIn>> source,
                 IEnumerable<TOut> expected,
-                object mapper)
+                IMapper<Source<IEnumerable<TIn>>, DestinationConstructor<IEnumerable<TOut>>> mapper)
         {
             return new CollectionTestCase<IEnumerable<TIn>, DestinationConstructor<IEnumerable<TOut>>, IEnumerable<TOut>>(
                 source,
                 expected,
-                (IMapper<Source<IEnumerable<TIn>>, DestinationConstructor<IEnumerable<TOut>>>)mapper
+                mapper
                 );
         }
-        
+
         private static CollectionTestCase<IEnumerable<TIn>, DestinationInitOnly<IEnumerable<TOut>>, IEnumerable<TOut>>
             IEnurableToDestinationInitIEnumerable<TIn, TOut>(
                 Func<IEnumerable<TIn>> source,
                 IEnumerable<TOut> expected,
-                object mapper)
+                IMapper<Source<IEnumerable<TIn>>, DestinationInitOnly<IEnumerable<TOut>>> mapper)
         {
             return new CollectionTestCase<IEnumerable<TIn>, DestinationInitOnly<IEnumerable<TOut>>, IEnumerable<TOut>>(
                 source,
                 expected,
-                (IMapper<Source<IEnumerable<TIn>>, DestinationInitOnly<IEnumerable<TOut>>>)mapper
+                mapper
                 );
         }
     }

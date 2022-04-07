@@ -31,7 +31,7 @@ namespace MappingGenerator.Tests.BasicTypesMapping
         public void IEnumerableToList()
         {
             var ar = new int[] { 1, 2, 3 };
-            
+
             var mapper = new BasicTypeMapper<int, int>();
 
             RunCollectionsTest<int, IEnumerable<Source<int>>, List<Destination<int>>>(
@@ -51,7 +51,7 @@ namespace MappingGenerator.Tests.BasicTypesMapping
         public void IEnumerableToCollection()
         {
             var ar = new int[] { 1, 2, 3 };
-            
+
             var mapper = new BasicTypeMapper<int, int>();
 
             RunCollectionsTest<int, IEnumerable<Source<int>>, Collection<Destination<int>>>(
@@ -67,12 +67,12 @@ namespace MappingGenerator.Tests.BasicTypesMapping
                 () => new Collection<Destination<int>>(ar.Select(p => new Destination<int> { Value = p }).ToList())
                 );
         }
-        
+
         [Fact]
         public void IEnumerableToHashSet()
         {
             var ar = new int[] { 1, 2, 3 };
-            
+
             var mapper = new BasicTypeMapper<int, int>();
 
             RunCollectionsTest<int, IEnumerable<Source<int>>, HashSet<Destination<int>>>(
@@ -86,7 +86,7 @@ namespace MappingGenerator.Tests.BasicTypesMapping
         public void IEnumerableToArray()
         {
             var ar = new int[] { 1, 2, 3 };
-            
+
             var mapper = new BasicTypeMapper<int, int>();
 
             RunCollectionsTest<int, IEnumerable<Source<int>>, Destination<int>[]>(
@@ -96,6 +96,18 @@ namespace MappingGenerator.Tests.BasicTypesMapping
                 );
         }
 
+        private void RunCollectionsTest<TSource, TSourceCollection, TDestinationCollection>(
+            IMapper<Source<TSource>, Destination<TSource>> mapper,
+            Func<TSourceCollection> sourceValues,
+            Func<TDestinationCollection> expectedValues)
+            where TSourceCollection : IEnumerable<Source<TSource>>
+            where TDestinationCollection : IEnumerable<Destination<TSource>>
+        {
+            var result = mapper.Map(sourceValues());
+            Assert.Equal(expectedValues(), result);
+        }
+
+
         [Fact]
         public void CanDoExplicitCast()
         {
@@ -104,22 +116,6 @@ namespace MappingGenerator.Tests.BasicTypesMapping
             var result = new BasicLongMapper().Map(source);
 
             Assert.Equal(expected, result);
-        }
-
-        private void RunCollectionsTest<TSource, TSourceCollection, TDestinationCollection>(
-            object mapper, 
-            Func<TSourceCollection> sourceValues,
-            Func<TDestinationCollection> expectedValues)
-            where TSourceCollection : IEnumerable<Source<TSource>>
-            where TDestinationCollection : IEnumerable<Destination<TSource>>
-        {
-            var m = mapper as IMapper<TSourceCollection, TDestinationCollection>;
-
-            Assert.NotNull(m);
-
-            var result = m!.Map(sourceValues());
-
-            Assert.Equal(expectedValues(), result);
         }
 
         public static IEnumerable<object[]> SimpleTypes =>

@@ -142,17 +142,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             return MemberAccess("result", destinationProperty);
         }
 
-        public static InvocationExpressionSyntax CallInnerMapper(NameSyntax thisType, string member, string sourceProperty)
-        {
-            return InvocationExpression(
-                MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    ParenthesizedExpression(CastExpression(thisType, ThisMemberAccess(member))),
-                    IdentifierName("Map")
-                    )
-                ).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(MemberAccess("source", sourceProperty)))));
-        }
-
         public static ExpressionStatementSyntax PropertyMapping(
             string destinationProperty,
             ExpressionSyntax assignment)
@@ -325,32 +314,13 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             var collection = model.KnownTypes.CollectionType;
 
             var sourceEnumerable = enumerable.Construct(model.SourceType);
-            var listInterface = MapperInterface(sourceEnumerable, list.Construct(model.DestinationType));
 
             var baseTypes = new SyntaxNodeOrToken[]
             {
                 SimpleBaseType(mapperInterface),
-                Token(SyntaxKind.CommaToken),
-                SimpleBaseType(listInterface),
-                Token(SyntaxKind.CommaToken),
-                SimpleBaseType(MapperInterface(sourceEnumerable, hashSet.Construct(model.DestinationType))),
-                Token(SyntaxKind.CommaToken),
-                SimpleBaseType(MapperInterface(sourceEnumerable, collection.Construct(model.DestinationType))),
-                Token(SyntaxKind.CommaToken),
-                SimpleBaseType(MapperInterface(sourceEnumerable, model.DestinationType, isDestinationArray: true)),
             };
 
             classMembers.Add(_syntaxFactoryWithContext.MapMethod(sourceFqn, destFqn, body));
-
-            var mapListBody = MapCollectionMethodBody(sourceFqn, CreateQualifiedName(list.Construct(model.DestinationType)));
-            var mapHashSetBody = MapCollectionMethodBody(sourceFqn, CreateQualifiedName(hashSet.Construct(model.DestinationType)));
-            var mapToArrayBody = MapToTargetEnumerable(sourceFqn, "ToArray");
-            var mapCollectionBody = MapToTargetCollection(listInterface, destFqn);
-
-            classMembers.Add(MapManyMethodDeclarationSyntax(sourceEnumerable, list.Construct(model.DestinationType), mapListBody));
-            classMembers.Add(MapManyMethodDeclarationSyntax(sourceEnumerable, hashSet.Construct(model.DestinationType), mapHashSetBody));
-            classMembers.Add(MapManyMethodDeclarationSyntax(sourceEnumerable, collection.Construct(model.DestinationType), mapCollectionBody));
-            classMembers.Add(MapManyMethodDeclarationSyntax(sourceEnumerable, model.DestinationType, mapToArrayBody, true));
 
             classMembers.Add(AfterMapMethod(sourceFqn, destFqn, model.AfterMapMethodName));
 

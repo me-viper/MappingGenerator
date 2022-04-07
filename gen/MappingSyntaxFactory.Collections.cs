@@ -24,16 +24,18 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
     {
         private static readonly NameSyntax _collectionsHelper = IdentifierName("CollectionsHelper");
 
-        private static string CopyToNewMethod(CollectionKind type)
+        public static InvocationExpressionSyntax CallInnerMapper(
+            CollectionKind collectionKind,
+            string member, 
+            string sourceProperty)
         {
-            return type switch
-            {
-                CollectionKind.List => $"{nameof(CollectionsHelper.CopyToNew)}List",
-                CollectionKind.Collection => $"{nameof(CollectionsHelper.CopyToNew)}Collection",
-                CollectionKind.HashSet => $"{nameof(CollectionsHelper.CopyToNew)}HashSet",
-                CollectionKind.Array => $"{nameof(CollectionsHelper.CopyToNew)}Array",
-                _ => throw new NotSupportedException($"'{type}' is not supported"),
-            };
+            return InvocationExpression(
+                MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    ThisMemberAccess(member),
+                    IdentifierName(MapperMethod(collectionKind))
+                    )
+                ).WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(MemberAccess("source", sourceProperty)))));
         }
 
         public static ExpressionSyntax MapperToConverter(ExpressionSyntax member)
@@ -205,7 +207,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 ).WithElse(ElseClause(copyToSyntax));
         }
 
-        public static StatementSyntax ConvertAndCopyToExistingOrNew(
+        private static StatementSyntax ConvertAndCopyToExistingOrNew(
             ITypeSymbol sourceType,
             CollectionKind collectionKind,
             string sourceProperty,
@@ -307,6 +309,30 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                         )
                     )
                 );
+        }
+
+        private static string CopyToNewMethod(CollectionKind type)
+        {
+            return type switch
+            {
+                CollectionKind.List => $"{nameof(CollectionsHelper.CopyToNew)}List",
+                CollectionKind.Collection => $"{nameof(CollectionsHelper.CopyToNew)}Collection",
+                CollectionKind.HashSet => $"{nameof(CollectionsHelper.CopyToNew)}HashSet",
+                CollectionKind.Array => $"{nameof(CollectionsHelper.CopyToNew)}Array",
+                _ => throw new NotSupportedException($"'{type}' is not supported"),
+            };
+        }
+
+        private static string MapperMethod(CollectionKind type)
+        {
+            return type switch
+            {
+                CollectionKind.List => "ToList",
+                CollectionKind.Collection => "ToCollection",
+                CollectionKind.HashSet => "ToHashSet",
+                CollectionKind.Array => "ToArray",
+                _ => throw new NotSupportedException($"'{type}' is not supported"),
+            };
         }
     }
 }
