@@ -13,15 +13,13 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
     using static SyntaxFactory;
 
-    internal class MappingSyntaxFactory
+    internal partial class MappingSyntaxFactory
     {
         private MappingSyntaxFactoryWithContext _syntaxFactoryWithContext = default!;
 
         private readonly IReadOnlyCollection<UsingDirectiveSyntax> _knownUsings;
 
         private readonly NameSyntax _compilerGenerated;
-
-        private static readonly NameSyntax _collectionsHelper = IdentifierName("CollectionsHelper");
 
         public MappingSyntaxFactory()
         {
@@ -130,323 +128,18 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 .WithExpressionBody(CastExpression(type, IdentifierName("p")));
         }
 
+        //public SimpleLambdaExpressionSyntax CallMapMethodLambda(TypeSyntax mapInterface)
+        //{
+        //    return SimpleLambdaExpression(Parameter(Identifier("p")))
+        //        .WithExpressionBody(
+        //            CallMapMethod(mapInterface)
+        //            .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("p")))))
+        //            );
+        //}
+
         public static ExpressionSyntax DestinationMember(string destinationProperty)
         {
             return MemberAccess("result", destinationProperty);
-        }
-
-        public static ExpressionSyntax CallCopyToNew(
-            ITypeSymbol elementsType,
-            ITypeSymbol collectionType,
-            string sourceProperty)
-        {
-            var elementsFqn = CreateQualifiedName(elementsType);
-            var collectionFqn = CreateQualifiedName(collectionType);
-
-            return InvocationExpression(
-                MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    _collectionsHelper,
-                    GenericName(Identifier(nameof(CollectionsHelper.CopyToNew)))
-                    .WithTypeArgumentList(
-                        TypeArgumentList(
-                            SeparatedList<TypeSyntax>(
-                                new SyntaxNodeOrToken[]
-                                {
-                                    elementsFqn,
-                                    Token(SyntaxKind.CommaToken),
-                                    collectionFqn,
-                                })
-                            )
-                        )
-                    )
-                ).WithArgumentList(
-                    ArgumentList(
-                        SeparatedList<ArgumentSyntax>(
-                            new SyntaxNodeOrToken[]
-                            {
-                                Argument(MemberAccess("source", sourceProperty)),
-                            })
-                        )
-                    );
-        }
-
-        public static ExpressionSyntax CallConvertAndCopyToNew(
-            ITypeSymbol sourceType,
-            string sourceProperty,
-            ITypeSymbol destinationType,
-            ITypeSymbol collectionType,
-            ExpressionSyntax converter)
-        {
-
-            var srcFqn = CreateQualifiedName(sourceType);
-            var dstFqn = CreateQualifiedName(destinationType);
-            var collectionFqn = CreateQualifiedName(collectionType);
-
-            return InvocationExpression(
-                MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    _collectionsHelper,
-                    GenericName(Identifier(nameof(CollectionsHelper.CopyToNew)))
-                    .WithTypeArgumentList(
-                        TypeArgumentList(
-                            SeparatedList<TypeSyntax>(
-                                new SyntaxNodeOrToken[]
-                                {
-                                    srcFqn,
-                                    Token(SyntaxKind.CommaToken),
-                                    dstFqn,
-                                    Token(SyntaxKind.CommaToken),
-                                    collectionFqn
-                                })
-                            )
-                        )
-                    )
-                ).WithArgumentList(
-                    ArgumentList(
-                        SeparatedList<ArgumentSyntax>(
-                            new SyntaxNodeOrToken[]
-                            {
-                                Argument(MemberAccess("source", sourceProperty)),
-                                Token(SyntaxKind.CommaToken),
-                                Argument(converter)
-                            })
-                        )
-                    );
-        }
-
-        public static ExpressionSyntax CallCopyToExistingOrNew(
-            ITypeSymbol elementsType,
-            ITypeSymbol collectionType,
-            string sourceProperty,
-            ExpressionSyntax destinationSyntax)
-        {
-            var elementsFqn = CreateQualifiedName(elementsType);
-            var collectionFqn = CreateQualifiedName(collectionType);
-
-            return InvocationExpression(
-                MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    _collectionsHelper,
-                    GenericName(Identifier(nameof(CollectionsHelper.CopyToExistingOrNew)))
-                    .WithTypeArgumentList(
-                        TypeArgumentList(
-                            SeparatedList<TypeSyntax>(
-                                new SyntaxNodeOrToken[]
-                                {
-                                    elementsFqn,
-                                    Token(SyntaxKind.CommaToken),
-                                    collectionFqn,
-                                })
-                            )
-                        )
-                    )
-                ).WithArgumentList(
-                    ArgumentList(
-                        SeparatedList<ArgumentSyntax>(
-                            new SyntaxNodeOrToken[]
-                            {
-                                Argument(MemberAccess("source", sourceProperty)),
-                                Token(SyntaxKind.CommaToken),
-                                Argument(destinationSyntax)
-                            })
-                        )
-                    );
-        }
-
-        public static ExpressionSyntax CallConvertAndCopyToExistingOrNew(
-            ITypeSymbol sourceType,
-            string sourceProperty,
-            ITypeSymbol destinationType,
-            ExpressionSyntax destinationSyntax,
-            ITypeSymbol collectionType,
-            ExpressionSyntax converter)
-        {
-
-            var srcFqn = CreateQualifiedName(sourceType);
-            var dstFqn = CreateQualifiedName(destinationType);
-            var collectionFqn = CreateQualifiedName(collectionType);
-
-            return InvocationExpression(
-                MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    _collectionsHelper,
-                    GenericName(Identifier(nameof(CollectionsHelper.CopyToExistingOrNew)))
-                    .WithTypeArgumentList(
-                        TypeArgumentList(
-                            SeparatedList<TypeSyntax>(
-                                new SyntaxNodeOrToken[]
-                                {
-                                    srcFqn,
-                                    Token(SyntaxKind.CommaToken),
-                                    dstFqn,
-                                    Token(SyntaxKind.CommaToken),
-                                    collectionFqn
-                                })
-                            )
-                        )
-                    )
-                ).WithArgumentList(
-                    ArgumentList(
-                        SeparatedList<ArgumentSyntax>(
-                            new SyntaxNodeOrToken[]
-                            {
-                                Argument(MemberAccess("source", sourceProperty)),
-                                Token(SyntaxKind.CommaToken),
-                                Argument(destinationSyntax),
-                                Token(SyntaxKind.CommaToken),
-                                Argument(converter)
-                            })
-                        )
-                    );
-        }
-
-        public static void CallCopyTo(
-            ITypeSymbol sourceType,
-            string sourceProperty,
-            ExpressionSyntax destinationSyntax,
-            ITypeSymbol collectionType,
-            bool isWritable,
-            Action<ExpressionSyntax> appendExpression,
-            Action<StatementSyntax> appendStatement)
-        {
-            if (isWritable)
-            {
-                var expr = CallCopyToExistingOrNew(
-                    sourceType,
-                    collectionType,
-                    sourceProperty,
-                    destinationSyntax
-                    );
-                appendExpression(expr);
-                return;
-            }
-
-            var stmt = CallCopyToExisting(
-                sourceType,
-                sourceProperty,
-                destinationSyntax
-                );
-            appendStatement(stmt);
-        }
-
-        public static void CallConvertAndCopyTo(
-            ITypeSymbol sourceType,
-            string sourceProperty,
-            ITypeSymbol destinationType,
-            ExpressionSyntax destinationSyntax,
-            ITypeSymbol collectionType,
-            ExpressionSyntax converter,
-            bool isWritable,
-            Action<ExpressionSyntax> appendExpression,
-            Action<StatementSyntax> appendStatement)
-        {
-            if (isWritable)
-            {
-                var expr = CallConvertAndCopyToExistingOrNew(
-                    sourceType,
-                    sourceProperty,
-                    destinationType,
-                    destinationSyntax,
-                    collectionType,
-                    converter
-                    );
-                appendExpression(expr);
-                return;
-            }
-
-            var stmt = CallConvertAndCopyToExisting(
-                sourceType,
-                sourceProperty,
-                destinationType, 
-                destinationSyntax,
-                converter
-                );
-            appendStatement(stmt);
-        }
-
-
-        private static StatementSyntax CallCopyToExisting(
-            ITypeSymbol type,
-            string sourceProperty,
-            ExpressionSyntax destinationSyntax)
-        {
-            var srcFqn = CreateQualifiedName(type);
-
-            return ExpressionStatement(
-                InvocationExpression(
-                    MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        _collectionsHelper,
-                        GenericName(Identifier(nameof(CollectionsHelper.CopyTo)))
-                        .WithTypeArgumentList(
-                            TypeArgumentList(
-                                SeparatedList<TypeSyntax>(
-                                    new SyntaxNodeOrToken[]
-                                    {
-                                        srcFqn,
-                                    })
-                                )
-                            )
-                        )
-                    )
-                .WithArgumentList(
-                    ArgumentList(
-                        SeparatedList<ArgumentSyntax>(
-                            new SyntaxNodeOrToken[]
-                            {
-                                Argument(MemberAccess("source", sourceProperty)),
-                                Token(SyntaxKind.CommaToken),
-                                Argument(destinationSyntax)
-                            })
-                        )
-                    )
-                );
-        }
-
-        private static StatementSyntax CallConvertAndCopyToExisting(
-            ITypeSymbol sourceType,
-            string sourceProperty,
-            ITypeSymbol destinationType,
-            ExpressionSyntax destinationSyntax,
-            ExpressionSyntax converter)
-        {
-            var srcFqn = CreateQualifiedName(sourceType);
-            var dstFqn = CreateQualifiedName(destinationType);
-
-            return ExpressionStatement(
-                InvocationExpression(
-                    MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        _collectionsHelper,
-                        GenericName(Identifier(nameof(CollectionsHelper.CopyTo)))
-                        .WithTypeArgumentList(
-                            TypeArgumentList(
-                                SeparatedList<TypeSyntax>(
-                                    new SyntaxNodeOrToken[]
-                                    {
-                                        srcFqn,
-                                        Token(SyntaxKind.CommaToken),
-                                        dstFqn
-                                    })
-                                )
-                            )
-                        )
-                    )
-                .WithArgumentList(
-                    ArgumentList(
-                        SeparatedList<ArgumentSyntax>(
-                            new SyntaxNodeOrToken[]
-                            {
-                                Argument(MemberAccess("source", sourceProperty)),
-                                Token(SyntaxKind.CommaToken),
-                                Argument(destinationSyntax),
-                                Token(SyntaxKind.CommaToken),
-                                Argument(converter)
-                            })
-                        )
-                    )
-                );
         }
 
         public static InvocationExpressionSyntax CallInnerMapper(NameSyntax thisType, string member, string sourceProperty)
@@ -699,28 +392,19 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 .SyntaxTree;
         }
 
-        private SimpleLambdaExpressionSyntax CallMapMethodLambda(TypeSyntax mapInterface)
-        {
-            return SimpleLambdaExpression(Parameter(Identifier("p")))
-                .WithExpressionBody(
-                    CallMapMethod(mapInterface)
-                    .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("p")))))
-                    );
-        }
-
-        private static InvocationExpressionSyntax CallMapMethod(TypeSyntax mapInterface)
-        {
-            return InvocationExpression(
-                    MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        ParenthesizedExpression(CastExpression(mapInterface, ThisExpression())),
-                        IdentifierName("Map")
-                        )
-                    )
-                .WithArgumentList(
-                    ArgumentList(SingletonSeparatedList(Argument(IdentifierName("source"))))
-                    );
-        }
+        //private static InvocationExpressionSyntax CallMapMethod(TypeSyntax mapInterface)
+        //{
+        //    return InvocationExpression(
+        //            MemberAccessExpression(
+        //                SyntaxKind.SimpleMemberAccessExpression,
+        //                ParenthesizedExpression(CastExpression(mapInterface, ThisExpression())),
+        //                IdentifierName("Map")
+        //                )
+        //            )
+        //        .WithArgumentList(
+        //            ArgumentList(SingletonSeparatedList(Argument(IdentifierName("source"))))
+        //            );
+        //}
 
         private static NameSyntax CreateQualifiedName(ITypeSymbol typeSymbol)
         {

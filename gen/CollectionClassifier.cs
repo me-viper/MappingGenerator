@@ -25,6 +25,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 {
                     if (type is IArrayTypeSymbol ats)
                     {
+                        result.CollectionKind = CollectionKind.Array;
                         result.IsArray = true;
                         result.IsEnumerable = true;
                         result.ElementsType = ats.ElementType;
@@ -37,6 +38,8 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             if (!namedType.IsGenericType)
                 return new CollectionTypeClassification(type);
 
+            result.CollectionKind = CollectionKind.List;
+
             if (namedType.TypeKind == TypeKind.Interface)
                 result.IsInterface = true;
 
@@ -48,6 +51,14 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             if (namedType.ConstructedFrom.Equals(_knownTypes.ICollectionType, SymbolEqualityComparer.Default))
             {
                 result.IsEnumerable = true;
+                result.IsCollection = true;
+            }
+
+            if (namedType.ConstructedFrom.Equals(_knownTypes.CollectionType, SymbolEqualityComparer.Default))
+            {
+                result.CollectionKind = CollectionKind.Collection;
+                result.IsEnumerable = true;
+                result.IsType = true;
                 result.IsCollection = true;
             }
 
@@ -66,13 +77,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
             if (namedType.ConstructedFrom.Equals(_knownTypes.HashSetType, SymbolEqualityComparer.Default))
             {
-                result.IsEnumerable = true;
-                result.IsType = true;
-                result.IsCollection = true;
-            }
-
-            if (namedType.ConstructedFrom.Equals(_knownTypes.CollectionType, SymbolEqualityComparer.Default))
-            {
+                result.CollectionKind = CollectionKind.HashSet;
                 result.IsEnumerable = true;
                 result.IsType = true;
                 result.IsCollection = true;
@@ -110,5 +115,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         public bool IsType { get; set; }
 
         public bool IsArray { get; set; }
+
+        public CollectionKind CollectionKind { get; set; }
     }
 }

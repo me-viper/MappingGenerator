@@ -47,6 +47,7 @@ namespace MyCode
 
             Assert.True(result.IsEnumerable);
             Assert.True(result.IsInterface);
+            Assert.Equal(CollectionKind.List, result.CollectionKind);
             Assert.Equal(intType, result.ElementsType, SymbolEqualityComparer.Default);
         }
 
@@ -63,6 +64,7 @@ namespace MyCode
 
             Assert.True(result.IsEnumerable);
             Assert.True(result.IsArray);
+            Assert.Equal(CollectionKind.Array, result.CollectionKind);
             Assert.Equal(intType, result.ElementsType, SymbolEqualityComparer.Default);
         }
 
@@ -80,6 +82,7 @@ namespace MyCode
             Assert.True(result.IsEnumerable);
             Assert.True(result.IsType);
             Assert.True(result.IsCollection);
+            Assert.Equal(CollectionKind.List, result.CollectionKind);
             Assert.Equal(intType, result.ElementsType, SymbolEqualityComparer.Default);
         }
 
@@ -97,6 +100,43 @@ namespace MyCode
             Assert.True(result.IsEnumerable);
             Assert.False(result.IsType);
             Assert.True(result.IsCollection);
+            Assert.Equal(CollectionKind.List, result.CollectionKind);
+            Assert.Equal(intType, result.ElementsType, SymbolEqualityComparer.Default);
+        }
+
+        [Fact]
+        public void HashSet()
+        {
+            var intType = _compilation.GetSpecialType(SpecialType.System_Int32);
+
+            var classifier = new CollectionClassifier(_knownTypes);
+            var sourceType = _knownTypes.HashSetType.Construct(intType);
+            var entry = new MappingDefinition("Test", sourceType, null!, null);
+
+            var result = classifier.ClassifyCollectionType(entry.Type);
+
+            Assert.True(result.IsEnumerable);
+            Assert.True(result.IsType);
+            Assert.True(result.IsCollection);
+            Assert.Equal(CollectionKind.HashSet, result.CollectionKind);
+            Assert.Equal(intType, result.ElementsType, SymbolEqualityComparer.Default);
+        }
+
+        [Fact]
+        public void Collection()
+        {
+            var intType = _compilation.GetSpecialType(SpecialType.System_Int32);
+
+            var classifier = new CollectionClassifier(_knownTypes);
+            var sourceType = _knownTypes.CollectionType.Construct(intType);
+            var entry = new MappingDefinition("Test", sourceType, null!, null);
+
+            var result = classifier.ClassifyCollectionType(entry.Type);
+
+            Assert.True(result.IsEnumerable);
+            Assert.True(result.IsType);
+            Assert.True(result.IsCollection);
+            Assert.Equal(CollectionKind.Collection, result.CollectionKind);
             Assert.Equal(intType, result.ElementsType, SymbolEqualityComparer.Default);
         }
 

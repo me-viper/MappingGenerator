@@ -75,16 +75,16 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 
             if (entry.EntryType == MappingDestinationType.Property && destClassification.IsCollection)
             {
-                MappingSyntaxFactory.CallConvertAndCopyTo(
-                    sourceClassification.ElementsType,
-                    sourceProperty.Name,
-                    destClassification.ElementsType,
-                    MappingSyntaxFactory.DestinationMember(entry.Name),
-                    destClassification.CollectionType,
-                    SyntaxFactory.IdentifierName(memberName),
-                    entry.IsWritable(),
-                    result.MappingExpressions.Add,
-                    result.MappingStatements.Add
+                result.MappingStatements.Add(
+                    MappingSyntaxFactory.CallConvertAndCopyTo(
+                        sourceClassification.ElementsType,
+                        sourceProperty.Name,
+                        destClassification.ElementsType,
+                        MappingSyntaxFactory.DestinationMember(entry.Name),
+                        destClassification.CollectionKind,
+                        MappingSyntaxFactory.MapperToConverter(SyntaxFactory.IdentifierName(memberName)),
+                        entry.IsWritable()
+                        )
                     );
                 return result;
             }

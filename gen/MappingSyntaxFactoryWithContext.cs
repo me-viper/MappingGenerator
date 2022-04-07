@@ -58,8 +58,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         {
             return SimpleLambdaExpression(Parameter(Identifier("p")))
                 .WithExpressionBody(
-                    CallMapMethod()
-                    .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("p")))))
+                    CallMapMethod().WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("p")))))
                     );
         }
 
