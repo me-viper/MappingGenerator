@@ -70,7 +70,7 @@ public partial class Mapper<TSource, TDestination>
 Generated code (removed redundant parts and added comments for brevity):
 
 ```csharp
-partial class Mapper<TSource, TDestination> : IMapper<TSource, TDestination>
+partial class Mapper<TSource, TDestination> : IMapper<Source<TSource>, Destination<TDestination>>
 {
     public Mapper()
     {
