@@ -215,8 +215,11 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             };
         }
 
-        public SyntaxTree BuildConstructorOnly(MapperAnchorSyntaxModel model)
+        public SyntaxTree? BuildConstructorOnly(MapperAnchorSyntaxModel model)
         {
+            if (model.ConstructorAccessibility == ConstructorAccessibility.Suppress)
+                return null;
+
             var nsFqn = CreateQualifiedName(model.Namespace.ToDisplayString());
 
             var typeParameters = new SeparatedSyntaxList<TypeParameterSyntax>()
@@ -245,14 +248,11 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 .WithMembers(
                     SingletonList<MemberDeclarationSyntax>(
                         NamespaceDeclaration(nsFqn)
-                            //.WithNamespaceKeyword(NullableKeyword(true))
+                            .WithNamespaceKeyword(NullableKeyword(true))
                             .WithUsings(List(_knownUsings))
                             .WithMembers(
                                 SingletonList<MemberDeclarationSyntax>(
                                     ClassDeclaration(model.MapperType.Name)
-                                        // .WithAttributeLists(
-                                        //     SingletonList(AttributeList(SingletonSeparatedList(Attribute(_compilerGenerated))))
-                                        //     )
                                         .WithModifiers(
                                             TokenList(new[] { Token(SyntaxKind.PartialKeyword) })
                                             )
@@ -262,7 +262,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                                 )
                             )
                     )
-                //.WithEndOfFileToken(NullableKeyword(false))
+                .WithEndOfFileToken(NullableKeyword(false))
                 .NormalizeWhitespace()
                 .SyntaxTree;
         }
@@ -296,16 +296,19 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             var classMembers = new List<MemberDeclarationSyntax>();
             classMembers.AddRange(model.Fields);
 
-            if (model.ConstructorBody.Count > 0 || model.ConstructorAccessibility != default)
+            if (model.ConstructorAccessibility != ConstructorAccessibility.Suppress)
             {
-                classMembers.Add(
-                    Constructor(
-                        model.MapperType.Name,
-                        model.ConstructorAccessibility,
-                        model.ConstructorParameters,
-                        model.ConstructorBody
-                        )
-                    ); 
+                if (model.ConstructorBody.Count > 0 || model.ConstructorAccessibility != ConstructorAccessibility.Public)
+                {
+                    classMembers.Add(
+                        Constructor(
+                            model.MapperType.Name,
+                            model.ConstructorAccessibility,
+                            model.ConstructorParameters,
+                            model.ConstructorBody
+                            )
+                        );
+                } 
             }
 
             var enumerable = model.KnownTypes.IEnumerableType;
@@ -338,7 +341,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 .WithMembers(
                     SingletonList<MemberDeclarationSyntax>(
                         NamespaceDeclaration(nsFqn)
-                            //.WithNamespaceKeyword(NullableKeyword(true))
+                            .WithNamespaceKeyword(NullableKeyword(true))
                             .WithUsings(List(_knownUsings))
                             .WithMembers(
                                 SingletonList<MemberDeclarationSyntax>(
@@ -357,7 +360,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                                 )
                             )
                     )
-                //.WithEndOfFileToken(NullableKeyword(false))
+                .WithEndOfFileToken(NullableKeyword(false))
                 .NormalizeWhitespace()
                 .SyntaxTree;
         }

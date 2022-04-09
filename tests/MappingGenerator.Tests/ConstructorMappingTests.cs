@@ -59,7 +59,7 @@ namespace MappingGenerator.Tests.ConstructorMapping
     [MappingGenerator(typeof(Source<string, int>), typeof(DestinationConstructor<string, int>))]
     public partial class ConstructorOnlyMapperCustomMapping
     {
-        public string? MapValue(Source<string, int> source)
+        public string MapValue(Source<string, int> source)
         {
             return $"Custom{source.Value}";
         }

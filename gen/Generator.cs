@@ -77,8 +77,13 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 result.Add(syntax);
             }
 
-            var anchorSyntax = mst.BuildConstructorOnly(anchorClassModel).GetRoot();
-            result.Add(anchorSyntax);
+            var ctorSyntax = mst.BuildConstructorOnly(anchorClassModel);
+
+            if (ctorSyntax != null)
+            {
+                var anchorSyntax = ctorSyntax.GetRoot();
+                result.Add(anchorSyntax); 
+            }
 
             return result;
         }

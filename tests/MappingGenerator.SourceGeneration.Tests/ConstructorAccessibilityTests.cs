@@ -44,7 +44,7 @@ namespace MappingGenerator.SourceGeneration.Tests
         [InlineData(ConstructorAccessibility.PrivateProtected)]
         [InlineData(ConstructorAccessibility.InternalProtected)]
         [InlineData(ConstructorAccessibility.Protected)]
-        public void Run(ConstructorAccessibility accessibility)
+        public void Modifiers(ConstructorAccessibility accessibility)
         {
             static string Code(ConstructorAccessibility access) => $@"
 namespace Test
