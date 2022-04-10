@@ -251,6 +251,20 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             if (source == null || dest == null)
                 return false;
 
+            if (dest.IsStatic)
+            {
+                context.ReportDiagnostic(
+                    Diagnostic.Create(
+                        DiagnosticDescriptors.DestinationIsStatic,
+                        model.Locations.FirstOrDefault(),
+                        model.ToDisplayString(),
+                        dest.ToDisplayString()
+                        )
+                    );
+
+                return false;
+            }
+
             var sourceTypeArgsCount = 0;
             var destTypeArgsCount = 0;
 
@@ -271,6 +285,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                         sourceTypeArgsCount + destTypeArgsCount
                         )
                     );
+
                 return false;
             }
 
@@ -326,6 +341,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                             name
                             )
                         );
+
                     return false;
                 }
             }

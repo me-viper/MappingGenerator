@@ -134,6 +134,23 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.Mappers
                 break;
             }
 
+            if (destinationConstructor == null)
+            {
+                if (context.DestinationType.IsAbstract)
+                {
+                    context.ExecutionContext.ReportDiagnostic(
+                        Diagnostic.Create(
+                            DiagnosticDescriptors.DestinationIsAbstractOrInterface,
+                            context.DestinationType.Locations.FirstOrDefault(),
+                            context.MapperType.ToDisplayString(),
+                            context.DestinationType.ToDisplayString()
+                            )
+                        );
+
+                    throw new MappingGenerationException("Bad constructor");
+                }
+            }
+
             return destinationConstructor;
         }
     }

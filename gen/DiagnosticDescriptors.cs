@@ -157,5 +157,23 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             DiagnosticSeverity.Error,
             true
             );
+
+        public static DiagnosticDescriptor DestinationIsAbstractOrInterface => new(
+            "MG0018",
+            "Custom destination type constructor required",
+            "Mapping generator '{0}': Destination type '{1}' is interface or abstract class. Custom constructor is required.",
+            "MappingGenerator",
+            DiagnosticSeverity.Error,
+            true
+            );
+
+        public static DiagnosticDescriptor DestinationIsStatic => new(
+            "MG0019",
+            "Invalid destination",
+            "Mapping generator '{0}': Destination type '{1}' can't be static class.",
+            "MappingGenerator",
+            DiagnosticSeverity.Error,
+            true
+            );
     }
 }

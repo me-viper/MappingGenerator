@@ -723,5 +723,69 @@ namespace Test
 
             await generator.RunAsync();
         }
+
+        [Fact]
+        public async Task DestinationIsAbstractOrInterface()
+        {
+            var code = @"
+namespace Test
+{
+    using System;
+    using Talk2Bits.MappingGenerator.Abstractions;
+
+    public class A {}
+    public abstract class B {}
+
+    [MappingGenerator(typeof(A), typeof(B))]
+    public partial class TestMapper
+    {
+    }
+}
+";
+            var generator = new CSharpSourceGeneratorVerifier<MappingSourceGenerator>.Test();
+            generator.TestState.Sources.Add(code);
+            generator.TestBehaviors = TestBehaviors.SkipGeneratedSourcesCheck;
+
+            var d1 = DiagnosticResult
+                .CompilerError("MG0018")
+                .WithArguments("Test.TestMapper", "Test.B")
+                .WithSpan(8, 27, 8, 28);
+
+            generator.TestState.ExpectedDiagnostics.Add(d1);
+
+            await generator.RunAsync();
+        }
+
+        [Fact]
+        public async Task DestinationIsStatic()
+        {
+            var code = @"
+namespace Test
+{
+    using System;
+    using Talk2Bits.MappingGenerator.Abstractions;
+
+    public class A {}
+    public static class B {}
+
+    [MappingGenerator(typeof(A), typeof(B))]
+    public partial class TestMapper
+    {
+    }
+}
+";
+            var generator = new CSharpSourceGeneratorVerifier<MappingSourceGenerator>.Test();
+            generator.TestState.Sources.Add(code);
+            generator.TestBehaviors = TestBehaviors.SkipGeneratedSourcesCheck;
+
+            var d1 = DiagnosticResult
+                .CompilerError("MG0019")
+                .WithArguments("Test.TestMapper", "Test.B")
+                .WithSpan(11, 26, 11, 36);
+
+            generator.TestState.ExpectedDiagnostics.Add(d1);
+
+            await generator.RunAsync();
+        }
     }
 }
