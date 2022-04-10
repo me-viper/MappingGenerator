@@ -5,15 +5,20 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
     internal class MemberNamingManager
     {
-        private readonly Dictionary<string, KnownMapper> _usedNames = new();
+        private readonly Dictionary<string, KnownMapperRef> _usedNames;
 
-        public string GetMemberName(KnownMapper mapper)
+        public MemberNamingManager(IDictionary<string, KnownMapperRef> mappers)
         {
-            var mapperName = $"{char.ToLower(mapper.Name[0])}{mapper.Name.Substring(1)}";
+            _usedNames = new Dictionary<string, KnownMapperRef>(mappers);
+        }
+
+        public string GetMemberName(KnownMapperRef mapper)
+        {
+            var memberName = mapper.MemberName;
             
             string MemberNameInner(int? suffix = null)
             {
-                var name = mapperName + (suffix?.ToString() ?? string.Empty);
+                var name = memberName + (suffix?.ToString() ?? string.Empty);
 
                 if (!_usedNames.TryGetValue(name, out var mp))
                 {

@@ -10,8 +10,10 @@ using Talk2Bits.MappingGenerator.Abstractions;
 
 namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
-    internal class MappingEmitContext : EmitContext
+    internal class MappingEmitContext
     {
+        private readonly EmitContext _emitContext;
+
         private readonly HashSet<IMethodSymbol> _mappingMethods = new(SymbolEqualityComparer.Default);
 
         private readonly HashSet<IMethodSymbol> _converterMethods = new(SymbolEqualityComparer.Default);
@@ -23,6 +25,18 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         private readonly HashSet<IPropertySymbol> _destinationCandidateProperties = new(SymbolEqualityComparer.Default);
 
         private readonly HashSet<MappingDefinition> _destinationProperties = new(MappingDefinitionEqualityComparer.IgnoreCase);
+
+        public INamedTypeSymbol MapperType => _emitContext.MapperType;
+
+        public IGeneratorContext ExecutionContext => _emitContext.ExecutionContext;
+
+        public KnownTypeSymbols KnownTypes => _emitContext.KnownTypes;
+
+        public CollectionClassifier CollectionClassifier => _emitContext.CollectionClassifier;
+
+        public MemberNamingManager MemberNamingManager => _emitContext.MemberNamingManager;
+
+        public IReadOnlyCollection<KnownMapperRef> MemberMappers => _emitContext.MemberMappers;
 
         private KnownMapper Mapper { get; }
         
@@ -48,17 +62,15 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         public ImmutableList<MappingDefinition> DestinationProperties => _destinationProperties.ToImmutableList();
 
-        public MemberNamingManager MemberNamingManager { get; private set; } = default!;
-
         public string AfterMapMethodName => $"{MapperName}AfterMap";
 
         public string DestinationConstructorName => $"{MapperName}CreateDestination";
 
         public string MapMethodName(string suffix) => $"{MapperName}Map{suffix}";
 
-        private MappingEmitContext(KnownMapper mapperType, IGeneratorContext executionContext) 
-            : base(mapperType.Mapper, executionContext)
+        private MappingEmitContext(KnownMapper mapperType, EmitContext emitContext)
         {
+            _emitContext = emitContext;
             Mapper = mapperType;
         }
 
@@ -120,31 +132,21 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         }
 
         public static MappingEmitContext Build(
+            EmitContext emitContext,
             KnownMapper mapperType, 
             INamedTypeSymbol sourceType,
-            INamedTypeSymbol destinationType,
-            IEnumerable<KnownMapper> internalMappers,
-            IEnumerable<KnownMapper> knownMappers,
-            IGeneratorContext executionContext,
-            MemberNamingManager memberNamingManager)
+            INamedTypeSymbol destinationType)
         {
-            if (internalMappers == null)
-                throw new ArgumentNullException(nameof(internalMappers));
-
-            if (knownMappers == null)
-                throw new ArgumentNullException(nameof(knownMappers));
+            if (emitContext == null)
+                throw new ArgumentNullException(nameof(emitContext));
             
-            if (memberNamingManager == null)
-                throw new ArgumentNullException(nameof(memberNamingManager));
-            
-            var result = new MappingEmitContext(mapperType, executionContext);
+            var result = new MappingEmitContext(mapperType, emitContext);
 
             result.SourceType = sourceType ?? throw new ArgumentNullException(nameof(sourceType));
             result.DestinationType = destinationType ?? throw new ArgumentNullException(nameof(destinationType));
-            result.MemberNamingManager = memberNamingManager;
 
-            SetInternalKnownMappers(result, internalMappers);
-            SetKnownMappers(result, knownMappers);
+            SetInternalKnownMappers(result, emitContext.InternalMappers);
+            SetKnownMappers(result, emitContext.KnownMappers);
             SetCustomConverterMethods(result);
             SetSourceProperties(result);
             SetDestinationCandidateProperties(result);

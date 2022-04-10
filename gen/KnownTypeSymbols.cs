@@ -27,6 +27,8 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         public INamedTypeSymbol ListType { get; }
 
         public INamedTypeSymbol HashSetType { get; }
+
+        public INamedTypeSymbol IMapper { get; }
         
         public KnownTypeSymbols(Compilation compilation)
         {
@@ -40,6 +42,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             CollectionType = compilation.GetTypeByMetadataName(typeof(Collection<>).FullName)!;
             ListType = compilation.GetTypeByMetadataName(typeof(List<>).FullName)!;
             HashSetType = compilation.GetTypeByMetadataName(typeof(HashSet<>).FullName)!;
+            IMapper = compilation.GetTypeByMetadataName(typeof(IMapper<,>).FullName)!;
         }
 
         public bool IsInSameClassHierarchy(ITypeSymbol source, ITypeSymbol destination)

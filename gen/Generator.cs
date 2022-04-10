@@ -19,8 +19,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         private readonly IReadOnlyCollection<KnownMapper> _knownMappers;
 
-        private readonly MemberNamingManager _memberNamingManager = new();
-
         public string FileName => _mapperType.ToDisplayString().Replace('<', '[').Replace('>', ']');
 
         public Generator(
@@ -45,12 +43,18 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         public IEnumerable<SyntaxNode> Build(IGeneratorContext executionContext)
         {
             var mst = new MappingSyntaxFactory();
-
             var result = new List<SyntaxNode>();
+
+            var emitContext = EmitContext.Build(
+                _mapperType, 
+                executionContext,
+                _internalMappers,
+                _knownMappers
+                );
 
             if (_internalMappers.Count == 1)
             {
-                var model = BuildMapper(_internalMappers.Single(), executionContext);
+                var model = BuildMapper(_internalMappers.Single(), emitContext);
 
                 if (model == null)
                     return new List<SyntaxNode>(0);
@@ -59,8 +63,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 result.Add(syntax);
                 return result;
             }
-
-            var emitContext = EmitContext.Build(_mapperType, executionContext);
+            
             var anchorClassModel = emitContext.CreateAnchorSyntaxModel();
 
             // 1. Merge constructors.
@@ -68,7 +71,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             // 3. PROFIT!
             foreach (var target in _internalMappers)
             {
-                var model = BuildMapper(target, executionContext, p => anchorClassModel.TryPopulate(p, true));
+                var model = BuildMapper(target, emitContext, p => anchorClassModel.TryPopulate(p, true));
 
                 if (model == null)
                     return new List<SyntaxNode>(0);
@@ -90,22 +93,20 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         private MapperInstanceSyntaxModel? BuildMapper(
             KnownMapper mapperToGenerate, 
-            IGeneratorContext executionContext,
+            EmitContext emitContext,
             Func<MapperTypeSpec, bool>? populate = null)
         {
             var context = MappingEmitContext.Build(
+                emitContext,
                 mapperToGenerate,
                 mapperToGenerate.SourceType,
-                mapperToGenerate.DestType,
-                _internalMappers,
-                _knownMappers,
-                executionContext,
-                _memberNamingManager
+                mapperToGenerate.DestType
                 );
 
             var resolvers = new List<BaseMappingSource>();
 
             resolvers.Add(new CustomMethodMappingSource(context));
+            resolvers.AddRange(context.MemberMappers.Select(p => new MemberMapperSource(p, context)));
             resolvers.AddRange(context.InternalMappers.Select(p => new KnownTypeMappingSource(p, true, context)));
             resolvers.AddRange(context.KnownMappers.Select(p => new KnownTypeMappingSource(p, false, context)));
             resolvers.Add(new PropertyMappingSource(context));
@@ -140,7 +141,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
                 foreach (var missingMapping in context.DestinationProperties)
                 {
-                    executionContext.ReportDiagnostic(
+                    emitContext.ExecutionContext.ReportDiagnostic(
                         Diagnostic.Create(
                             DiagnosticDescriptors.MissingMapping(severity),
                             null,
