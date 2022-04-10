@@ -64,7 +64,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 return result;
             }
             
-            var anchorClassModel = emitContext.CreateAnchorSyntaxModel();
+            var anchorClassModel = emitContext.CreateSyntaxModel();
 
             // 1. Merge constructors.
             // 2. Generate separate partial class with constructor only.

@@ -12,6 +12,8 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
     internal class MappingEmitContext
     {
+        private KnownMapper _mapper;
+
         private readonly EmitContext _emitContext;
 
         private readonly HashSet<IMethodSymbol> _mappingMethods = new(SymbolEqualityComparer.Default);
@@ -37,8 +39,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         public MemberNamingManager MemberNamingManager => _emitContext.MemberNamingManager;
 
         public IReadOnlyCollection<KnownMapperRef> MemberMappers => _emitContext.MemberMappers;
-
-        private KnownMapper Mapper { get; }
         
         public INamedTypeSymbol SourceType { get; private set; } = default!;
 
@@ -48,13 +48,13 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         public IReadOnlyCollection<KnownMapper> KnownMappers { get; private set; } = default!;
 
-        public MissingMappingBehavior MissingMappingBehaviour => Mapper.MissingMappingBehavior;
+        public MissingMappingBehavior MissingMappingBehaviour => _mapper.MissingMappingBehavior;
 
-        public ImplementationType ImplementationType => Mapper.ImplementationType;
+        public ImplementationType ImplementationType => _mapper.ImplementationType;
 
-        public ConstructorAccessibility ConstructorAccessibility => Mapper.ConstructorAccessibility;
+        public ConstructorAccessibility ConstructorAccessibility => _mapper.ConstructorAccessibility;
 
-        private string MapperName => Mapper.LocalName ?? string.Empty;
+        private string MapperName => _mapper.LocalName ?? string.Empty;
 
         public IReadOnlyCollection<IMethodSymbol> MappingMethods => _mappingMethods;
 
@@ -68,10 +68,10 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         public string MapMethodName(string suffix) => $"{MapperName}Map{suffix}";
 
-        private MappingEmitContext(KnownMapper mapperType, EmitContext emitContext)
+        private MappingEmitContext(KnownMapper mapper, EmitContext emitContext)
         {
             _emitContext = emitContext;
-            Mapper = mapperType;
+            _mapper = mapper;
         }
 
         public MappingDefinition MakeMappingDefinition(IPropertySymbol symbol)

@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
-    internal class EmitContext
+    internal sealed class EmitContext
     {
         public INamedTypeSymbol MapperType { get; }
 
@@ -24,7 +24,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         
         public IReadOnlyCollection<KnownMapper> KnownMappers { get; private set; } = default!;
 
-        protected EmitContext(INamedTypeSymbol mapperType, IGeneratorContext executionContext)
+        private EmitContext(INamedTypeSymbol mapperType, IGeneratorContext executionContext)
         {
             MapperType = mapperType ?? throw new ArgumentNullException(nameof(mapperType));
             ExecutionContext = executionContext ?? throw new ArgumentNullException(nameof(executionContext));
@@ -61,7 +61,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             return result;
         }
 
-        public MapperAnchorSyntaxModel CreateAnchorSyntaxModel()
+        public MapperAnchorSyntaxModel CreateSyntaxModel()
         {
             return new MapperAnchorSyntaxModel(
                 ExecutionContext,
