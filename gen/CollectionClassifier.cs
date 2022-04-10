@@ -91,17 +91,6 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         }
     }
 
-    [Flags]
-    internal enum CollectionTypeInfo
-    {
-        NotCollection = 0,
-        IEnumerable = 2,
-        Collection = 4,
-        Interface = 8,
-        Type = 16,
-        Array = 32
-    }
-
     internal record CollectionTypeClassification(ITypeSymbol CollectionType)
     {
         public ITypeSymbol? ElementsType { get; set; }
