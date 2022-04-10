@@ -2,6 +2,8 @@
 
 MappingGenerator will reuse other generated mappings.
 
+**Note**. At this moment. due to significant reflection overheads only mappers generated within same assembly are considered.
+
 ```csharp
 public class InnerSource
 {
@@ -91,5 +93,84 @@ partial class Mapper : IMapper<Source, Destination>
     }
 
     partial void AfterMap(Source source, Destination result);
+}
+```
+
+## Controlling which mappers used
+
+If MappingGenerator finds fields or properties of `IMapper<TSource, TDestination` type that are relevant for generation it will use them:
+
+
+```csharp
+public record A { public string Value { get; set; } = default!; }
+public record B { public string Value { get; set; } = default!; }
+public record C { public string Value { get; set; } = default!; }
+
+public record Source
+{
+    public A Value1 { get; set; } = default!;
+    public A Value2 { get; set; } = default!;
+}
+
+public record Destination
+{
+    public B Value1 { get; set; } = default!;
+    public C Value2 { get; set; } = default!;
+}
+
+[MappingGenerator(typeof(Source), typeof(Destination))]
+public partial class Mapper
+{
+    // We want use specific A => B mapper.
+    private IMapper<A, B> _fieldMapper = new A2B();
+
+    // We want use specific A => C mapper.
+    public IMapper<A, C> PropertyMapper { get; } = new A2C();
+
+    private class A2B : IMapper<A, B>
+    {
+        public B Map(A source)
+        {
+            return new B { Value = source.Value };
+        }
+    }
+
+    private class A2C : IMapper<A, C>
+    {
+        public C Map(A source)
+        {
+            return new C { Value = source.Value };
+        }
+    }
+}
+```
+
+Generated code (removed redundant parts and added comments for brevity):
+
+```csharp
+partial class Mapper : IMapper<Source, Destination>
+{
+    public Destination Map(Source source)
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+
+        Destination CreateDestination()
+        {
+            return new Destination()
+            {};
+        }
+
+        var result = CreateDestination();
+
+        // Using A => B mapper.
+        result.Value1 = this._fieldMapper.Map(source.Value1);
+
+        // Using A => C mapper.
+        result.Value2 = this.PropertyMapper.Map(source.Value2);
+
+        AfterMap(source, result);
+        return result;
+    }
 }
 ```
