@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Talk2Bits.MappingGenerator.Abstractions;
 
@@ -10,7 +6,7 @@ using Xunit;
 
 namespace MappingGenerator.Tests.MappingCustomization
 {
-    public class MappingCustomizationTests
+    public class CustomizationTests
     {
         [Fact]
         public void PropertyMappingCustomization()
@@ -116,7 +112,9 @@ namespace MappingGenerator.Tests.MappingCustomization
 
     [MappingGenerator(typeof(Source), typeof(Destination))]
     [MappingGeneratorPropertyIgnore(nameof(Destination.Ignore))]
+    [MappingGeneratorPropertyIgnore(nameof(Destination.Value), AppliesTo = "A")]
     [MappingGeneratorPropertyMapping(nameof(Source.SourceValue), nameof(Destination.DestinationValue))]
+    [MappingGeneratorPropertyMapping(nameof(Source.SourceValue), nameof(Destination.Value), AppliesTo = "A")]
     public partial class CustomizedMapper
     { }
 
@@ -148,8 +146,8 @@ namespace MappingGenerator.Tests.MappingCustomization
     }
 
     [MappingGenerator(typeof(Source), typeof(Destination), Name = "Ex")]
-    [MappingGeneratorPropertyIgnore(nameof(Destination.Ignore))]
-    [MappingGeneratorPropertyMapping(nameof(Source.SourceValue), nameof(Destination.DestinationValue))]
+    [MappingGeneratorPropertyIgnore(nameof(Destination.Ignore), AppliesTo = "Ex")]
+    [MappingGeneratorPropertyMapping(nameof(Source.SourceValue), nameof(Destination.DestinationValue), AppliesTo = "Ex")]
     public partial class MapperWithCustomPrefix
     {
         private string ExMapValue(Source source)

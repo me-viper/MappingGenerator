@@ -151,6 +151,19 @@ partial class Mapper : IMapper<Source, Destination>
 }
 ```
 
+**Note**. By default `MappingGeneratorPropertyIgnore` will be applied to all mappers within anchor class. If you want it to be applied only to specific mapper use `AppliesTo` parameter:
+
+```csharp
+[MappingGenerator(typeof(A), typeof(B))]
+[MappingGenerator(typeof(C), typeof(D), Name = "B2DMapper")]
+// 'IgnoreAll' property will be ignored both for A => B and C => D mappers.
+[MappingGeneratorPropertyIgnore(nameof("IgnoreAll"))]
+// 'Some' property will be ignored only for C => D mapper.
+[MappingGeneratorPropertyIgnore(nameof("IgnoreSome"), AppliesTo = "B2DMapper")]
+public partial class Mapper
+{ }
+```
+
 ## Override property matching behavior
 
 ```csharp
@@ -206,4 +219,17 @@ partial class Mapper : IMapper<Source, Destination>
 
     partial void AfterMap(Source source, Destination result);
 }
+```
+
+**Note**. By default `MappingGeneratorPropertyMapping` will be applied to all mappers within anchor class. If you want it to be applied only to specific mapper use `AppliesTo` parameter:
+
+```csharp
+[MappingGenerator(typeof(A), typeof(B))]
+[MappingGenerator(typeof(C), typeof(D), Name = "B2DMapper")]
+// 'SourceVal' property will be mapped to 'DestVal' property for both for A => B and C => D mappers.
+[MappingGeneratorPropertyMapping("SourceVal", "DestVal")]
+// 'CVal' property will be mapped to 'DVal' property only for C => D mapper.
+[MappingGeneratorPropertyMapping("CVal", "DVal", AppliesTo = "B2DMapper")]
+public partial class Mapper
+{ }
 ```

@@ -157,14 +157,14 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             return result;
         }
 
-        private static void SetDestinationProperties(MappingEmitContext result)
+        private static void SetDestinationProperties(MappingEmitContext context)
         {
-            foreach (var prop in result._destinationCandidateProperties)
+            foreach (var prop in context._destinationCandidateProperties)
             {
-                if (!result.ExecutionContext.Compilation.IsSymbolAccessibleWithin(prop, result.MapperType))
+                if (!context.ExecutionContext.Compilation.IsSymbolAccessibleWithin(prop, context.MapperType))
                     continue;
 
-                var colType = result.CollectionClassifier.ClassifyCollectionType(prop.Type);
+                var colType = context.CollectionClassifier.ClassifyCollectionType(prop.Type);
 
                 if (!colType.IsEnumerable)
                 {
@@ -174,12 +174,12 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                     if (prop.SetMethod == null)
                         continue;
 
-                    if (!result.ExecutionContext.Compilation.IsSymbolAccessibleWithin(prop.SetMethod, result.MapperType))
+                    if (!context.ExecutionContext.Compilation.IsSymbolAccessibleWithin(prop.SetMethod, context.MapperType))
                         continue;
                 }
 
-                var entry = result.MakeMappingDefinition(prop);
-                result._destinationProperties.Add(entry);
+                var entry = context.MakeMappingDefinition(prop);
+                context._destinationProperties.Add(entry);
             }
         }
 
@@ -366,6 +366,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                         StringComparison.Ordinal
                         )
                     )
+                .Where(p => IsAttibuteInScope(p, context))
                 .ToList();
 
             var propertiesToIgnore = new HashSet<string>();
@@ -407,6 +408,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                         StringComparison.Ordinal
                         )
                     )
+                .Where(p => IsAttibuteInScope(p, context))
                 .ToList();
 
             foreach (var customMapping in customAttr)
@@ -453,6 +455,18 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
                 context._customizedMappings[dest.Name] = new CustomizedMapping(source);
             }
+        }
+
+        private static bool IsAttibuteInScope(AttributeData attribute, MappingEmitContext context)
+        {
+            var scopeVal = attribute.NamedArguments
+                .FirstOrDefault(p => string.Equals(p.Key, nameof(ScopedMapperAttribute.AppliesTo), StringComparison.Ordinal));
+
+            if (string.IsNullOrWhiteSpace(scopeVal.Key))
+                return true;
+
+            return scopeVal.Value.Value == null 
+                || string.Equals((string)scopeVal.Value.Value, context.MapperName, StringComparison.Ordinal);
         }
     }
 }
