@@ -11,15 +11,14 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 {
     internal class KnownTypeMappingSource : MemberMapperSource
     {
-        private KnownMapper Mapper { get; }
+        private readonly KnownMapper _mapper;
 
-        private bool _isInternal;
+        private readonly bool _isInternal;
 
         public KnownTypeMappingSource(KnownMapper mapper, bool isInternal, MappingEmitContext context) : base(mapper, context)
         {
             _isInternal = isInternal;
-
-            Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public override MappingSpec? TryMap(MappingDestination entry)
@@ -29,8 +28,8 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
             if (memberMapping == null)
                 return null;
 
-            var memberName = Context.MemberNamingManager.GetMemberName(Mapper);
-            var result = new KnownTypeMappingSpec(memberName, Mapper, entry, _isInternal);
+            var memberName = Context.MemberNamingManager.GetMemberName(_mapper);
+            var result = new KnownTypeMappingSpec(memberName, _mapper, entry, _isInternal);
             result.MappingExpressions.AddRange(memberMapping.MappingExpressions);
             result.MappingStatements.AddRange(memberMapping.MappingStatements);
 

@@ -3,22 +3,12 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using System;
-using System.Collections.Generic;
 
 using Talk2Bits.MappingGenerator.Abstractions;
 
 namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
     using static SyntaxFactory;
-
-    internal enum CollectionKind
-    {
-        Undefined,
-        List,
-        Collection,
-        HashSet,
-        Array
-    }
 
     internal partial class MappingSyntaxFactory
     {

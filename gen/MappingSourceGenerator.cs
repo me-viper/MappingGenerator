@@ -122,7 +122,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 }
             }
 
-            var allKnownMappers = knownMappers.Values.SelectMany(p => p);
+            var allKnownMappers = knownMappers.Values.SelectMany(p => p).ToList();
 
             foreach (var mapper in knownMappers)
             {

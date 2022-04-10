@@ -92,7 +92,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 {
                     var source = (INamedTypeSymbol)((INamedTypeSymbol)field.Type).TypeArguments[0];
                     var dest = (INamedTypeSymbol)((INamedTypeSymbol)field.Type).TypeArguments[1];
-                    var kmr = new KnownMapperRef(context.MapperType, source!, dest!, field.Name);
+                    var kmr = new KnownMapperRef(context.MapperType, source, dest, field.Name);
                     memberMappers.Add(kmr);
                 }
 
@@ -107,7 +107,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 {
                     var source = (INamedTypeSymbol)((INamedTypeSymbol)prop.Type).TypeArguments[0];
                     var dest = (INamedTypeSymbol)((INamedTypeSymbol)prop.Type).TypeArguments[1];
-                    var kmr = new KnownMapperRef(context.MapperType, source!, dest!, prop.Name);
+                    var kmr = new KnownMapperRef(context.MapperType, source, dest, prop.Name);
                     memberMappers.Add(kmr);
                 }
 
