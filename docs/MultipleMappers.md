@@ -53,91 +53,68 @@ partial class Mapper
 Will produce the following generated code (removed redundant parts and added comments for brevity):
 
 ```csharp
-namespace MappingGenerator.SampleApp
+// A => B mapper generated in separate "part" of anchor class.
+partial class Mapper : IMapper<A, B>
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using Talk2Bits.MappingGenerator.Abstractions;
-
-    // A => B mapper generated in separate "part" of anchor class.
-    partial class Mapper : IMapper<A, B>
+    public B Map(A source)
     {
-        public B Map(A source)
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+        B CreateDestination()
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-            B CreateDestination()
-            {
-                return new B()
-                {};
-            }
-
-            var result = CreateDestination();
-            result.Text = source.Text;
-            AfterMap(source, result);
-            return result;
+            return new B()
+            {};
         }
 
-        partial void AfterMap(A source, B result);
+        var result = CreateDestination();
+        result.Text = source.Text;
+
+        AfterMap(source, result);
+        
+        return result;
     }
+
+    partial void AfterMap(A source, B result);
 }
-namespace MappingGenerator.SampleApp
+
+// C => D mapper generated in separate "part" of anchor class.
+partial class Mapper : IMapper<C, D>
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using Talk2Bits.MappingGenerator.Abstractions;
-
-    // C => D mapper generated in separate "part" of anchor class.
-    partial class Mapper : IMapper<C, D>, IMapper<IEnumerable<C>, List<D>>, IMapper<IEnumerable<C>, HashSet<D>>, IMapper<IEnumerable<C>, Collection<D>>, IMapper<IEnumerable<C>, D[]>
+    public D Map(C source)
     {
-        public D Map(C source)
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+
+        D CreateDestination()
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-            D CreateDestination()
-            {
-                return new D()
-                {};
-            }
-
-            var result = CreateDestination();
-
-            // Reusing A => B mapper.
-            result.Inner = this.mapper.Map(source.Inner);
-            
-            AfterMap(source, result);
-            return result;
+            return new D()
+            {};
         }
 
-        partial void AfterMap(C source, D result);
+        var result = CreateDestination();
+
+        // Reusing A => B mapper.
+        result.Inner = this.mapper.Map(source.Inner);
+        
+        AfterMap(source, result);
+        return result;
     }
+
+    partial void AfterMap(C source, D result);
 }
-namespace MappingGenerator.SampleApp
+
+// Separate "part" containing constructor only.
+partial class Mapper
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using Talk2Bits.MappingGenerator.Abstractions;
+    // A => B mapper.
+    private IMapper<A, B> mapper;
 
-    // Separate "part" containing constructor only.
-    partial class Mapper
+    public Mapper()
     {
-        // A => B mapper.
-        private IMapper<A, B> mapper;
-
-        public Mapper()
-        {
-            // We know A => B mapper is inside same class.
-            this.mapper = (IMapper<A, B>)this;
-        }
+        // We know A => B mapper is inside same class.
+        this.mapper = (IMapper<A, B>)this;
     }
 }
-
 ```
 
 ## Caveats
@@ -180,7 +157,6 @@ public partial class Mapper
 
 With the fix code compiles fine:
 
-```csharp
 ```csharp
 partial class Mapper : IMapper<A, B>, IMapper<A, C>
 {
