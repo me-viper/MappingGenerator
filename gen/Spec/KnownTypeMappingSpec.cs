@@ -2,7 +2,7 @@
 {
     internal record KnownTypeMappingSpec(
         string MemberName,
-        KnownMapper Mapper,
+        KnownMapperRef Mapper,
         MappingDestination Destination,
         bool IsInternal) : MappingSpec(Destination);
 }

@@ -13,7 +13,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
     {
         private readonly IReadOnlyCollection<IPropertySymbol> _sourceProperties;
 
-        private KnownMapperRef Mapper { get; }
+        protected KnownMapperRef Mapper { get; }
 
         public MemberMapperSource(KnownMapperRef mapper, MappingEmitContext context) : base(context)
         {

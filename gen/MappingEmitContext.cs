@@ -44,9 +44,9 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         public INamedTypeSymbol DestinationType { get; private set; } = default!;
 
-        public IReadOnlyCollection<KnownMapper> InternalMappers { get; private set; } = default!;
+        public IReadOnlyCollection<KnownMapperRef> InternalMappers { get; private set; } = default!;
 
-        public IReadOnlyCollection<KnownMapper> KnownMappers { get; private set; } = default!;
+        public IReadOnlyCollection<KnownMapperRef> KnownMappers { get; private set; } = default!;
 
         public MissingMappingBehavior MissingMappingBehaviour => _mapper.MissingMappingBehavior;
 
@@ -183,16 +183,16 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             }
         }
 
-        private static void SetInternalKnownMappers(MappingEmitContext context, IEnumerable<KnownMapper> knownMappers)
+        private static void SetInternalKnownMappers(MappingEmitContext context, IEnumerable<KnownMapperRef> knownMappers)
         {
             var km = knownMappers.Where(
                 p => !(p.SourceType.Equals(context.SourceType, SymbolEqualityComparer.Default) && p.DestType.Equals(context.DestinationType, SymbolEqualityComparer.Default))
                 );
 
-            context.InternalMappers = new List<KnownMapper>(km);
+            context.InternalMappers = new List<KnownMapperRef>(km);
         }
 
-        private static void SetKnownMappers(MappingEmitContext context, IEnumerable<KnownMapper> knownMappers)
+        private static void SetKnownMappers(MappingEmitContext context, IEnumerable<KnownMapperRef> knownMappers)
         {
             var knownMappersToIgnore = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
             var knownMappersToIgnoreAttr = context.MapperType.GetAttributes().Where(
@@ -211,7 +211,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 .Where(p => !p.Mapper.Equals(context.MapperType, SymbolEqualityComparer.Default))
                 .Where(p => !knownMappersToIgnore.Contains(p.Mapper));
 
-            context.KnownMappers = new List<KnownMapper>(km);
+            context.KnownMappers = new List<KnownMapperRef>(km);
         }
 
         private static void SetCustomMappingMethods(MappingEmitContext context)

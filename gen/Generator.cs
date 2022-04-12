@@ -17,20 +17,20 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         private readonly IReadOnlyCollection<KnownMapper> _internalMappers;
 
-        private readonly IReadOnlyCollection<KnownMapper> _knownMappers;
+        private readonly IReadOnlyCollection<KnownMapperRef> _knownMappers;
 
         public string FileName => _mapperType.ToDisplayString().Replace('<', '[').Replace('>', ']');
 
         public Generator(
             INamedTypeSymbol mapper,
             IReadOnlyCollection<KnownMapper> internalMappers,
-            IEnumerable<KnownMapper> knownMappers)
+            IEnumerable<KnownMapperRef> knownMappers)
         {
             if (internalMappers == null)
                 throw new ArgumentNullException(nameof(internalMappers));
 
             _mapperType = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _knownMappers = new List<KnownMapper>(knownMappers);
+            _knownMappers = new List<KnownMapperRef>(knownMappers);
 
             var mappers = new List<KnownMapper>(internalMappers.Count);
 

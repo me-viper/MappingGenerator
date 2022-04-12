@@ -20,9 +20,9 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
         public IReadOnlyCollection<KnownMapperRef> MemberMappers { get; private set; } = default!;
         
-        public IReadOnlyCollection<KnownMapper> InternalMappers { get; private set; } = default!;
+        public IReadOnlyCollection<KnownMapperRef> InternalMappers { get; private set; } = default!;
         
-        public IReadOnlyCollection<KnownMapper> KnownMappers { get; private set; } = default!;
+        public IReadOnlyCollection<KnownMapperRef> KnownMappers { get; private set; } = default!;
 
         private EmitContext(INamedTypeSymbol mapperType, IGeneratorContext executionContext)
         {
@@ -35,8 +35,8 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         public static EmitContext Build(
             INamedTypeSymbol mapperType, 
             IGeneratorContext executionContext,
-            IEnumerable<KnownMapper> internalMappers,
-            IEnumerable<KnownMapper> knownMappers)
+            IEnumerable<KnownMapperRef> internalMappers,
+            IEnumerable<KnownMapperRef> knownMappers)
         {
             if (mapperType == null)
                 throw new ArgumentNullException(nameof(mapperType));
@@ -51,8 +51,8 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 throw new ArgumentNullException(nameof(knownMappers));
 
             var result = new EmitContext(mapperType, executionContext);
-            result.InternalMappers = new List<KnownMapper>(internalMappers);
-            result.KnownMappers = new List<KnownMapper>(knownMappers);
+            result.InternalMappers = new List<KnownMapperRef>(internalMappers);
+            result.KnownMappers = new List<KnownMapperRef>(knownMappers);
 
             SetMemberMappers(result);
 

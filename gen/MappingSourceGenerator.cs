@@ -122,7 +122,12 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 }
             }
 
-            var allKnownMappers = knownMappers.Values.SelectMany(p => p).ToList();
+            if (knownMappers.Count == 0)
+                return;
+
+            var allKnownMappers = knownMappers.Values.SelectMany(p => p).Cast<KnownMapperRef>().ToList();
+            var externalMappers = GetExternalMappers();
+            allKnownMappers.AddRange(externalMappers);
 
             foreach (var mapper in knownMappers)
             {
@@ -147,6 +152,11 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                     // context.ReportDiagnostic()
                 }
             }
+        }
+
+        private static IReadOnlyCollection<KnownMapperRef> GetExternalMappers()
+        {
+            return new List<KnownMapperRef>();
         }
 
         private static bool IsValidMappingGenerator(
