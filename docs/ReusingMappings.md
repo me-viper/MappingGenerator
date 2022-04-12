@@ -2,7 +2,7 @@
 
 MappingGenerator will reuse other generated mappings.
 
-**Note**. At this moment. due to significant reflection overheads only mappers generated within same assembly are considered.
+**Note**. At this moment. due to significant reflection overheads only mappers generated within same assembly are considered. If you wan't to use mappers from other assemblies see section bellow.
 
 ```csharp
 public class InnerSource
@@ -173,4 +173,21 @@ partial class Mapper : IMapper<Source, Destination>
         return result;
     }
 }
+```
+
+## Reusing mappers from other assemblies
+
+You can tell MappingGenerator where to look for mappers with `MappingGeneratorIncludeAssembly` and `MappingGeneratorIncludeMapper` attributes:
+
+```csharp
+// Mapping generator will use all types implementing IMapper<TSource, TDestination>
+// from External.Mappers assembly.
+[assembly: MappingGeneratorIncludeAssemblyAttribute("External.Mappers") ]
+```
+
+**Important**. `External.Mappers` assembly must be referenced by current project.
+
+```csharp
+// Mapping generator will use MapperA and MapperB implementations.
+[assembly: MappingGeneratorIncludeMapper(typeof(MapperA), typeof(MapperB)) ]
 ```
