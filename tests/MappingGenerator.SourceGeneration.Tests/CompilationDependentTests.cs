@@ -24,12 +24,14 @@ namespace MappingGenerator.SourceGeneration.Tests
             Output = output;
         }
 
+        private MetadataReference MapperRef =
+            MetadataReference.CreateFromFile(typeof(MappingGeneratorAttribute).GetTypeInfo().Assembly.Location);
+
         private IEnumerable<MetadataReference> DefaultReferences = new[]
         {
             MetadataReference.CreateFromFile(Assembly.Load("netstandard, Version=2.0.0.0").Location),
             MetadataReference.CreateFromFile(Assembly.Load("System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a").Location),
             MetadataReference.CreateFromFile(typeof(Binder).GetTypeInfo().Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(MappingGeneratorAttribute).GetTypeInfo().Assembly.Location),
         };
 
         protected Compilation EmptyCompilation => CreateCompilation(@"
@@ -43,11 +45,11 @@ namespace MyCode
     }
 }
 ");
-        protected Compilation CreateCompilation(string source)
+        protected Compilation CreateCompilation(string source, IEnumerable<MetadataReference>? refs = null)
             => CSharpCompilation.Create(
                 "compilation",
                 new[] { CSharpSyntaxTree.ParseText(source) },
-                DefaultReferences,
+                DefaultReferences.Concat(refs ?? new[] { MapperRef }),
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
                 );
     }

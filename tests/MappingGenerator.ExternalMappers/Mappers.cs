@@ -2,12 +2,12 @@
 
 namespace MappingGenerator.ExternalMappers
 {
-    public class ExternalSource
+    public record ExternalSource
     {
         public string Text { get; set; } = default!;
     }
 
-    public class ExternalDestination
+    public record ExternalDestination
     {
         public string Text { get; set; } = default!;
 

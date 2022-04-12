@@ -175,5 +175,14 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             DiagnosticSeverity.Error,
             true
             );
+
+        public static DiagnosticDescriptor InvalidTypeTarget => new(
+            "MG0020",
+            "Invalid MappingGeneratorIncludeMapper target",
+            "Type '{0}' does not implement IMapper<TSource, TDestination> interface.",
+            "MappingGenerator",
+            DiagnosticSeverity.Error,
+            true
+            );
     }
 }

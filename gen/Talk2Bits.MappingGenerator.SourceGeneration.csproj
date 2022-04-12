@@ -22,6 +22,8 @@
     <Compile Include="..\src\Abstractions\ImplementationType.cs" Link="Abstractions\ImplementationType.cs" />
     <Compile Include="..\src\Abstractions\MapperExtensions.cs" Link="Abstractions\MapperExtensions.cs" />
     <Compile Include="..\src\Abstractions\MappingGeneratorAttribute.cs" Link="Abstractions\MappingGeneratorAttribute.cs" />
+    <Compile Include="..\src\Abstractions\MappingGeneratorIncludeAssemblyAttribute.cs" Link="Abstractions\MappingGeneratorIncludeAssemblyAttribute.cs" />
+    <Compile Include="..\src\Abstractions\MappingGeneratorIncludeMapperAttribute.cs" Link="Abstractions\MappingGeneratorIncludeMapperAttribute.cs" />
     <Compile Include="..\src\Abstractions\MappingGeneratorMappersIgnoreAttribute.cs" Link="Abstractions\MappingGeneratorMappersIgnoreAttribute.cs" />
     <Compile Include="..\src\Abstractions\MappingGeneratorPropertyIgnoreAttribute.cs" Link="Abstractions\MappingGeneratorPropertyIgnoreAttribute.cs" />
     <Compile Include="..\src\Abstractions\MappingGeneratorPropertyMappingAttribute.cs" Link="Abstractions\MappingGeneratorPropertyMappingAttribute.cs" />

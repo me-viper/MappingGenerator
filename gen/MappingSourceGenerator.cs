@@ -126,13 +126,22 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 return;
 
             var allKnownMappers = knownMappers.Values.SelectMany(p => p).Cast<KnownMapperRef>().ToList();
-            var externalMappers = GetExternalMappers();
-            allKnownMappers.AddRange(externalMappers);
+
+            var generatorContext = new GeneratorContext(compilation, context.ReportDiagnostic);
+
+            try
+            {
+                var externalMappers = GetExternalMappers(compilation, generatorContext);
+                allKnownMappers.AddRange(externalMappers);
+            }
+            catch(MappingGenerationException)
+            {
+                return;
+            }
 
             foreach (var mapper in knownMappers)
             {
                 var generator = new Generator(mapper.Key, mapper.Value, allKnownMappers);
-                var generatorContext = new GeneratorContext(compilation, context.ReportDiagnostic);
 
                 try
                 {
@@ -154,9 +163,96 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             }
         }
 
-        private static IReadOnlyCollection<KnownMapperRef> GetExternalMappers()
+        internal static IReadOnlyCollection<KnownMapperRef> GetExternalMappers(
+            Compilation compilation,
+            IGeneratorContext context)
         {
-            return new List<KnownMapperRef>();
+            var imapper = compilation.GetTypeByMetadataName(typeof(IMapper<,>).FullName)!;
+            var result = new HashSet<KnownMapperRef>();
+
+            void AddType(INamedTypeSymbol type, bool validate)
+            {
+                var isValidTarget = false;
+
+                foreach (var impl in type.AllInterfaces)
+                {
+                    if (!impl.IsGenericType || !impl.OriginalDefinition.Equals(imapper, SymbolEqualityComparer.Default))
+                        continue;
+
+                    var sourceType = (INamedTypeSymbol)impl.TypeArguments[0];
+                    var destType = (INamedTypeSymbol)impl.TypeArguments[1];
+
+                    var km = new KnownMapper(type, sourceType, destType, null);
+                    result.Add(km);
+
+                    isValidTarget = true;
+                }
+
+                if (!isValidTarget && validate)
+                {
+                    context.ReportDiagnostic(
+                        Diagnostic.Create(
+                            DiagnosticDescriptors.InvalidTypeTarget,
+                            null,
+                            type.ToDisplayString()
+                            )
+                        );
+
+                    throw new MappingGenerationException("Invalid target");
+                }
+            }
+
+            var assembliesAttrs = compilation.Assembly.GetAttributes().Where(
+                p => string.Equals(p.AttributeClass?.ToDisplayString(), typeof(MappingGeneratorIncludeAssemblyAttribute).FullName)
+                ).ToList();
+
+            var mapperTypes = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
+            var refSymbols = new List<IAssemblySymbol>();
+
+            if (assembliesAttrs.Count > 0)
+            {
+                refSymbols = compilation.ExternalReferences
+                    .Select(compilation.GetAssemblyOrModuleSymbol)
+                    .OfType<IAssemblySymbol>()
+                    .ToList(); 
+            }
+
+            var mappersVisitor = new MapperSymbolsVisitor(imapper, mapperTypes);
+
+            foreach (var assemblyAttr in assembliesAttrs)
+            {
+                var assemblyName = assemblyAttr.ConstructorArguments[0].Value!.ToString();
+                var identity = compilation.ReferencedAssemblyNames.FirstOrDefault(p => string.Equals(p.Name, assemblyName));
+
+                if (identity == null)
+                {
+                    throw new MappingGenerationException("Invalid assembly");
+                }
+
+                var symbol = refSymbols.FirstOrDefault(p => p.Identity.Equals(identity));
+
+                if (symbol == null)
+                    continue;
+                
+                mappersVisitor.Visit(symbol.GlobalNamespace);
+            }
+
+            foreach (var type in mapperTypes)
+                AddType(type, false);
+
+            var mapperTypesAttrs = compilation.Assembly.GetAttributes().Where(
+                p => string.Equals(p.AttributeClass?.ToDisplayString(), typeof(MappingGeneratorIncludeMapperAttribute).FullName)
+                );
+
+            foreach (var mapperTypeAttr in mapperTypesAttrs)
+            {
+                var types = mapperTypeAttr.ConstructorArguments[0].Values!.Select(p => (INamedTypeSymbol)p.Value!);
+
+                foreach (var type in types)
+                    AddType(type, true);
+            }
+            
+            return result;
         }
 
         private static bool IsValidMappingGenerator(
