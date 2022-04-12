@@ -14,9 +14,9 @@ namespace MappingGenerator.SourceGeneration.Tests
     public class ExternalMappersIncludeTests : CompilationDependentTests
     {
 #if DEBUG
-        private const string BasePath = @"..\..\..\..\MappingGenerator.ExternalMappers\bin\Debug\net6.0";
+        private const string BasePath = @"../../../../MappingGenerator.ExternalMappers/bin/Debug/net6.0/";
 #else
-        private const string BasePath = @"..\..\..\..\MappingGenerator.ExternalMappers\bin\Release\net6.0";
+        private const string BasePath = @"../../../../MappingGenerator.ExternalMappers/bin/Release/net6.0/";
 #endif
 
         public ExternalMappersIncludeTests(ITestOutputHelper output) : base(output)
@@ -46,8 +46,8 @@ namespace MyCode
                 code,
                 new[] 
                 { 
-                    MetadataReference.CreateFromFile(@$"{BasePath}\MappingGenerator.ExternalMappers.dll"),
-                    MetadataReference.CreateFromFile(@$"{BasePath}\Talk2Bits.MappingGenerator.dll"),
+                    MetadataReference.CreateFromFile(@$"{BasePath}MappingGenerator.ExternalMappers.dll"),
+                    MetadataReference.CreateFromFile(@$"{BasePath}Talk2Bits.MappingGenerator.dll"),
                 });
             
             var diagnostics = compilation.GetDiagnostics();
@@ -84,8 +84,8 @@ namespace MyCode
                 code,
                 new[]
                 {
-                    MetadataReference.CreateFromFile(@$"{BasePath}\MappingGenerator.ExternalMappers.dll"),
-                    MetadataReference.CreateFromFile(@$"{BasePath}\Talk2Bits.MappingGenerator.dll"),
+                    MetadataReference.CreateFromFile(@$"{BasePath}MappingGenerator.ExternalMappers.dll"),
+                    MetadataReference.CreateFromFile(@$"{BasePath}Talk2Bits.MappingGenerator.dll"),
                 });
 
             var diagnostics = compilation.GetDiagnostics();
@@ -119,8 +119,8 @@ namespace MyCode
                 code,
                 new[]
                 {
-                    MetadataReference.CreateFromFile(@$"{BasePath}\MappingGenerator.ExternalMappers.dll"),
-                    MetadataReference.CreateFromFile(@$"{BasePath}\Talk2Bits.MappingGenerator.dll"),
+                    MetadataReference.CreateFromFile(@$"{BasePath}MappingGenerator.ExternalMappers.dll"),
+                    MetadataReference.CreateFromFile(@$"{BasePath}Talk2Bits.MappingGenerator.dll"),
                 });
 
             var diagnostics = compilation.GetDiagnostics();
@@ -157,8 +157,8 @@ namespace MyCode
                 code,
                 new[]
                 {
-                    MetadataReference.CreateFromFile(@$"{BasePath}\MappingGenerator.ExternalMappers.dll"),
-                    MetadataReference.CreateFromFile(@$"{BasePath}\Talk2Bits.MappingGenerator.dll"),
+                    MetadataReference.CreateFromFile(@$"{BasePath}MappingGenerator.ExternalMappers.dll"),
+                    MetadataReference.CreateFromFile(@$"{BasePath}Talk2Bits.MappingGenerator.dll"),
                 });
 
             var diagnostics = compilation.GetDiagnostics();
