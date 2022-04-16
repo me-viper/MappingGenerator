@@ -2,7 +2,7 @@
 
 namespace Talk2Bits.MappingGenerator.Abstractions
 {
-    public class SourceMemberNullException : Exception
+    public class MappingNullException : Exception
     {
         public Type SourceType { get; }
 
@@ -12,7 +12,7 @@ namespace Talk2Bits.MappingGenerator.Abstractions
 
         public string DestinationMember { get; }
 
-        public SourceMemberNullException(Type sourceType, string sourceMember, Type destinationType, string destinationMember) 
+        public MappingNullException(Type sourceType, string sourceMember, Type destinationType, string destinationMember) 
             : base($"Source {sourceType}.{sourceMember} cannot be null because destination {destinationType}.{destinationMember} is not nullable type.")
         {
             SourceType = sourceType;
@@ -20,5 +20,14 @@ namespace Talk2Bits.MappingGenerator.Abstractions
             DestinationType = destinationType;
             DestinationMember = destinationMember;
         }
-    }
+
+        public MappingNullException(Type mapperType, Type destinationType, string destinationMember)
+            : base($"Mapper {mapperType} returned 'null' but destination {destinationType}.{destinationMember} is not nullable type.")
+        {
+            SourceType = mapperType;
+            DestinationType = destinationType;
+            SourceMember = "Map";
+            DestinationMember = destinationMember;
+        }
+     }
 }

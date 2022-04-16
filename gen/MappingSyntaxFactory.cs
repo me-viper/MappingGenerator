@@ -62,7 +62,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             var destFqn = CreateQualifiedName(dt);
 
             return ThrowExpression(
-                ObjectCreationExpression(IdentifierName(nameof(SourceMemberNullException)))
+                ObjectCreationExpression(IdentifierName(nameof(MappingNullException)))
                 .WithArgumentList(
                     ArgumentList(
                         SeparatedList<ArgumentSyntax>(
@@ -71,6 +71,40 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                                 Argument(TypeOfExpression(sourceFqn)),
                                 Token(SyntaxKind.CommaToken),
                                 Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(sourceMember))),
+                                Token(SyntaxKind.CommaToken),
+                                Argument(TypeOfExpression(destFqn)),
+                                Token(SyntaxKind.CommaToken),
+                                Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(destinationeMember))),
+                            })
+                        )
+                    )
+                );
+        }
+        
+        public static ExpressionSyntax ThrowSourceMemberNullException(
+            string memberMapper,
+            ITypeSymbol destinationType,
+            string destinationeMember)
+        {
+            var dt = destinationType.WithNullableAnnotation(NullableAnnotation.None);
+            var destFqn = CreateQualifiedName(dt);
+
+            var memberMapperType = InvocationExpression(
+                MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression, 
+                    IdentifierName(memberMapper), 
+                    IdentifierName("GetType")
+                    )
+                );
+
+            return ThrowExpression(
+                ObjectCreationExpression(IdentifierName(nameof(MappingNullException)))
+                .WithArgumentList(
+                    ArgumentList(
+                        SeparatedList<ArgumentSyntax>(
+                            new SyntaxNodeOrToken[] 
+                            {
+                                Argument(memberMapperType),
                                 Token(SyntaxKind.CommaToken),
                                 Argument(TypeOfExpression(destFqn)),
                                 Token(SyntaxKind.CommaToken),

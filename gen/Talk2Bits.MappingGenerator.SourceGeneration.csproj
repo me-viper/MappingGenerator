@@ -29,7 +29,7 @@
     <Compile Include="..\src\Abstractions\MappingGeneratorPropertyMappingAttribute.cs" Link="Abstractions\MappingGeneratorPropertyMappingAttribute.cs" />
     <Compile Include="..\src\Abstractions\MissingMappingBehavior.cs" Link="Abstractions\MissingMappingBehavior.cs" />
     <Compile Include="..\src\Abstractions\ScopedMapperAttribute.cs" Link="Abstractions\ScopedMapperAttribute.cs" />
-    <Compile Include="..\src\Abstractions\SourceMemberNullException.cs" Link="Abstractions\SourceMemberNullException.cs" />
+    <Compile Include="..\src\Abstractions\MappingNullException.cs" Link="Abstractions\MappingNullException.cs" />
   </ItemGroup>
 
   <ItemGroup>
