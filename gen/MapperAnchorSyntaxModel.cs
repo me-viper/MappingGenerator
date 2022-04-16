@@ -15,6 +15,8 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         INamedTypeSymbol MapperType,
         KnownTypeSymbols KnownTypes)
     {
+        private HashSet<string> _members = new();
+
         private ConstructorAccessibility? _constructorAccessibility;
 
         public List<FieldDeclarationSyntax> Fields { get; } = new();
@@ -51,6 +53,9 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             {
                 var memberName = spec.MemberName;
 
+                if (_members.Contains(memberName))
+                    continue;
+
                 Fields.Add(MappingSyntaxFactory.InnerMapperField(spec.Mapper.SourceType, spec.Mapper.DestType, memberName));
 
                 if (!spec.IsInternal)
@@ -70,6 +75,8 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                             )
                         );
                 }
+
+                _members.Add(memberName);
             }
 
             return true;
