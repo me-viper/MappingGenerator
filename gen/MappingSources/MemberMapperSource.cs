@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using System;
 using System.Collections.Generic;
@@ -44,18 +45,36 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 
             var memberName = Context.MemberNamingManager.GetMemberName(Mapper);
             var result = new MappingSpec(entry);
-            
-            result.MappingExpressions.Add(
-                MappingSyntaxFactory.CallInnerMapper(
-                    Context.SourceType, 
-                    Context.DestinationType, 
+
+            ExpressionSyntax expr;
+
+            if (Mapper.SourceType.NullableAnnotation == sourceProperty.Type.NullableAnnotation)
+                expr = MappingSyntaxFactory.CallInnerMapper(memberName, sourceProperty.Name);
+            else
+            {
+                expr = MappingSyntaxFactory.CallInnerMapperNullable(
+                    Context.SourceType,
+                    Context.DestinationType,
                     sourceProperty.Type,
                     entry.Type,
-                    memberName, 
+                    memberName,
                     sourceProperty.Name,
                     entry.Name
-                    )
-                );
+                    );
+            }
+
+            // If mapper can return nullable type but destination is not nullable.
+            if (Mapper.DestType.NullableAnnotation == NullableAnnotation.Annotated 
+                && entry.Type.NullableAnnotation != NullableAnnotation.Annotated)
+            {
+                expr = SyntaxFactory.BinaryExpression(
+                    SyntaxKind.CoalesceExpression,
+                    expr,
+                    MappingSyntaxFactory.ThrowSourceMemberNullException(memberName, Context.DestinationType, entry.Name)
+                    );
+            }
+
+            result.MappingExpressions.Add(expr);
 
             return result;
         }
