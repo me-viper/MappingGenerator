@@ -50,6 +50,37 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 );
         }
 
+        public static ExpressionSyntax ThrowSourceMemberNullException(
+            ITypeSymbol sourceType,
+            ITypeSymbol destinationType,
+            string sourceMember,
+            string destinationeMember)
+        {
+            var st = sourceType.WithNullableAnnotation(NullableAnnotation.None);
+            var sourceFqn = CreateQualifiedName(st);
+            var dt = destinationType.WithNullableAnnotation(NullableAnnotation.None);
+            var destFqn = CreateQualifiedName(dt);
+
+            return ThrowExpression(
+                ObjectCreationExpression(IdentifierName(nameof(SourceMemberNullException)))
+                .WithArgumentList(
+                    ArgumentList(
+                        SeparatedList<ArgumentSyntax>(
+                            new SyntaxNodeOrToken[] 
+                            {
+                                Argument(TypeOfExpression(sourceFqn)),
+                                Token(SyntaxKind.CommaToken),
+                                Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(sourceMember))),
+                                Token(SyntaxKind.CommaToken),
+                                Argument(TypeOfExpression(destFqn)),
+                                Token(SyntaxKind.CommaToken),
+                                Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(destinationeMember))),
+                            })
+                        )
+                    )
+                );
+        }
+
         public static InvocationExpressionSyntax CallMappingMethod(string methodName)
         {
             return InvocationExpression(IdentifierName(methodName))
@@ -108,7 +139,58 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 });
         }
 
-        public static InvocationExpressionSyntax CallInnerMapper(string member, string sourceProperty)
+        public static ExpressionSyntax NullAwareExpression(
+            ITypeSymbol sourceType,
+            ITypeSymbol destinationType,
+            ITypeSymbol sourceMemberType,
+            ITypeSymbol destinationMemberType,
+            ExpressionSyntax innerExpression,
+            string sourceMember,
+            string destinationMember,
+            bool forceCheck = true)
+        {
+            if (sourceMemberType.NullableAnnotation != NullableAnnotation.Annotated)
+                return innerExpression;
+
+            if (!forceCheck && sourceMemberType.NullableAnnotation == destinationMemberType.NullableAnnotation)
+                return innerExpression;
+
+            var nullableExpr = destinationMemberType.NullableAnnotation == NullableAnnotation.Annotated
+                ? LiteralExpression(SyntaxKind.NullLiteralExpression)
+                : ThrowSourceMemberNullException(sourceType, destinationType, sourceMember, destinationMember);
+
+            return ConditionalExpression(
+                BinaryExpression(
+                    SyntaxKind.EqualsExpression,
+                    MemberAccess("source", sourceMember),
+                    LiteralExpression(SyntaxKind.NullLiteralExpression)),
+                nullableExpr,
+                innerExpression
+                );
+        }
+
+        public static ExpressionSyntax CallInnerMapper(
+            ITypeSymbol sourceType,
+            ITypeSymbol destinationType,
+            ITypeSymbol sourceMemberType,
+            ITypeSymbol destinationMemberType,
+            string member,
+            string sourceProperty,
+            string destinationProperty)
+        {
+            return NullAwareExpression(
+                sourceType,
+                destinationType,
+                sourceMemberType,
+                destinationMemberType,
+                CallInnerMapper(member, sourceProperty),
+                sourceProperty,
+                destinationProperty,
+                true
+                );
+        }
+
+        private static InvocationExpressionSyntax CallInnerMapper(string member, string sourceProperty)
         {
             return InvocationExpression(
                 MemberAccessExpression(

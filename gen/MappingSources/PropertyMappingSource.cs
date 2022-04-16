@@ -49,7 +49,18 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
                     return null;
 
                 if (conv.IsExplicit)
-                    expr = SyntaxFactory.CastExpression(MappingSyntaxFactory.GetTypeSyntax(entry.Type), expr); 
+                    expr = SyntaxFactory.CastExpression(MappingSyntaxFactory.GetTypeSyntax(entry.Type), expr);
+
+                expr = MappingSyntaxFactory.NullAwareExpression(
+                    Context.SourceType, 
+                    Context.DestinationType,
+                    sourceProperty.Type,
+                    entry.Type,
+                    expr, 
+                    sourceProperty.Name, 
+                    entry.Name, 
+                    false
+                    );
             }
 
             result.MappingExpressions.Add(expr);
