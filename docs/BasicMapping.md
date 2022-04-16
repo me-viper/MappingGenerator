@@ -47,10 +47,8 @@ partial class Mapper : IMapper<Source, Destination>
 
         // Explicit cast generated.
         result.BigNumber = (int)source.BigNumber;
-        AfterMap(source, result);
+        
         return result;
     }
-
-    partial void AfterMap(Source source, Destination result);
 }
 ```

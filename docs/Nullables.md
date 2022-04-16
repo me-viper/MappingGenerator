@@ -28,7 +28,6 @@ partial class Mapper : IMapper<Source, Destination>
         // Destination.Value and Source.Value are both string? type.
         result.Value = source.Value;
         
-        AfterMap(source, result);
         return result;
     }
 }
@@ -63,7 +62,6 @@ partial class Mapper : IMapper<Source, Destination>
         // Destination.Value is not nullable but Source.Value is.
         result.Value = source.Value == null ? throw new MappingNullException(typeof(Source), "Value", typeof(Destination), "Value") : source.Value;
         
-        AfterMap(source, result);
         return result;
     }
 }
@@ -115,7 +113,6 @@ partial class CustomNullableMapper : IMapper<Source<SourceInner?>, Destination<D
         // Inner mapper is fine with source = null, no additional code needed.
         result.Value = this._nullToDefaultMapper.Map(source.Value);
         
-        AfterMap(source, result);
         return result;
     }
 }
@@ -167,7 +164,6 @@ partial class CustomNullableMapper : IMapper<Source<SourceInner?>, Destination<D
         result.Value = this._nullToDefaultMapper.Map(source.Value) 
             ?? throw new MappingNullException(_nullToDefaultMapper.GetType(), typeof(Destination<DestinationInner>), "Value");
         
-        AfterMap(source, result);
         return result;
     }
 }

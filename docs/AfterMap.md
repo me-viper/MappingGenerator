@@ -3,7 +3,7 @@
 MappingGenerator generates partial `AfterMap` method which is called after mapping is done.
 
 ```csharp
-partial void <MAPPER-NAME>AfterMap(Source source, Destination result)
+partial void <MAPPER-NAME>AfterMap(Source source, ref Destination result)
 {}
 ```
 
@@ -25,7 +25,7 @@ public class Destination
 [MappingGenerator(typeof(Source), typeof(Destination))]
 public partial class Mapper
 { 
-    private partial void AfterMap(Source source, Destination result);
+    private partial void AfterMap(Source source, ref Destination result);
     {
         result.Number = result.Number + 100;
     }
@@ -47,10 +47,10 @@ partial class Mapper : IMapper<Source, Destination>
         result.Text = source.Text;
 
         // Will call your AfterMap method.
-        AfterMap(source, result);
+        AfterMap(source, ref result);
         return result;
     }
 
-    partial void AfterMap(Source source, Destination result);
+    partial void AfterMap(Source source, ref Destination result);
 }
 ```

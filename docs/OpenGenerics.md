@@ -91,10 +91,7 @@ partial class Mapper<TSource, TDestination> : IMapper<Source<TSource>, Destinati
         // Custom type converter called.
         result.A = Convert(source.A);
 
-        AfterMap(source, result);
         return result;
     }
-
-    partial void AfterMap(Source source, Destination result);
 }
 ```

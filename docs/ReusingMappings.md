@@ -52,11 +52,8 @@ partial class InnerMapper : IMapper<InnerSource, InnerDestination>
 
         result.InnerText = source.InnerText;
 
-        AfterMap(source, result);
         return result;
     }
-
-    partial void AfterMap(Source source, Destination result);
 }
 
 partial class Mapper : IMapper<Source, Destination>
@@ -88,11 +85,8 @@ partial class Mapper : IMapper<Source, Destination>
         result.A = this.innerMapper(source.A);
         result.B = this.innerMapper(source.B);
 
-        AfterMap(source, result);
         return result;
     }
-
-    partial void AfterMap(Source source, Destination result);
 }
 ```
 
@@ -169,7 +163,6 @@ partial class Mapper : IMapper<Source, Destination>
         // Using A => C mapper.
         result.Value2 = this.PropertyMapper.Map(source.Value2);
 
-        AfterMap(source, result);
         return result;
     }
 }

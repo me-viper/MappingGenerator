@@ -44,10 +44,7 @@ partial class Mapper : IMapper<Source, Destination>
         // Custom type converter called.
         result.Number = Convert(source.Number);
 
-        AfterMap(source, result);
         return result;
     }
-
-    partial void AfterMap(Source source, Destination result);
 }
 ```

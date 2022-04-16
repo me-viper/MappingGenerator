@@ -171,7 +171,7 @@ namespace MappingGenerator.Tests.MappingCustomization
     [MappingGeneratorPropertyMapping(nameof(Source.SourceValue), nameof(Destination.DestinationValue))]
     public partial class MapperWithAfterMap
     {
-        partial void AfterMap(Source source, Destination result)
+        partial void AfterMap(Source source, ref Destination result)
         {
             result.Ignore = "AfterMap";
         }

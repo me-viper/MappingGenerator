@@ -50,11 +50,8 @@ partial class Mapper : IMapper<Source, Destination>
         // User provided mapping used.
         result.DestinationText = MapDestinationText(source);
 
-        AfterMap(source, result);
         return result;
     }
-
-    partial void AfterMap(Source source, Destination result);
 }
 ```
 

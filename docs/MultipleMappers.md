@@ -68,13 +68,9 @@ partial class Mapper : IMapper<A, B>
 
         var result = CreateDestination();
         result.Text = source.Text;
-
-        AfterMap(source, result);
         
         return result;
     }
-
-    partial void AfterMap(A source, B result);
 }
 
 // C => D mapper generated in separate "part" of anchor class.
@@ -96,11 +92,8 @@ partial class Mapper : IMapper<C, D>
         // Reusing A => B mapper.
         result.Inner = this.mapper.Map(source.Inner);
         
-        AfterMap(source, result);
         return result;
     }
-
-    partial void AfterMap(C source, D result);
 }
 
 // Separate "part" containing constructor only.

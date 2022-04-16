@@ -56,11 +56,8 @@ partial class Mapper : IMapper<Source, Destination>
         // NOTE. Mapping result.Text = source.Text is omitted
         // because MappingGenerator considers mapping was done in constructor.
 
-        AfterMap(source, result);
         return result;
     }
-
-    partial void AfterMap(Source source, Destination result);
 }
 ```
 
@@ -114,11 +111,8 @@ partial class Mapper : IMapper<Source, Destination>
         // NOTE. Mapping result.Text = source.Text is omitted
         // because MappingGenerator considers mapping have been done already.
 
-        AfterMap(source, result);
         return result;
     }
-
-    partial void AfterMap(Source source, Destination result);
 }
 ```
 
@@ -180,10 +174,7 @@ partial class Mapper : IMapper<Source, Destination>
         result.Number = source.Number;
         result.Text = source.Text;
 
-        AfterMap(source, result);
         return result;
     }
-
-    partial void AfterMap(Source source, Destination result);
 }
 ```

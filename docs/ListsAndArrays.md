@@ -37,13 +37,12 @@ partial class Mapper : IMapper<Source, Destination>
     {
         if (source == null)
             throw new ArgumentNullException(nameof(source));
+        
         var result = CreateDestination(source);
         result.Text = source.Text;
-        AfterMap(source, result);
+        
         return result;
     }
-
-    partial void AfterMap(Source source, Destination result);
 }
 ```
 
@@ -196,10 +195,7 @@ partial class Mapper : IMapper<Source, Destination>
         else
             CollectionsHelper.CopyTo<C>(source.Covariation, result.Covariation);
         
-        AfterMap(source, result);
         return result;
     }
-
-    partial void AfterMap(Source source, Destination result);
 }
 ```

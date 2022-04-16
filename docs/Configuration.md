@@ -69,11 +69,11 @@ partial class Mapper : IMapper<Source, Destination>
 
         ...
 
-        MyAfterMap(source, result);
+        MyAfterMap(source, ref result);
         return result;
     }
 
-    private partial void MyAfterMap(Source source, Destination result);
+    private partial void MyAfterMap(Source source, ref Destination result);
 }
 ```
 
@@ -143,11 +143,8 @@ partial class Mapper : IMapper<Source, Destination>
 
         // No mapping for BigNumber property.
 
-        AfterMap(source, result);
         return result;
     }
-
-    partial void AfterMap(Source source, Destination result);
 }
 ```
 
@@ -213,11 +210,8 @@ partial class Mapper : IMapper<Source, Destination>
         // SourceText mapped to DestinationText.
         result.DestinationText = source.SourceText;
 
-        AfterMap(source, result);
         return result;
     }
-
-    partial void AfterMap(Source source, Destination result);
 }
 ```
 

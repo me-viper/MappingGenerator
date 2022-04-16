@@ -636,7 +636,9 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                             {
                                 Parameter(Identifier("source")).WithType(sourceType),
                                 Token(SyntaxKind.CommaToken),
-                                Parameter(Identifier("result")).WithType(destinationMap)
+                                Parameter(Identifier("result"))
+                                    .WithType(destinationMap)
+                                    .WithModifiers(TokenList(Token(SyntaxKind.RefKeyword)))
                             })
                         )
                     )
@@ -654,7 +656,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                             {
                                 Argument(IdentifierName("source")),
                                 Token(SyntaxKind.CommaToken),
-                                Argument(IdentifierName("result"))
+                                Argument(IdentifierName("result")).WithRefOrOutKeyword(Token(SyntaxKind.RefKeyword))
                             })
                         )
                     )

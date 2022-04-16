@@ -46,7 +46,7 @@ partial class InnerMapper : IMapper<InnerSource, InnerDestination>
 
         var result = CreateDestination();
         result.InnerText = source.InnerText;
-        AfterMap(source, result);
+        
         return result;
     }
 }
@@ -75,7 +75,6 @@ partial class Mapper : IMapper<Source, Destination>
         // Reusing InnerSource => InnerDestination for nested mapping.
         result.Inner = this.innerMapper.Map(source.Inner);
         
-        AfterMap(source, result);
         return result;
     }
 }

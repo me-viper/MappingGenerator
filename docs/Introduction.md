@@ -85,7 +85,7 @@ By default MappingGenerator generates the following:
 * Partial class `Mapper` implementing `IMapper<Source, Destination>` interface.
 * Implicit implementation for `IMapper<Source, Destination>.Map` method.
 * `CreateDestination` method to construct Destination.
-* Partial `AfterMap(Source, Destination)` method.
+* Partial `AfterMap(Source, ref Destination)` method.
 * Private fields for other mappers current mapper depends on.
 * Constructor to initialize these fields.
 
