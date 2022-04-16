@@ -41,10 +41,10 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 && DestType.Equals(other.DestType, SymbolEqualityComparer.Default);
         }
 
-        public string ToDisplayString()
+        public override string ToDisplayString()
         {
             var localName = LocalName != null ? $" (Name = {LocalName})" : string.Empty;
-            return $"{SourceType.Name} to {DestType.Name}{localName}";
+            return $"{SourceType.Name} => {DestType.Name}{localName}";
         }
     }
 }

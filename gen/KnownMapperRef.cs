@@ -1,10 +1,12 @@
 ﻿
 using System;
+using System.Diagnostics;
 
 using Microsoft.CodeAnalysis;
 
 namespace Talk2Bits.MappingGenerator.SourceGeneration
 {
+    [DebuggerDisplay("{ToDisplayString(), nq}")]
     internal class KnownMapperRef : IEquatable<KnownMapperRef>
     {
         public INamedTypeSymbol Mapper { get; }
@@ -41,6 +43,11 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             return Mapper.Equals(other.Mapper, SymbolEqualityComparer.Default)
                 && SourceType.Equals(other.SourceType, SymbolEqualityComparer.Default)
                 && DestType.Equals(other.DestType, SymbolEqualityComparer.Default);
+        }
+
+        public virtual string ToDisplayString()
+        {
+            return $"{SourceType.Name} => {DestType.Name}";
         }
     }
 }

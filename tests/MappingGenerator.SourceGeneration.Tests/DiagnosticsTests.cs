@@ -615,7 +615,7 @@ namespace Test
 
             var d1 = DiagnosticResult
                 .CompilerError("MG0015")
-                .WithArguments("Test.TestMapper", "A to B (Name = M)", "Test.A")
+                .WithArguments("Test.TestMapper", "A => B (Name = M)", "Test.A")
                 .WithSpan(13, 26, 13, 36);
 
             generator.TestState.ExpectedDiagnostics.Add(d1);
@@ -649,7 +649,7 @@ namespace Test
 
             var d1 = DiagnosticResult
                 .CompilerError("MG0015")
-                .WithArguments("Test.TestMapper", "A to B", "Test.A")
+                .WithArguments("Test.TestMapper", "A => B", "Test.A")
                 .WithSpan(13, 26, 13, 36);
 
             generator.TestState.ExpectedDiagnostics.Add(d1);
@@ -716,7 +716,7 @@ namespace Test
 
             var d1 = DiagnosticResult
                 .CompilerError("MG0017")
-                .WithArguments("Test.TestMapper", "A to B", "Test.A", "Test.B")
+                .WithArguments("Test.TestMapper", "A => B", "Test.A", "Test.B")
                 .WithSpan(12, 26, 12, 36);
 
             generator.TestState.ExpectedDiagnostics.Add(d1);
