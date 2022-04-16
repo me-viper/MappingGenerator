@@ -123,6 +123,44 @@ namespace MyCode
         }
 
         [Fact]
+        public void IDictionary()
+        {
+            var intType = _compilation.GetSpecialType(SpecialType.System_Int32);
+
+            var classifier = new CollectionClassifier(_knownTypes);
+            var sourceType = _knownTypes.IDictionaryType.Construct(intType, intType);
+            var elementType = _knownTypes.KeyValueType.Construct(intType, intType);
+            var entry = new MappingDefinition("Test", sourceType, null!, null);
+
+            var result = classifier.ClassifyCollectionType(entry.Type);
+
+            Assert.True(result.IsEnumerable);
+            Assert.False(result.IsType);
+            Assert.True(result.IsCollection);
+            Assert.Equal(CollectionKind.Dictionary, result.CollectionKind);
+            Assert.Equal(elementType, result.ElementsType, SymbolEqualityComparer.Default);
+        }
+
+        [Fact]
+        public void Dictionary()
+        {
+            var intType = _compilation.GetSpecialType(SpecialType.System_Int32);
+
+            var classifier = new CollectionClassifier(_knownTypes);
+            var sourceType = _knownTypes.DictionaryType.Construct(intType, intType);
+            var elementType = _knownTypes.KeyValueType.Construct(intType, intType);
+            var entry = new MappingDefinition("Test", sourceType, null!, null);
+
+            var result = classifier.ClassifyCollectionType(entry.Type);
+
+            Assert.True(result.IsEnumerable);
+            Assert.True(result.IsType);
+            Assert.True(result.IsCollection);
+            Assert.Equal(CollectionKind.Dictionary, result.CollectionKind);
+            Assert.Equal(elementType, result.ElementsType, SymbolEqualityComparer.Default);
+        }
+
+        [Fact]
         public void Collection()
         {
             var intType = _compilation.GetSpecialType(SpecialType.System_Int32);

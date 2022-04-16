@@ -96,6 +96,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
             if (namedType.ConstructedFrom.Equals(_knownTypes.IDictionaryType, SymbolEqualityComparer.Default))
             {
+                result.CollectionKind = CollectionKind.Dictionary;
                 result.IsEnumerable = true;
                 result.IsCollection = true;
 
