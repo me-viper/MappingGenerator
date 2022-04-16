@@ -69,6 +69,63 @@ namespace MappingGenerator.Tests.Dictionary
 
             Assert.Equal(expected.Value, result.Value);
         }
+
+        [Fact]
+        public void KeyMapper()
+        {
+            var source = new Source<SK, string>
+            {
+                Value = new()
+                {
+                    { new SK { Key = 1 }, "1" },
+                    { new SK { Key = 2 }, "2" },
+                    { new SK { Key = 3 }, "3" },
+                }
+            };
+
+            var expected = new Destination<DK, string>
+            {
+                Value = new()
+                {
+                    { new DK { Key = 1 }, "1" },
+                    { new DK { Key = 2 }, "2" },
+                    { new DK { Key = 3 }, "3" },
+                }
+            };
+
+            var mapper = new Mapper();
+            var result = mapper.Map(source);
+
+            Assert.Equal(expected.Value, result.Value);
+        }
+        [Fact]
+        public void ValueMapper()
+        {
+            var source = new Source<int, SV>
+            {
+                Value = new()
+                {
+                    { 1, new SV { Text = "1" } },
+                    { 2, new SV { Text = "2" } },
+                    { 3, new SV { Text = "3" } },
+                }
+            };
+
+            var expected = new Destination<int, DV>
+            {
+                Value = new()
+                {
+                    { 1, new DV { Text = "1" } },
+                    { 2, new DV { Text = "2" } },
+                    { 3, new DV { Text = "3" } },
+                }
+            };
+
+            var mapper = new Mapper();
+            var result = mapper.Map(source);
+
+            Assert.Equal(expected.Value, result.Value);
+        }
     }
 
     public record SK { public int Key { get; set; } }
@@ -92,7 +149,11 @@ namespace MappingGenerator.Tests.Dictionary
     [MappingGenerator(typeof(SK), typeof(DK))]
     [MappingGenerator(typeof(SV), typeof(DV))]
     [MappingGenerator(typeof(KeyValuePair<SK, SV>), typeof(KeyValuePair<DK, DV>))]
+    [MappingGenerator(typeof(KeyValuePair<SK, string>), typeof(KeyValuePair<DK, string>))]
+    [MappingGenerator(typeof(KeyValuePair<int, SV>), typeof(KeyValuePair<int, DV>))]
     [MappingGenerator(typeof(Source<SK, SV>), typeof(Destination<DK, DV>))]
+    [MappingGenerator(typeof(Source<int, SV>), typeof(Destination<int, DV>))]
+    [MappingGenerator(typeof(Source<SK, string>), typeof(Destination<DK, string>))]
     [MappingGenerator(typeof(Source<Dictionary<int, string>>), typeof(Destination<Dictionary<int, string>>))]
     public partial class Mapper
     { }
