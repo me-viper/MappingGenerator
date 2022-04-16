@@ -151,6 +151,8 @@ public partial class CustomNullableMapper
 Will produce the following generated code (removed redundant parts and added comments for brevity):
 
 ```csharp
+#nullable enable
+
 partial class CustomNullableMapper : IMapper<Source<SourceInner?>, Destination<DestinationInner>>
 {
     public Destination<DestinationInner> Map(Source<SourceInner?> source)
@@ -167,4 +169,6 @@ partial class CustomNullableMapper : IMapper<Source<SourceInner?>, Destination<D
         return result;
     }
 }
+
+#nullable restore
 ```

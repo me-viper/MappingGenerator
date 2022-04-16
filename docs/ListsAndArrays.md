@@ -28,7 +28,7 @@ public partial class Mapper
 { }
 ```
 
-Generated code (removed redundant parts and added comments for clarity):
+Generated code (removed redundant parts and added comments for brevity):
 
 ```csharp
 partial class Mapper : IMapper<Source, Destination>

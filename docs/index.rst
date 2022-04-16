@@ -28,6 +28,7 @@ Check out the :doc:`GettingStarted` page first.
    CustomTypeConverters
    DependencyInjection
    ListsAndArrays
+   Dictionaries
    OpenGenerics
    MultipleMappers
    Nullables
