@@ -1,6 +1,6 @@
 # Nullable Mappings
 
-MappingGenerator tries respects nullable annotations.
+MappingGenerator respects nullable annotations.
 
 If Source and Destination have same nullable annotations:
 
