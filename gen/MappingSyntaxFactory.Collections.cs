@@ -49,22 +49,26 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             CollectionKind collectionKind,
             string sourceProperty)
         {
-            var elementsFqn = CreateQualifiedName(elementsType);
+            TypeArgumentListSyntax typeArgs;
+
+            if (collectionKind != CollectionKind.Dictionary)
+            {
+                var elementsFqn = CreateQualifiedName(elementsType);
+                typeArgs = TypeArgumentList(SeparatedList<TypeSyntax>(new SyntaxNodeOrToken[] { elementsFqn })); 
+            }
+            else
+            {
+                var keyFqn = CreateQualifiedName(((INamedTypeSymbol)elementsType).TypeArguments[0]);
+                var valFqn = CreateQualifiedName(((INamedTypeSymbol)elementsType).TypeArguments[1]);
+                typeArgs = TypeArgumentList(SeparatedList<TypeSyntax>(new[] { keyFqn, valFqn }));
+            }
 
             return InvocationExpression(
                 MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
                     _collectionsHelper,
                     GenericName(Identifier(CopyToNewMethod(collectionKind)))
-                    .WithTypeArgumentList(
-                        TypeArgumentList(
-                            SeparatedList<TypeSyntax>(
-                                new SyntaxNodeOrToken[]
-                                {
-                                    elementsFqn,
-                                })
-                            )
-                        )
+                    .WithTypeArgumentList(typeArgs)
                     )
                 ).WithArgumentList(
                     ArgumentList(
@@ -85,25 +89,32 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             ExpressionSyntax converter)
         {
 
-            var srcFqn = CreateQualifiedName(sourceType);
-            var dstFqn = CreateQualifiedName(destinationType);
+            //var srcFqn = CreateQualifiedName(sourceType);
+            //var dstFqn = CreateQualifiedName(destinationType);
+
+            TypeArgumentListSyntax typeArgs;
+
+            if (collectionKind != CollectionKind.Dictionary)
+            {
+                var srcFqn = CreateQualifiedName(sourceType);
+                var dstFqn = CreateQualifiedName(destinationType);
+                typeArgs = TypeArgumentList(SeparatedList<TypeSyntax>(new [] { srcFqn, dstFqn }));
+            }
+            else
+            {
+                var skeyFqn = CreateQualifiedName(((INamedTypeSymbol)sourceType).TypeArguments[0]);
+                var svalFqn = CreateQualifiedName(((INamedTypeSymbol)sourceType).TypeArguments[1]);
+                var dkeyFqn = CreateQualifiedName(((INamedTypeSymbol)destinationType).TypeArguments[0]);
+                var dvalFqn = CreateQualifiedName(((INamedTypeSymbol)destinationType).TypeArguments[1]);
+                typeArgs = TypeArgumentList(SeparatedList<TypeSyntax>(new[] { skeyFqn, svalFqn, dkeyFqn, dvalFqn }));
+            }
 
             return InvocationExpression(
                 MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
                     _collectionsHelper,
                     GenericName(Identifier(CopyToNewMethod(collectionKind)))
-                    .WithTypeArgumentList(
-                        TypeArgumentList(
-                            SeparatedList<TypeSyntax>(
-                                new SyntaxNodeOrToken[]
-                                {
-                                    srcFqn,
-                                    Token(SyntaxKind.CommaToken),
-                                    dstFqn,
-                                })
-                            )
-                        )
+                    .WithTypeArgumentList(typeArgs)
                     )
                 ).WithArgumentList(
                     ArgumentList(
@@ -309,6 +320,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 CollectionKind.Collection => $"{nameof(CollectionsHelper.CopyToNew)}Collection",
                 CollectionKind.HashSet => $"{nameof(CollectionsHelper.CopyToNew)}HashSet",
                 CollectionKind.Array => $"{nameof(CollectionsHelper.CopyToNew)}Array",
+                CollectionKind.Dictionary => $"{nameof(CollectionsHelper.CopyToNew)}Dictionary",
                 _ => throw new NotSupportedException($"'{type}' is not supported"),
             };
         }

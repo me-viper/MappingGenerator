@@ -391,7 +391,8 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
 
             var body = new List<StatementSyntax>();
 
-            body.Add(ArgumentNotNull("source"));
+            if (!model.DestinationType.IsValueType)
+                body.Add(ArgumentNotNull("source"));
 
             if (model.DestinationTypeConstructor == null)
                 body.Add(DeclareResultVar(model.DestinationConstructorMethodName, false));

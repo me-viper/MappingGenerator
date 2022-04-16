@@ -6,6 +6,7 @@
         List,
         Collection,
         HashSet,
-        Array
+        Array,
+        Dictionary
     }
 }

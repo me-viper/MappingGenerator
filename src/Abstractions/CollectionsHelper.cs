@@ -49,6 +49,27 @@ namespace Talk2Bits.MappingGenerator.Abstractions
 
             return source.Select(p => mapper(p)).ToArray();
         }
+        
+        public static Dictionary<TOutKey, TOutValue> CopyToNewDictionary<TInKey, TInValue, TOutKey, TOutValue>(
+            ICollection<KeyValuePair<TInKey, TInValue>>? source, 
+            Converter<KeyValuePair<TInKey, TInValue>, KeyValuePair<TOutKey, TOutValue>> mapper)
+        {
+            if (mapper == null)
+                throw new ArgumentNullException(nameof(mapper));
+
+            if (source == null)
+                return new Dictionary<TOutKey, TOutValue>();
+
+            var result = new Dictionary<TOutKey, TOutValue>(source.Count);
+
+            foreach (var kv in source)
+            {
+                var s = mapper(kv);
+                result.Add(s.Key, s.Value); 
+            }
+
+            return result;
+        }
 
         public static TCollection CopyToNew<TIn, TOut, TCollection>(IEnumerable<TIn>? source, Converter<TIn, TOut> mapper)
             where TCollection : ICollection<TOut>, new()
@@ -116,6 +137,20 @@ namespace Talk2Bits.MappingGenerator.Abstractions
                 return Array.Empty<T>();
 
             return source.ToArray();
+        }
+
+        public static Dictionary<TKey, TValue> CopyToNewDictionary<TKey, TValue>(
+            ICollection<KeyValuePair<TKey, TValue>>? source)
+        {
+            if (source == null)
+                return new Dictionary<TKey, TValue>();
+
+            var result = new Dictionary<TKey, TValue>(source.Count);
+
+            foreach (var kv in source)
+                result.Add(kv.Key, kv.Value);
+
+            return result;
         }
 
         public static TCollection CopyToNew<T, TCollection>(IEnumerable<T>? source)

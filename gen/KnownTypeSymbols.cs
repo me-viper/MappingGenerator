@@ -27,6 +27,12 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
         public INamedTypeSymbol ListType { get; }
 
         public INamedTypeSymbol HashSetType { get; }
+        
+        public INamedTypeSymbol IDictionaryType { get; }
+        
+        public INamedTypeSymbol DictionaryType { get; }
+
+        public INamedTypeSymbol KeyValueType { get; }
 
         public INamedTypeSymbol IMapper { get; }
         
@@ -42,7 +48,10 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
             CollectionType = compilation.GetTypeByMetadataName(typeof(Collection<>).FullName)!;
             ListType = compilation.GetTypeByMetadataName(typeof(List<>).FullName)!;
             HashSetType = compilation.GetTypeByMetadataName(typeof(HashSet<>).FullName)!;
+            DictionaryType = compilation.GetTypeByMetadataName(typeof(Dictionary<,>).FullName)!;
+            IDictionaryType = compilation.GetTypeByMetadataName(typeof(IDictionary<,>).FullName)!;
             IMapper = compilation.GetTypeByMetadataName(typeof(IMapper<,>).FullName)!;
+            KeyValueType = compilation.GetTypeByMetadataName(typeof(KeyValuePair<,>).FullName)!;
         }
 
         public bool IsInSameClassHierarchy(ITypeSymbol source, ITypeSymbol destination)

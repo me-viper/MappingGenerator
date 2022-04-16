@@ -39,6 +39,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 return new CollectionTypeClassification(type);
 
             result.CollectionKind = CollectionKind.List;
+            result.ElementsType = namedType.TypeArguments[0];
 
             if (namedType.TypeKind == TypeKind.Interface)
                 result.IsInterface = true;
@@ -83,9 +84,23 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 result.IsCollection = true;
             }
 
-            var elementsType = namedType.TypeArguments[0];
+            if (namedType.ConstructedFrom.Equals(_knownTypes.DictionaryType, SymbolEqualityComparer.Default))
+            {
+                result.CollectionKind = CollectionKind.Dictionary;
+                result.IsEnumerable = true;
+                result.IsType = true;
+                result.IsCollection = true;
 
-            result.ElementsType = elementsType;
+                result.ElementsType = _knownTypes.KeyValueType.Construct(namedType.TypeArguments[0], namedType.TypeArguments[1]);
+            }
+
+            if (namedType.ConstructedFrom.Equals(_knownTypes.IDictionaryType, SymbolEqualityComparer.Default))
+            {
+                result.IsEnumerable = true;
+                result.IsCollection = true;
+
+                result.ElementsType = _knownTypes.KeyValueType.Construct(namedType.TypeArguments[0], namedType.TypeArguments[1]);
+            }
 
             return result;
         }
