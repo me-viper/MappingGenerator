@@ -44,18 +44,23 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration.MappingSources
 
             var memberName = Context.MemberNamingManager.GetMemberName(Mapper);
             var result = new MappingSpec(entry);
-            
-            result.MappingExpressions.Add(
-                MappingSyntaxFactory.CallInnerMapper(
-                    Context.SourceType, 
-                    Context.DestinationType, 
-                    sourceProperty.Type,
-                    entry.Type,
-                    memberName, 
-                    sourceProperty.Name,
-                    entry.Name
-                    )
-                );
+
+            if (Mapper.SourceType.NullableAnnotation == sourceProperty.Type.NullableAnnotation)
+                result.MappingExpressions.Add(MappingSyntaxFactory.CallInnerMapper(memberName, sourceProperty.Name));
+            else
+            {
+                result.MappingExpressions.Add(
+                    MappingSyntaxFactory.CallInnerMapperNullable(
+                        Context.SourceType,
+                        Context.DestinationType,
+                        sourceProperty.Type,
+                        entry.Type,
+                        memberName,
+                        sourceProperty.Name,
+                        entry.Name
+                        )
+                    ); 
+            }
 
             return result;
         }

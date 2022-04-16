@@ -169,7 +169,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 );
         }
 
-        public static ExpressionSyntax CallInnerMapper(
+        public static ExpressionSyntax CallInnerMapperNullable(
             ITypeSymbol sourceType,
             ITypeSymbol destinationType,
             ITypeSymbol sourceMemberType,
@@ -190,7 +190,7 @@ namespace Talk2Bits.MappingGenerator.SourceGeneration
                 );
         }
 
-        private static InvocationExpressionSyntax CallInnerMapper(string member, string sourceProperty)
+        public static InvocationExpressionSyntax CallInnerMapper(string member, string sourceProperty)
         {
             return InvocationExpression(
                 MemberAccessExpression(

@@ -49,6 +49,34 @@ namespace MappingGenerator.Tests.Nullable
 
             Assert.Equal(expected, result);
         }
+
+        [Fact]
+        public void CustomNullableSourceNested()
+        {
+            var source = new Source<SourceInner?>();
+            var expected = new Destination<DestinationInner> { Value = new() { InnerNumber = 100, InnerText = "Default" } };
+            var mapper = new CustomNullableMapper();
+            var result = mapper.Map(source);
+
+            Assert.Equal(expected, result);
+        }
+    }
+
+    [MappingGenerator(typeof(Source<SourceInner?>), typeof(Destination<DestinationInner>))]
+    public partial class CustomNullableMapper
+    {
+        private IMapper<SourceInner?, DestinationInner> _nullToDefaultMapper = new NullToDefaultMapper();
+
+        private class NullToDefaultMapper : IMapper<SourceInner?, DestinationInner>
+        {
+            public DestinationInner Map(SourceInner? source)
+            {
+                if (source == null)
+                    return new DestinationInner { InnerNumber = 100, InnerText = "Default" };
+
+                return new DestinationInner { InnerNumber = source.InnerNumber, InnerText = source.InnerText };
+            }
+        }
     }
 
     [MappingGenerator(typeof(Source<SourceInner?>), typeof(Destination<DestinationInner>))]
