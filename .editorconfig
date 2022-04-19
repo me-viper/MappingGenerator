@@ -25,6 +25,3 @@ insert_final_newline = true
 
 [*.props]
 indent_size = 2
-
-[*.csproj]
-indent_size = 2
